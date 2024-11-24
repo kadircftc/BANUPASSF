@@ -36,7 +36,7 @@ export class NavbarComponent implements OnInit {
 	help(): void{
 
 		window.open(
-			'https://www.devarchitecture.net/',
+			'https://www.reqspark.net/',
 			'_blank' 
 		);
 	}

@@ -12,8 +12,8 @@ namespace Tests.Helpers.Token
     {
         private static readonly JwtSecurityTokenHandler s_TokenHandler = new();
 
-        public string Issuer { get; } = "www.devarchitecture.com";
-        public string Audience { get; } = "www.devarchitecture.com";
+        public string Issuer { get; } = "www.reqspark.com";
+        public string Audience { get; } = "www.reqspark.com";
         public SigningCredentials SigningCredentials { get; }
 
         protected HttpClient HttpClient { get; set; }
