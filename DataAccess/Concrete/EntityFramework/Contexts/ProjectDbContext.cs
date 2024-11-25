@@ -53,6 +53,7 @@ namespace DataAccess.Concrete.EntityFramework.Contexts
         public DbSet<VisitConfirm> VisitConfirms { get; set; }
         public DbSet<Visit> Visits { get; set; }
         public DbSet<MultiVisiters> MultiVisiterses { get; set; }
+        public DbSet<BanuLog> BanuLogs { get; set; }
 
         protected IConfiguration Configuration { get; }
 
