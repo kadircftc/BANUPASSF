@@ -1,4 +1,5 @@
 ﻿using Business;
+using Business.CrossCuttingConcernsBS.Logging;
 using Business.Helpers;
 using Core.CrossCuttingConcerns.Logging.Serilog.Loggers;
 using Core.Extensions;
@@ -99,6 +100,7 @@ namespace WebAPI
             services.AddTransient<FileLogger>();
             services.AddTransient<PostgreSqlLogger>();
             services.AddTransient<MsSqlLogger>();
+            services.AddTransient<MsSqlLoggerProcess>();
             services.AddScoped<IpControlAttribute>();
 
             base.ConfigureServices(services);

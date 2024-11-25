@@ -15,6 +15,8 @@ namespace Entities.Concrete
         public bool VehicleEntry { get; set; }
         public bool MultiPersonVisit { get; set; }
         public bool IsConfirm { get; set; }
+        public bool IsExit{ get; set; }
+        public bool Status{ get; set; }
         public DateTime ApprovalDate { get; set; }
         public DateTime ExitDate { get; set; }
         public DateTime VisitStartDate { get; set; }

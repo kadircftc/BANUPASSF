@@ -94,7 +94,26 @@ namespace WebAPI.Controllers
             }
             return BadRequest(result.Message);
         }
-
+        ///<summary>
+        ///It brings the details according to its id.
+        ///</summary>
+        ///<remarks>Visits</remarks>
+        ///<return>Visits List</return>
+        ///<response code="200"></response>  
+        [Produces("application/json", "text/plain")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Visit))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [HttpGet("getByDate")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetByDate( string startDate,string endDate)
+        {
+            var result = await Mediator.Send(new GetVisitsByDateQuery { StartDate=startDate,EndDate=endDate });
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result.Message);
+        }
         /// <summary>
         /// Add Visit.
         /// </summary>

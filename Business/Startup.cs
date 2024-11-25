@@ -93,6 +93,7 @@ namespace Business
         public void ConfigureDevelopmentServices(IServiceCollection services)
         {
             ConfigureServices(services);
+            services.AddTransient<IBanuLogRepository, BanuLogRepository>();
             services.AddTransient<IMultiVisitersRepository, MultiVisitersRepository>();
             services.AddTransient<IVisitRepository, VisitRepository>();
             services.AddTransient<IVisitConfirmRepository, VisitConfirmRepository>();
@@ -119,6 +120,7 @@ namespace Business
         public void ConfigureStagingServices(IServiceCollection services)
         {
             ConfigureServices(services);
+            services.AddTransient<IBanuLogRepository, BanuLogRepository>();
             services.AddTransient<IMultiVisitersRepository, MultiVisitersRepository>();
             services.AddTransient<IVisitRepository, VisitRepository>();
             services.AddTransient<IVisitConfirmRepository, VisitConfirmRepository>();
@@ -144,6 +146,7 @@ namespace Business
         public void ConfigureProductionServices(IServiceCollection services)
         {
             ConfigureServices(services);
+            services.AddTransient<IBanuLogRepository, BanuLogRepository>();
             services.AddTransient<IMultiVisitersRepository, MultiVisitersRepository>();
             services.AddTransient<IVisitRepository, VisitRepository>();
             services.AddTransient<IVisitConfirmRepository, VisitConfirmRepository>();

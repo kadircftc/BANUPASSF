@@ -16,6 +16,7 @@ using Business.Handlers.Visits.ValidationRules;
 using Business.Services.UserService.Abstract;
 using Microsoft.AspNetCore.Http;
 using System;
+using Business.CrossCuttingConcernsBS.Logging;
 
 namespace Business.Handlers.Visits.Commands
 {
@@ -30,6 +31,8 @@ namespace Business.Handlers.Visits.Commands
         public string VisitorLicensePlate { get; set; }
         public bool VehicleEntry { get; set; }
         public bool MultiPersonVisit { get; set; }
+        public bool IsExit { get; set; }
+        public bool Status { get; set; }
         public System.DateTime ApprovalDate { get; set; }
         public System.DateTime ExitDate { get; set; }
         public System.DateTime VisitStartDate { get; set; }
@@ -53,7 +56,7 @@ namespace Business.Handlers.Visits.Commands
 
             [ValidationAspect(typeof(CreateVisitValidator), Priority = 1)]
             [CacheRemoveAspect("Get")]
-            [LogAspect(typeof(FileLogger))]
+            [BanuLogAspect(typeof(MsSqlLoggerProcess))]
             [SecuredOperation(Priority = 1)]
             public async Task<Core.Utilities.Results.IResult> Handle(CreateVisitCommand request, CancellationToken cancellationToken)
             {
@@ -75,6 +78,8 @@ namespace Business.Handlers.Visits.Commands
                     ExitDate = request.ExitDate,
                     VisitStartDate = request.VisitStartDate,
                     VisitEndDate = request.VisitEndDate,
+                    IsExit=false,
+                    Status=true,
                 };
 
                 _visitRepository.Add(addedVisit);
