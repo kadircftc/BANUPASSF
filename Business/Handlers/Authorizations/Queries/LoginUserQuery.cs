@@ -17,6 +17,10 @@ using System.Net.Http;
 using System.Text;
 using Core.Entities.Concrete;
 using Entities.Dtos;
+using System.Configuration;
+using Core.Utilities.IoC;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Business.Handlers.Authorizations.Queries
 {
@@ -79,7 +83,6 @@ namespace Business.Handlers.Authorizations.Queries
                     }
                 }
 
-                // Step 2: Create token
                 var claims = _userRepository.GetClaims(user.UserId);
                 var accessToken = _tokenHelper.CreateToken<DArchToken>(user);
                 accessToken.Claims = claims.Select(x => x.Name).ToList();
@@ -95,12 +98,18 @@ namespace Business.Handlers.Authorizations.Queries
 
             private async Task<BanuLoginResponse> CheckUserFromExternalApi(string email, string password)
             {
+                var configuration = ServiceTool.ServiceProvider.GetService<IConfiguration>();
                 using var client = new HttpClient();
                 var url = "http://mobil-web-servis.bandirma.edu.tr/api/Giris";
                 var kullaniciBody = $@"{{
                     ""kullaniciAdi"": ""{email}"",
                     ""sifre"": ""{password}""
                 }}";
+                var apiKey = configuration["ApiKey"];
+                if (string.IsNullOrEmpty(apiKey))
+                {
+                    throw new Exception("API Key not found in configuration.");
+                }
 
                 var content = new StringContent(kullaniciBody, Encoding.UTF8, "application/json");
 
@@ -110,7 +119,7 @@ namespace Business.Handlers.Authorizations.Queries
                 client.DefaultRequestHeaders.Add("Host", "mobil-web-servis.bandirma.edu.tr");
                 client.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
                 client.DefaultRequestHeaders.Add("User-Agent", "PostmanRuntime/7.19.0");
-                client.DefaultRequestHeaders.Add("X-ApiKey", "ujgsdf-f938-454dsf-hrafd-f0b4042cd74d");
+                client.DefaultRequestHeaders.Add("X-ApiKey", apiKey);
 
                 var response = await client.PostAsync(url, content);
 
