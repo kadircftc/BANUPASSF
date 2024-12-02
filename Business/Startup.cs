@@ -70,7 +70,7 @@ namespace Business
 
             services.AddTransient<ITokenHelper, JwtHelper>();
             services.AddTransient<IElasticSearch, ElasticSearchManager>();
-            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IUserService, ChatHub>();
 
             services.AddTransient<IMessageBrokerHelper, MqQueueHelper>();
             services.AddTransient<IMessageConsumer, MqConsumerHelper>();

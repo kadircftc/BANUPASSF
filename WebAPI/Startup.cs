@@ -21,8 +21,10 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using WebAPI.Hubs;
 using System.Text.Json.Serialization;
 using ConfigurationManager = Business.ConfigurationManager;
+using WebAPI.Hubs.Abstract;
 
 namespace WebAPI
 {
@@ -72,7 +74,11 @@ namespace WebAPI
             {
                 options.AddPolicy(
                     "AllowOrigin",
-                    builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+                    builder => builder.AllowAnyMethod().AllowAnyHeader().AllowCredentials()
+                    .WithOrigins("http://localhost:5500", "http://127.0.0.1:5500")
+                    
+                    
+                    );
             });
 
             var tokenOptions = Configuration.GetSection("TokenOptions").Get<TokenOptions>();
@@ -97,12 +103,13 @@ namespace WebAPI
                 c.IncludeXmlComments(Path.ChangeExtension(typeof(Startup).Assembly.Location, ".xml"));
             });
 
+            services.AddSignalR();
             services.AddTransient<FileLogger>();
             services.AddTransient<PostgreSqlLogger>();
             services.AddTransient<MsSqlLogger>();
+            services.AddTransient<IChatHub, ChatHub>();
             services.AddTransient<MsSqlLoggerProcess>();
             services.AddScoped<IpControlAttribute>();
-
             base.ConfigureServices(services);
         }
 
@@ -150,6 +157,7 @@ namespace WebAPI
                     c.DocExpansion(DocExpansion.None);
                 });
             }
+          
             app.UseCors("AllowOrigin");
 
             app.UseHttpsRedirection();
@@ -174,7 +182,11 @@ namespace WebAPI
 
             app.UseStaticFiles();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/chat"); // SignalR endpoint.
+            });
         }
     }
 }

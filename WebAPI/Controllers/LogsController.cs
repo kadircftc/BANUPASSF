@@ -1,33 +1,64 @@
-﻿using Business.Handlers.Logs.Queries;
-using Core.Entities.Concrete;
-using Entities.Dtos;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Business.BusinessAspects;
+using Core.Aspects.Autofac.Caching;
+using Core.Aspects.Autofac.Logging;
+using Core.Aspects.Autofac.Performance;
+using Core.CrossCuttingConcerns.Logging.Serilog.Loggers;
+using Core.Entities.Dtos;
+using Core.Utilities.Results;
+using DataAccess.Abstract;
+using MediatR;
+using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace WebAPI.Controllers
+namespace Business.Handlers.Logs.Queries
 {
-    /// <summary>
-    /// If controller methods will not be Authorize, [AllowAnonymous] is used.
-    /// </summary>
-    [Route("api/v{version:apiVersion}/[controller]")]
-    [ApiController]
-    public class LogsController : BaseApiController
+    public class GetLogDtoQuery : IRequest<IDataResult<IEnumerable<LogDto>>>
     {
-        /// <summary>
-        /// List Logs
-        /// </summary>
-        /// <remarks>bla bla bla Logs</remarks>
-        /// <return>Logs List</return>
-        /// <response code="200"></response>
-        [Produces("application/json", "text/plain")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<OperationClaim>))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        [HttpGet]
-        public async Task<IActionResult> GetList()
+        public class GetLogDtoQueryHandler : IRequestHandler<GetLogDtoQuery, IDataResult<IEnumerable<LogDto>>>
         {
-            return GetResponseOnlyResultData(await Mediator.Send(new GetLogDtoQuery()));
+            private readonly ILogRepository _logRepository;
+            private readonly IMediator _mediator;
+
+            public GetLogDtoQueryHandler(ILogRepository logRepository, IMediator mediator)
+            {
+                _logRepository = logRepository;
+                _mediator = mediator;
+            }
+
+            [SecuredOperation(Priority = 1)]
+            [PerformanceAspect(5)]
+            [CacheAspect(10)]
+            [LogAspect(typeof(FileLogger))]
+            public async Task<IDataResult<IEnumerable<LogDto>>> Handle(GetLogDtoQuery request, CancellationToken cancellationToken)
+            {
+                var result = await _logRepository.GetListAsync();
+                var data = new List<LogDto>();
+                foreach (var item in result)
+                {
+                    var jsonMessage = JsonConvert.DeserializeObject<LogDto>(item.MessageTemplate);
+                    dynamic msg = JsonConvert.DeserializeObject(item.MessageTemplate);
+                    var valueList = msg.Parameters[0];
+                    var exceptionMessage = msg.ExceptionMessage;
+                    valueList = valueList.Value.ToString();
+
+                    var list = new LogDto
+                    {
+                        Id = item.Id,
+                        Level = item.Level,
+                        TimeStamp = item.TimeStamp,
+                        Type = msg.Parameters[0].Type,
+                        User = jsonMessage.User,
+                        Value = valueList,
+                        ExceptionMessage = exceptionMessage
+                    };
+
+                    data.Add(list);
+                }
+
+                return new SuccessDataResult<IEnumerable<LogDto>>(data);
+            }
         }
     }
 }

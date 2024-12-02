@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Business.Services.UserService.Concrete
 {
-    public class UserService : IUserService
+    public class ChatHub : IUserService
     {
         public int GetUserIdFromJwt(HttpRequest request)
         {
