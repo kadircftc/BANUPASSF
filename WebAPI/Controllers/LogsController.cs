@@ -1,4 +1,4 @@
-﻿using Business.Handlers.Logs.Queries;
+﻿using Business.Handlers.BanuLogs.Queries;
 using Core.Entities.Concrete;
 using Entities.Dtos;
 using Microsoft.AspNetCore.Http;
@@ -27,7 +27,7 @@ namespace WebAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetList()
         {
-            return GetResponseOnlyResultData(await Mediator.Send(new GetLogDtoQuery()));
+            return GetResponseOnlyResultData(await Mediator.Send(new GetBanuLogQuery()));
         }
     }
 }
