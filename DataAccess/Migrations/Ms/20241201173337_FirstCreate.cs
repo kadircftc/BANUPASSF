@@ -12,6 +12,22 @@ namespace DataAccess.Migrations.Ms
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "BanuLogs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TransactorFullName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TransactorId = table.Column<int>(type: "int", nullable: false),
+                    TransactionsDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TransactionType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BanuLogs", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MultiVisiterses",
                 columns: table => new
                 {
@@ -50,6 +66,8 @@ namespace DataAccess.Migrations.Ms
                     VehicleEntry = table.Column<bool>(type: "bit", nullable: false),
                     MultiPersonVisit = table.Column<bool>(type: "bit", nullable: false),
                     IsConfirm = table.Column<bool>(type: "bit", nullable: false),
+                    IsExit = table.Column<bool>(type: "bit", nullable: false),
+                    Status = table.Column<bool>(type: "bit", nullable: false),
                     ApprovalDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ExitDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     VisitStartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -65,6 +83,9 @@ namespace DataAccess.Migrations.Ms
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "BanuLogs");
+
             migrationBuilder.DropTable(
                 name: "MultiVisiterses");
 

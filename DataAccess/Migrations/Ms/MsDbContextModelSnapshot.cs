@@ -1262,6 +1262,32 @@ namespace DataAccess.Migrations.Ms
                     b.ToTable("UserGroups");
                 });
 
+            modelBuilder.Entity("Entities.Concrete.BanuLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TransactionType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TransactionsDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TransactorFullName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TransactorId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BanuLogs");
+                });
+
             modelBuilder.Entity("Entities.Concrete.MultiVisiters", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1300,11 +1326,17 @@ namespace DataAccess.Migrations.Ms
                     b.Property<bool>("IsConfirm")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsExit")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("MultiPersonVisit")
                         .HasColumnType("bit");
 
                     b.Property<int>("PersonnelId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("VehicleEntry")
                         .HasColumnType("bit");
