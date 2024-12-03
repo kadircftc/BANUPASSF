@@ -69,7 +69,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<BanuLog>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpGet("getbyfullname")]
-        [AllowAnonymous]
+        
         public async Task<IActionResult> GetByPersonelFullName(string personelFullName, string? queryStartDate=null, string? queryEndDate = null)
         {
             var result = await Mediator.Send(new GetBanuLogsByFullNameQuery
