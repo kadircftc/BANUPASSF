@@ -41,7 +41,7 @@ namespace WebAPI.Controllers
         [Route("secured")]
         public IActionResult GetSecuredProducts()
         {
-            var data = new List<string> { "Secure Product 1", "Secure Product 2" };
+            var data = new List<string> { "ApiKeys" };
             return Ok(data);
         }
         ///<summary>
