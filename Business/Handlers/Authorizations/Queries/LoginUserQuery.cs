@@ -21,10 +21,11 @@ using System.Configuration;
 using Core.Utilities.IoC;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Nest;
 
 namespace Business.Handlers.Authorizations.Queries
 {
-    public class LoginUserQuery : IRequest<IDataResult<AccessToken>>
+    public class LoginUserQuery : MediatR.IRequest<IDataResult<AccessToken>>
     {
         public string Email { get; set; }
         public string Password { get; set; }
@@ -35,13 +36,15 @@ namespace Business.Handlers.Authorizations.Queries
             private readonly ITokenHelper _tokenHelper;
             private readonly IMediator _mediator;
             private readonly ICacheManager _cacheManager;
+            private readonly IConfiguration _configuration;
 
-            public LoginUserQueryHandler(IUserRepository userRepository, ITokenHelper tokenHelper, IMediator mediator, ICacheManager cacheManager)
+            public LoginUserQueryHandler(IUserRepository userRepository, ITokenHelper tokenHelper, IMediator mediator, ICacheManager cacheManager, IConfiguration configuration)
             {
                 _userRepository = userRepository;
                 _tokenHelper = tokenHelper;
                 _mediator = mediator;
                 _cacheManager = cacheManager;
+                _configuration = configuration;
             }
 
             [LogAspect(typeof(FileLogger))]
@@ -53,7 +56,7 @@ namespace Business.Handlers.Authorizations.Queries
                 {
                     var apiResponse = await CheckUserFromExternalApi(request.Email, request.Password);
 
-                    if (!apiResponse.Basarilimi || apiResponse.Veri.Ogrencimi)
+                    if (!apiResponse.Basarilimi || !apiResponse.Veri.Ogrencimi)
                     {
                         return new ErrorDataResult<AccessToken>(Messages.UserNotFound);
                     }
@@ -62,7 +65,7 @@ namespace Business.Handlers.Authorizations.Queries
                     {
                         Email = request.Email,
                         FullName = $"{apiResponse.Veri.Adi} {apiResponse.Veri.Soyadi}",
-                        CitizenId = Convert.ToInt64(apiResponse.Veri.Tckimlik),
+                        CitizenId = 0,
                         Status = true, 
                         RecordDate = DateTime.Now,
                         UpdateContactDate = DateTime.Now
@@ -98,15 +101,14 @@ namespace Business.Handlers.Authorizations.Queries
 
             private async Task<BanuLoginResponse> CheckUserFromExternalApi(string email, string password)
             {
-                var configuration = ServiceTool.ServiceProvider.GetService<IConfiguration>();
                 using var client = new HttpClient();
                 var url = "http://mobil-web-servis.bandirma.edu.tr/api/Giris";
                 var kullaniciBody = $@"{{
                     ""kullaniciAdi"": ""{email}"",
                     ""sifre"": ""{password}""
                 }}";
-                var apiKey = configuration["ApiKey"];
-                if (string.IsNullOrEmpty(apiKey))
+                var apiKey = _configuration.GetSection("ApiKey");
+                if (string.IsNullOrEmpty(apiKey.ToString()))
                 {
                     throw new Exception("API Key not found in configuration.");
                 }
@@ -119,7 +121,7 @@ namespace Business.Handlers.Authorizations.Queries
                 client.DefaultRequestHeaders.Add("Host", "mobil-web-servis.bandirma.edu.tr");
                 client.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
                 client.DefaultRequestHeaders.Add("User-Agent", "PostmanRuntime/7.19.0");
-                client.DefaultRequestHeaders.Add("X-ApiKey", apiKey);
+                client.DefaultRequestHeaders.Add("X-ApiKey", apiKey.Value.ToString());
 
                 var response = await client.PostAsync(url, content);
 

@@ -13,6 +13,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 using Business.Handlers.BanuLogs.ValidationRules;
+using Core.Extensions;
+using Core.Aspects.Autofac.Exception;
 
 namespace Business.Handlers.BanuLogs.Commands
 {
@@ -41,6 +43,7 @@ namespace Business.Handlers.BanuLogs.Commands
 
             [ValidationAspect(typeof(CreateBanuLogValidator), Priority = 1)]
             [CacheRemoveAspect("Get")]
+            //[ExceptionLogAspect(typeof(MsSqlLogger))]
             [LogAspect(typeof(FileLogger))]
             [SecuredOperation(Priority = 1)]
             public async Task<IResult> Handle(CreateBanuLogCommand request, CancellationToken cancellationToken)

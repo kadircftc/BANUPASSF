@@ -4,6 +4,8 @@ using Core.CrossCuttingConcerns.Caching.Microsoft;
 using Core.Utilities.IoC;
 using Core.Utilities.Mail;
 using Core.Utilities.Messages;
+using Core.Utilities.Security.RateLimiting;
+using Core.Utilities.Security.RateLimiting.Abstract;
 using Core.Utilities.Uri;
 using Core.Utilities.URI;
 using MediatR;
@@ -23,6 +25,7 @@ namespace Core.DependencyResolvers
             services.AddMemoryCache();
             services.AddSingleton<ICacheManager, MemoryCacheManager>();
             services.AddSingleton<IMailService, MailManager>();
+            services.AddScoped<IRateLimitingService,RateLimitingService>();
             services.AddSingleton<IEmailConfiguration, EmailConfiguration>();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

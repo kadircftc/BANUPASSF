@@ -17,6 +17,9 @@ using Business.Services.UserService.Abstract;
 using Microsoft.AspNetCore.Http;
 using System;
 using Business.CrossCuttingConcernsBS.Logging;
+using System.Collections.Generic;
+using System.Collections;
+using ServiceStack;
 
 namespace Business.Handlers.Visits.Commands
 {
@@ -44,27 +47,36 @@ namespace Business.Handlers.Visits.Commands
             private readonly IVisitRepository _visitRepository;
             private readonly IMediator _mediator;
             private readonly IUserService _userService;
+            private readonly IUserRepository _userRepository;
             private readonly IHttpContextAccessor _context;
 
-            public CreateVisitCommandHandler(IVisitRepository visitRepository, IMediator mediator, IUserService userService, IHttpContextAccessor context)
+            public CreateVisitCommandHandler(IVisitRepository visitRepository, IMediator mediator, IUserService userService, IUserRepository userRepository, IHttpContextAccessor context)
             {
                 _visitRepository = visitRepository;
                 _mediator = mediator;
                 _userService = userService;
+                _userRepository = userRepository;
                 _context = context;
             }
 
             [ValidationAspect(typeof(CreateVisitValidator), Priority = 1)]
-            [CacheRemoveAspect("Get")]
+            [CacheRemoveAspect("Get", Priority = 2)]
             [BanuLogAspect(typeof(MsSqlLoggerProcess))]
             [SecuredOperation(Priority = 1)]
             public async Task<Core.Utilities.Results.IResult> Handle(CreateVisitCommand request, CancellationToken cancellationToken)
             {
-                var isThereVisitRecord = _visitRepository.Query().Any(u => u.PersonnelId==request.PersonnelId&&request.VisitStartDate.Date==u.VisitStartDate.Date &&u.VisitorFullName==request.VisitorFullName);
+                var userId = _userService.GetUserIdFromJwt(_context.HttpContext.Request);
+
+                IEnumerable<Visit> userTransactionCount = await _visitRepository.GetListAsync(v => v.PersonnelId==userId&& v.CreatedDate.Date == DateTime.Now.Date);
+                
+                if (userTransactionCount.Count()>4) {
+                    return new ErrorResult(TransactionMessagesTR.DefaultVisitTransactionCountReached);
+                }
+
+                var isThereVisitRecord = _visitRepository.Query().Any(u => u.PersonnelId==userId && request.VisitStartDate.Date==u.VisitStartDate.Date &&u.VisitorFullName==request.VisitorFullName);
 
                 if (isThereVisitRecord == true)
-                    return new ErrorResult(Messages.NameAlreadyExist);
-                var userId = _userService.GetUserIdFromJwt(_context.HttpContext.Request);
+                    return new ErrorResult(TransactionMessagesTR.NameAlreadyExist);
                 var addedVisit = new Visit
                 {
                     CreatedDate = DateTime.Now,

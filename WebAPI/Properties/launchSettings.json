@@ -63,6 +63,7 @@
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
       "publishAllPorts": true,
+      "ConnectionStrings__DefaultConnection ": "Server=mssql;Database=BanuPass;User=sa;Password=YourPassword123;",
       "useSSL": true
     }
   }
