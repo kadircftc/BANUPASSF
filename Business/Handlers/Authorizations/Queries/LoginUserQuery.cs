@@ -38,13 +38,13 @@ namespace Business.Handlers.Authorizations.Queries
             private readonly ICacheManager _cacheManager;
             private readonly IConfiguration _configuration;
 
-            public LoginUserQueryHandler(IUserRepository userRepository, ITokenHelper tokenHelper, IMediator mediator, ICacheManager cacheManager, IConfiguration confifuration)
+            public LoginUserQueryHandler(IUserRepository userRepository, ITokenHelper tokenHelper, IMediator mediator, ICacheManager cacheManager, IConfiguration configuration)
             {
                 _userRepository = userRepository;
                 _tokenHelper = tokenHelper;
                 _mediator = mediator;
                 _cacheManager = cacheManager;
-                _configuration = confifuration;
+                _configuration = configuration;
             }
 
             [LogAspect(typeof(FileLogger))]

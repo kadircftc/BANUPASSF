@@ -20,7 +20,7 @@ namespace Core.Middlewares
         {
             var path = context.Request.Path.Value;
             var endpoint=path.Split("/").Last();
-            if (path.StartsWith("secured"))
+            if (path.EndsWith("secured"))
             {
                 if (!context.Request.Headers.ContainsKey("ApiKey"))
                 {
