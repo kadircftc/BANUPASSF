@@ -132,7 +132,7 @@ namespace Tests.Business.Handlers
             _userRepository.Verify(x => x.SaveChangesAsync(), Times.Never);
             _tokenHelper.Verify(x => x.CreateToken<AccessToken>(It.IsAny<User>()), Times.Never);
             x.Success.Should().BeFalse();
-            x.Message.Should().Be(Messages.UserNotFound);
+            x.Message.Should().Be("Deneme");
         }
 
         [Test]

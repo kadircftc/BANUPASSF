@@ -6,6 +6,8 @@ using Entities.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -79,6 +81,38 @@ namespace WebAPI.Controllers
         {
             return GetResponseOnlyResultData(await Mediator.Send(new GetLanguageQuery { Id = id }));
         }
+        //[HttpGet("get-languages")]
+        //[AllowAnonymous]
+        //public IActionResult GetLanguages()
+        //{
+        //    try
+        //    {
+        //        using (var connection = new SqlConnection("Server=nodejs-mssql-1;Database=BanuPass;User Id=sa;Password=YourPassword123;TrustServerCertificate=True;Encrypt=False;"))
+        //        {
+        //            connection.Open();
+        //            var query = "SELECT * FROM Languages"; // Tabloyu sorgulama
+        //            var command = new SqlCommand(query, connection);
+        //            var reader = command.ExecuteReader();
+        //            var languages = new List<object>(); // Json formatında veri saklamak için liste
+
+        //            while (reader.Read())
+        //            {
+        //                languages.Add(new
+        //                {
+        //                    Id = reader["Id"],
+        //                    Name = reader["Name"],
+        //                    Code = reader["Code"]
+        //                });
+        //            }
+
+        //            return Ok(languages); // Json verisi olarak döndür
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, $"Internal server error: {ex.Message}");
+        //    }
+        //}
 
         /// <summary>
         /// Add Language.

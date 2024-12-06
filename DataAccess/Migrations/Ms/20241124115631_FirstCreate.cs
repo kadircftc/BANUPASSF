@@ -50,6 +50,8 @@ namespace DataAccess.Migrations.Ms
                     VehicleEntry = table.Column<bool>(type: "bit", nullable: false),
                     MultiPersonVisit = table.Column<bool>(type: "bit", nullable: false),
                     IsConfirm = table.Column<bool>(type: "bit", nullable: false),
+                    Status = table.Column<bool>(type: "bit", nullable: false),
+                    IsExit = table.Column<bool>(type: "bit", nullable: false),
                     ApprovalDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ExitDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     VisitStartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -60,6 +62,21 @@ namespace DataAccess.Migrations.Ms
                 {
                     table.PrimaryKey("PK_Visits", x => x.Id);
                 });
+            migrationBuilder.CreateTable(
+               name: "BanuLogs",
+               columns: table => new
+               {
+                   Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                   TransactorFullName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                   TransactorId = table.Column<int>(type: "int", nullable: false),
+                   TransactionsDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                   TransactionType = table.Column<bool>(type: "nvarchar(max)", nullable: false),
+                   CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+               },
+               constraints: table =>
+               {
+                   table.PrimaryKey("PK_BanuLogs", x => x.Id);
+               });
         }
 
         /// <inheritdoc />
@@ -73,6 +90,8 @@ namespace DataAccess.Migrations.Ms
 
             migrationBuilder.DropTable(
                 name: "Visits");
+            migrationBuilder.DropTable(
+                name: "BanuLogs");
         }
     }
 }

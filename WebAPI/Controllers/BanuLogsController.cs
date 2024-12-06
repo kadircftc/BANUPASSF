@@ -37,7 +37,33 @@ namespace WebAPI.Controllers
             }
             return BadRequest(result.Message);
         }
-
+        [HttpGet]
+        [Route("secured")]
+        public IActionResult GetSecuredProducts()
+        {
+            var data = new List<string> { "Secure Product 1", "Secure Product 2" };
+            return Ok(data);
+        }
+        ///<summary>
+        ///List BanuLogs
+        ///</summary>
+        ///<remarks>BanuLogs</remarks>
+        ///<return>List BanuLogs</return>
+        ///<response code="200"></response>
+        [Produces("application/json", "text/plain")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<BanuLog>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [HttpGet("getPag")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetPag()
+        {
+            var result = await Mediator.Send(new GetBanuLogsWPaginationQuery());
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(result.Message);
+        }
         ///<summary>
         ///It brings the details according to its id.
         ///</summary>

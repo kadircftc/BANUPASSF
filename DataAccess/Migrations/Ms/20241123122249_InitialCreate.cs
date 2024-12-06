@@ -368,6 +368,7 @@ namespace DataAccess.Migrations.Ms
 
             migrationBuilder.DropTable(
                 name: "Users");
+
         }
     }
 }
