@@ -104,7 +104,6 @@ namespace WebAPI
             services.AddTransient<MsSqlLogger>();
             services.AddTransient<MsSqlLoggerProcess>();
             services.AddScoped<IpControlAttribute>();
-            services.AddSingleton<IConfiguration>(Configuration);
 
             base.ConfigureServices(services);
         }
