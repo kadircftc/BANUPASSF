@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Entities.Concrete;
 using System.Collections.Generic;
 using System;
+using Core.Utilities.Results;
 
 namespace WebAPI.Controllers
 {
@@ -84,6 +85,29 @@ namespace WebAPI.Controllers
                 FullName = personelFullName,
                 QueryStartDate = queryStartDate,
                 QueryEndDate = queryEndDate
+            });
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(result.Message);
+        }
+        ///<summary>
+        ///It brings the details according to its page number.
+        ///</summary>
+        ///<remarks>BanuLogs</remarks>
+        ///<return>BanuLogs List By Paging</return>
+        ///<response code="200"></response>  
+        [Produces("application/json", "text/plain")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PagingResult<BanuLog>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [HttpGet("getbypaging")]
+        
+        public async Task<IActionResult> GetByPagination(int page)
+        {
+            var result = await Mediator.Send(new GetBanuLogsByPagingQuery
+            {
+                page = page
             });
             if (result.Success)
             {
