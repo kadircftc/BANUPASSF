@@ -16,11 +16,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Business.Handlers.BanuLogs.Queries
 {
-    public class GetBanuLogsByPagingQuery : IRequest<IDataResult<IEnumerable<BanuLog>>>
+    public class GetBanuLogsByPagingQuery : IRequest<IDataResult<PagingResult<BanuLog>>>
     {
        
         public int page { get; set; }
-        public class GetBanuLogsByPagingQueryHandler : IRequestHandler<GetBanuLogsByPagingQuery, IDataResult<IEnumerable<BanuLog>>>
+        public class GetBanuLogsByPagingQueryHandler : IRequestHandler<GetBanuLogsByPagingQuery, IDataResult<PagingResult<BanuLog>>>
 
         {
             private readonly IBanuLogRepository _banuLogRepository;
@@ -33,11 +33,12 @@ namespace Business.Handlers.BanuLogs.Queries
             }
             [LogAspect(typeof(FileLogger))]
             [SecuredOperation(Priority = 1)]
-            public async Task<IDataResult<IEnumerable<BanuLog>>> Handle(GetBanuLogsByPagingQuery request, CancellationToken cancellationToken)
+            public async Task<IDataResult<PagingResult<BanuLog>>> Handle(GetBanuLogsByPagingQuery request, CancellationToken cancellationToken)
             {
-                var banulogs = _banuLogRepository.GetListForPaging(request.page, "TransactorFullName", true);
+                var banulogs = await _banuLogRepository.GetListForPaging(request.page, "TransactorFullName", true);
 
-                return new SuccessDataResult<IEnumerable<BanuLog>>(banulogs.Data);
+
+                return new SuccessDataResult<PagingResult<BanuLog>>(banulogs);
             }
         }
     }
