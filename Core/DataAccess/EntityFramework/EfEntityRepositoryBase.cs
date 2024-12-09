@@ -71,7 +71,7 @@ namespace Core.DataAccess.EntityFramework
         }
 
         //sources: https://www.nuget.org/packages/Apsiyon  |||  https://github.com/vmutlu/ApsiyonFramework
-        public PagingResult<TEntity> GetListForPaging(int page, string propertyName, bool asc, Expression<Func<TEntity, bool>> expression = null, params Expression<Func<TEntity, object>>[] includeEntities)
+        public async Task<PagingResult<TEntity>> GetListForPaging(int page, string propertyName, bool asc, Expression<Func<TEntity, bool>> expression = null, params Expression<Func<TEntity, object>>[] includeEntities)
         {
             var list = Context.Set<TEntity>().AsQueryable();
 
@@ -87,7 +87,7 @@ namespace Core.DataAccess.EntityFramework
             var start = (page - 1) * 10;
             list = list.Skip(start).Take(10);
 
-            return new PagingResult<TEntity>(list.ToList(), totalCount, true, $"{totalCount} records listed.");
+            return new PagingResult<TEntity>(await list.ToListAsync(), totalCount, true, $"{totalCount} records listed.");
         }
 
 

@@ -33,7 +33,7 @@ namespace Business.Handlers.BanuLogs.Queries
                 _mediator = mediator;
             }
             [LogAspect(typeof(FileLogger))]
-            //[SecuredOperation(Priority = 1)]
+            [SecuredOperation(Priority = 1)]
             public async Task<IDataResult<IEnumerable<BanuLog>>> Handle(GetBanuLogsByFullNameQuery request, CancellationToken cancellationToken)
             {
                 if (string.IsNullOrEmpty(request.FullName))
@@ -41,14 +41,7 @@ namespace Business.Handlers.BanuLogs.Queries
                     return new ErrorDataResult<IEnumerable<BanuLog>>();
                 }
 
-                var query = _banuLogRepository.Query();
-
-                
-                if (!string.IsNullOrEmpty(request.FullName))
-                {
-                    query = query.Where(p => p.TransactorFullName == request.FullName);
-                }
-
+                var query = _banuLogRepository.Query().Where(p => p.TransactorFullName == request.FullName);
                
                 if (!string.IsNullOrEmpty(request.QueryStartDate) && DateTime.TryParse(request.QueryStartDate, out var startDate))
                 {
