@@ -114,12 +114,32 @@ namespace WebAPI.Controllers
             }
             return BadRequest(result.Message);
         }
-        /// <summary>
-        /// Add Visit.
-        /// </summary>
-        /// <param name="createVisit"></param>
-        /// <returns></returns>
-        [Produces("application/json", "text/plain")]
+
+		/// <summary>
+		/// Belirtilen tarih için Visit ve MultiVisiters birleşik listesini getirir.
+		/// </summary>
+		/// <param name="date">Tarih (dd-MM-yyyy formatında)</param>
+		/// <returns>Visit ve MultiVisiters birleşik DTO listesi</returns>
+		[HttpGet("GetVisitsWithMultiVisits")]
+		public async Task<IActionResult> GetVisitsWithMultiVisits([FromQuery] string date)
+		{
+			if (string.IsNullOrWhiteSpace(date))
+			{
+				return BadRequest("Tarih parametresi boş olamaz.");
+			}
+			var result = await Mediator.Send(new GetVisitsMultiVisitsQuery(date));
+			if (result.Success)
+			{
+				return Ok(result.Data);
+			}
+			return BadRequest(result.Message);
+		}
+		/// <summary>
+		/// Add Visit.
+		/// </summary>
+		/// <param name="createVisit"></param>
+		/// <returns></returns>
+		[Produces("application/json", "text/plain")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpPost]
