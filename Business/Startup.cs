@@ -3,8 +3,11 @@ using Business.Constants;
 using Business.DependencyResolvers;
 using Business.Fakes.DArch;
 using Business.Services.Authentication;
+using Business.Services.ConvertPdfService.Abstract;
+using Business.Services.ConvertPdfService.Concrete;
 using Business.Services.UserService.Abstract;
 using Business.Services.UserService.Concrete;
+
 using Core.CrossCuttingConcerns.Caching;
 using Core.CrossCuttingConcerns.Caching.Microsoft;
 using Core.DependencyResolvers;
@@ -128,6 +131,8 @@ namespace Business
             services.AddTransient<ITranslateRepository, TranslateRepository>();
             services.AddTransient<ILanguageRepository, LanguageRepository>();
 
+            
+
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IUserClaimRepository, UserClaimRepository>();
             services.AddTransient<IOperationClaimRepository, OperationClaimRepository>();
@@ -137,6 +142,8 @@ namespace Business
             services.AddDbContext<ProjectDbContext ,MsDbContext>();
 
             services.AddSingleton<MongoDbContextBase, MongoDbContext>();
+
+            services.AddScoped<IConvertPdfService, ConvertPdfService>();
         }
 
         /// <summary>
