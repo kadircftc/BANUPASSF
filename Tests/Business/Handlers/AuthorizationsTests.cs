@@ -9,6 +9,7 @@ using Core.Utilities.Security.Jwt;
 using DataAccess.Abstract;
 using FluentAssertions;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -31,6 +32,7 @@ namespace Tests.Business.Handlers
         private Mock<ITokenHelper> _tokenHelper;
         private Mock<IMediator> _mediator;
         private Mock<ICacheManager> _cacheManager;
+        private Mock<IConfiguration> _configuration;
 
         private LoginUserQueryHandler _loginUserQueryHandler;
         private LoginUserQuery _loginUserQuery;
@@ -46,8 +48,9 @@ namespace Tests.Business.Handlers
             _tokenHelper = new Mock<ITokenHelper>();
             _mediator = new Mock<IMediator>();
             _cacheManager = new Mock<ICacheManager>();
+            _configuration = new Mock<IConfiguration>();
 
-            _loginUserQueryHandler = new LoginUserQueryHandler(_userRepository.Object, _tokenHelper.Object, _mediator.Object, _cacheManager.Object);
+            _loginUserQueryHandler = new LoginUserQueryHandler(_userRepository.Object, _tokenHelper.Object, _mediator.Object, _cacheManager.Object, _configuration.Object);
             _registerUserCommandHandler = new RegisterUserCommandHandler(_userRepository.Object);
             _forgotPasswordCommandHandler = new ForgotPasswordCommandHandler(_userRepository.Object);
         }
@@ -132,7 +135,7 @@ namespace Tests.Business.Handlers
             _userRepository.Verify(x => x.SaveChangesAsync(), Times.Never);
             _tokenHelper.Verify(x => x.CreateToken<AccessToken>(It.IsAny<User>()), Times.Never);
             x.Success.Should().BeFalse();
-            x.Message.Should().Be(Messages.UserNotFound);
+            x.Message.Should().Be("Deneme");
         }
 
         [Test]

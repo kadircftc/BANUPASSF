@@ -18,7 +18,7 @@ using static Business.Handlers.BanuLogs.Commands.DeleteBanuLogCommand;
 using MediatR;
 using System.Linq;
 using FluentAssertions;
-
+using Core.Utilities.Security.RateLimiting.Abstract;
 
 namespace Tests.Business.HandlersTest
 {
@@ -27,6 +27,7 @@ namespace Tests.Business.HandlersTest
     {
         Mock<IBanuLogRepository> _banuLogRepository;
         Mock<IMediator> _mediator;
+        Mock<IRateLimitingService> _rateLimiting;
         [SetUp]
         public void Setup()
         {
@@ -68,7 +69,7 @@ namespace Tests.Business.HandlersTest
             _banuLogRepository.Setup(x => x.GetListAsync(It.IsAny<Expression<Func<BanuLog, bool>>>()))
                         .ReturnsAsync(new List<BanuLog> { new BanuLog() { /*TODO:propertyler buraya yazılacak BanuLogId = 1, BanuLogName = "test"*/ } });
 
-            var handler = new GetBanuLogsQueryHandler(_banuLogRepository.Object, _mediator.Object);
+            var handler = new GetBanuLogsQueryHandler(_banuLogRepository.Object, _mediator.Object, _rateLimiting.Object);
 
             //Act
             var x = await handler.Handle(query, new System.Threading.CancellationToken());

@@ -10,7 +10,9 @@ using Entities.Concrete;
 using System.Collections.Generic;
 using System;
 using Core.Utilities.Results;
+
 using System.Linq;
+
 
 namespace WebAPI.Controllers
 {
@@ -40,7 +42,14 @@ namespace WebAPI.Controllers
             }
             return BadRequest(result.Message);
         }
-
+        [HttpGet]
+        [Route("secured")]
+        public IActionResult GetSecuredProducts()
+        {
+            var data = new List<string> { "ApiKeys" };
+            return Ok(data);
+        }
+      
         ///<summary>
         ///It brings the details according to its id.
         ///</summary>
@@ -54,6 +63,56 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> GetById(Guid id)
         {
             var result = await Mediator.Send(new GetBanuLogQuery { Id = id });
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(result.Message);
+        } 
+        
+        
+        ///<summary>
+        ///It brings the details according to its full name.
+        ///</summary>
+        ///<remarks>BanuLogs</remarks>
+        ///<return>BanuLogs List By Fullname</return>
+        ///<response code="200"></response>  
+        [Produces("application/json", "text/plain")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<BanuLog>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [HttpGet("getbyfullname")]
+        
+        public async Task<IActionResult> GetByPersonelFullName(string personelFullName, string? queryStartDate=null, string? queryEndDate = null)
+        {
+            var result = await Mediator.Send(new GetBanuLogsByFullNameQuery
+            {
+                FullName = personelFullName,
+                QueryStartDate = queryStartDate,
+                QueryEndDate = queryEndDate
+            });
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(result.Message);
+        }
+        ///<summary>
+        ///It brings the details according to its page number.
+        ///</summary>
+        ///<remarks>BanuLogs</remarks>
+        ///<return>BanuLogs List By Paging</return>
+        ///<response code="200"></response>  
+        [Produces("application/json", "text/plain")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PagingResult<BanuLog>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [HttpGet("getbypaging")]
+        
+        public async Task<IActionResult> GetByPagination(int page)
+        {
+            var result = await Mediator.Send(new GetBanuLogsByPagingQuery
+            {
+                page = page
+            });
             if (result.Success)
             {
                 return Ok(result.Data);

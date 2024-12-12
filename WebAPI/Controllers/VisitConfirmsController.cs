@@ -28,6 +28,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<VisitConfirm>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpGet("getall")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetList()
         {
             var result = await Mediator.Send(new GetVisitConfirmsQuery());
@@ -38,6 +39,25 @@ namespace WebAPI.Controllers
             return BadRequest(result.Message);
         }
 
+        ///<summary>
+        ///List VisitConfirms
+        ///</summary>
+        ///<remarks>VisitConfirms</remarks>
+        ///<return>List VisitConfirms</return>
+        ///<response code="200"></response>
+        [Produces("application/json", "text/plain")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<VisitConfirm>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [HttpGet("getpersonelbyid")]
+        public async Task<IActionResult> GetPersonelById()
+        {
+            var result = await Mediator.Send(new GetVisitConfirmsQuery());
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(result.Message);
+        }
         ///<summary>
         ///It brings the details according to its id.
         ///</summary>

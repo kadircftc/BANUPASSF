@@ -30,8 +30,8 @@ namespace Business.Helpers
             var user = await mediator.Send(new RegisterUserInternalCommand
             {
                 FullName = "System Admin",
-                Password = "Q1w212*_*",
-                Email = "admin@adminmail.com",
+                Password = "adminQxUa",
+                Email = "admin@banupass.edu.tr",
             });
             await mediator.Send(new CreateUserClaimsInternalCommand
             {
@@ -44,7 +44,6 @@ namespace Business.Helpers
         {
             var assemblies = Assembly.GetExecutingAssembly().GetTypes()
                 .Where(x =>
-                    // runtime generated anonmous type'larin assemblysi olmadigi icin null cek yap
                     x.Namespace != null && x.Namespace.StartsWith("Business.Handlers") &&
                     (x.Name.EndsWith("Command") || x.Name.EndsWith("Query")));
 

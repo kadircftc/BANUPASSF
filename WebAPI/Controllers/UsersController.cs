@@ -2,8 +2,11 @@
 using Business.Handlers.Users.Queries;
 using Core.Entities.Dtos;
 using Entities.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -41,11 +44,28 @@ namespace WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<SelectionItem>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpGet("lookups")]
+        
         public async Task<IActionResult> GetUserLookup()
         {
             return GetResponseOnlyResultData(await Mediator.Send(new GetUserLookupQuery()));
         }
-
+        //[HttpGet("test-connection")]
+        //[AllowAnonymous]
+        //public IActionResult TestConnection()
+        //{
+        //    try
+        //    {
+        //        using (var connection = new SqlConnection("Server=nodejs-mssql-1;Database=BanuPass;User Id=sa;Password=YourPassword123;TrustServerCertificate=True;Encrypt=False;"))
+        //        {
+        //            connection.Open();
+        //            return Ok("Connection successful!");
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, $"Internal server error: {ex.Message}");
+        //    }
+        //}
         /// <summary>
         /// It brings the details according to its id.
         /// </summary>

@@ -1325,6 +1325,11 @@ namespace DataAccess.Migrations.Ms
 
                     b.Property<bool>("IsConfirm")
                         .HasColumnType("bit");
+                    b.Property<bool>("IsExit")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsExit")
                         .HasColumnType("bit");
@@ -1377,6 +1382,30 @@ namespace DataAccess.Migrations.Ms
 
                     b.ToTable("VisitConfirms");
                 });
+            modelBuilder.Entity("Entities.Concrete.BanuLog", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
+
+                b.Property<string>("TransactorFullName")
+                       .HasColumnType("nvarchar(max)");
+
+                b.Property<int>("TransactorId")
+                    .HasColumnType("int");
+
+                b.Property<string>("TransactionsDescription")
+                       .HasColumnType("nvarchar(max)");
+
+                b.Property<string>("TransactionType")
+                       .HasColumnType("nvarchar(max)");
+
+                b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+                b.HasKey("Id");
+
+                b.ToTable("BanuLogs");
+            });
 #pragma warning restore 612, 618
         }
     }

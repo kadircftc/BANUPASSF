@@ -12,6 +12,7 @@ using Core.CrossCuttingConcerns.Caching;
 using Core.CrossCuttingConcerns.Caching.Microsoft;
 using Core.DependencyResolvers;
 using Core.Extensions;
+using Core.Middlewares;
 using Core.Utilities.ElasticSearch;
 using Core.Utilities.IoC;
 using Core.Utilities.MessageBrokers.RabbitMq;
@@ -21,6 +22,7 @@ using DataAccess.Concrete.EntityFramework;
 using DataAccess.Concrete.EntityFramework.Contexts;
 using DataAccess.Concrete.MongoDb.Context;
 using FluentValidation;
+using Google.Protobuf.WellKnownTypes;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -112,7 +114,7 @@ namespace Business
             services.AddTransient<IGroupClaimRepository, GroupClaimRepository>();
             services.AddTransient<IUserGroupRepository, UserGroupRepository>();
 
-            services.AddDbContext<ProjectDbContext, DArchInMemory>(ServiceLifetime.Transient);
+            services.AddDbContext<ProjectDbContext, MsDbContext>();
             services.AddSingleton<MongoDbContextBase, MongoDbContext>();
         }
 
@@ -167,9 +169,7 @@ namespace Business
             services.AddTransient<IGroupRepository, GroupRepository>();
             services.AddTransient<IGroupClaimRepository, GroupClaimRepository>();
 
-
             services.AddDbContext<ProjectDbContext,MsDbContext>();
-
             services.AddSingleton<MongoDbContextBase, MongoDbContext>();
         }
 

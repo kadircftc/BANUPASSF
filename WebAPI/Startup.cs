@@ -1,8 +1,10 @@
 ﻿using Business;
 using Business.CrossCuttingConcernsBS.Logging;
+using Business.Handlers.Authorizations.Queries;
 using Business.Helpers;
 using Core.CrossCuttingConcerns.Logging.Serilog.Loggers;
 using Core.Extensions;
+using Core.Middlewares;
 using Core.Utilities.IoC;
 using Core.Utilities.Security.Encyption;
 using Core.Utilities.Security.Jwt;
@@ -130,7 +132,7 @@ namespace WebAPI
             switch (configurationManager.Mode)
             {
                 case ApplicationMode.Development:
-                    _ = app.UseDbFakeDataCreator();
+                    //_ = app.UseDbFakeDataCreator();
                     break;
 
                 case ApplicationMode.Profiling:
@@ -142,6 +144,7 @@ namespace WebAPI
             }
 
             app.UseDeveloperExceptionPage();
+            app.UseMiddleware<ApiKeyMiddleware>();
 
             app.ConfigureCustomExceptionMiddleware();
 
@@ -164,6 +167,8 @@ namespace WebAPI
 
             app.UseRouting();
 
+            var apiKey = app.ApplicationServices.GetRequiredService<IConfiguration>()["ApiKey"];
+            Console.WriteLine($"API Key from UserSecrets: {apiKey}");
             app.UseAuthentication();
 
             app.UseAuthorization();
