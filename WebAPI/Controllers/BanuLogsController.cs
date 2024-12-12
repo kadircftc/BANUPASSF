@@ -1,6 +1,7 @@
 ﻿
 using Business.Handlers.BanuLogs.Commands;
 using Business.Handlers.BanuLogs.Queries;
+using Business.Services.ConvertPdfService.Concrete;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -9,6 +10,9 @@ using Entities.Concrete;
 using System.Collections.Generic;
 using System;
 using Core.Utilities.Results;
+
+using System.Linq;
+
 
 namespace WebAPI.Controllers
 {
@@ -115,6 +119,37 @@ namespace WebAPI.Controllers
             }
             return BadRequest(result.Message);
         }
+
+        [Produces("application/pdf", "text/plain")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BanuLog))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [HttpGet("getbypdf")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetByDate(String date)
+        {
+            var result = await Mediator.Send(new GetBanuLogsByPdfQuery { QueryDate = date });
+            if (result.Success)
+            {   
+                ConvertPdfService convertPdfService = new ConvertPdfService();
+                if (result.Data.Count() > 35)
+                {
+                    var logGroups = convertPdfService.SplitLogs(result.Data, 35);
+
+                    var zipBytes = convertPdfService.GenerateZipWithPdfs(logGroups, date);
+
+                    return File(zipBytes, "application/zip", $"BanuLogs_{date}.zip");
+                }
+                else
+                {
+                    var pdfBytes = convertPdfService.GeneratePdf(result.Data.ToList(), 1, date);
+
+                    return File(pdfBytes, "application/pdf", $"BanuLogs_{date}.pdf");
+                }
+            }
+
+            return BadRequest(result.Message);
+        } 
+        
 
         /// <summary>
         /// Add BanuLog.
