@@ -42,4 +42,12 @@ namespace Business.Handlers.Visits.ValidationRules
 
         }
     }
+    public class VisitRejectValidator : AbstractValidator<VisitRejectCommand>
+    {
+        public VisitRejectValidator()
+        {
+            //RuleFor(x => x.ReasonForRejection).NotEmpty();
+            
+        }
+    }
 }
