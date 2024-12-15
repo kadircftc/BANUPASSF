@@ -171,6 +171,24 @@ namespace WebAPI.Controllers
             }
             return BadRequest(result.Message);
         }
+        /// <summary>
+        /// Reject Visit.
+        /// </summary>
+        /// <param name="rejectVisit"></param>
+        /// <returns></returns>
+        [Produces("application/json", "text/plain")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [HttpPut("rejectvisit")]
+        public async Task<IActionResult> Update([FromBody] VisitRejectCommand rejectVisit)
+        {
+            var result = await Mediator.Send(rejectVisit);
+            if (result.Success)
+            {
+                return Ok(result.Message);
+            }
+            return BadRequest(result.Message);
+        }
 
         /// <summary>
         /// Delete Visit.

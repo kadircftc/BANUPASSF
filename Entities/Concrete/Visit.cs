@@ -17,6 +17,8 @@ namespace Entities.Concrete
         public bool IsConfirm { get; set; }
         public bool IsExit{ get; set; }
         public bool Status{ get; set; }
+        public string? ReasonForRejection { get; set; }
+        public bool IsReject {  get; set; }
         public DateTime ApprovalDate { get; set; }
         public DateTime ExitDate { get; set; }
         public DateTime VisitStartDate { get; set; }
