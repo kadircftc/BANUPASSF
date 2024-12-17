@@ -41,7 +41,7 @@ namespace Business.Handlers.Users.Commands
                     return new ErrorResult(Messages.InvalidRequestLimit);
                 }
 
-                int newLimit = user.ReqLimit + request.IncreaseAmount;
+                int newLimit = request.IncreaseAmount;
                 if (newLimit > 50)
                 {
                     return new ErrorResult(Messages.RequestLimitExceeded);

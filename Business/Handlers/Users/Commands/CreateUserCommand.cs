@@ -45,6 +45,12 @@ namespace Business.Handlers.Users.Commands
             [LogAspect(typeof(FileLogger))]
             public async Task<IResult> Handle(CreateUserCommand request, CancellationToken cancellationToken)
             {
+
+                if (request.ReqLimit < 0 || request.ReqLimit > 50)
+                {
+                    return new ErrorResult("ReqLimit 0 ile 50 arasında olmalıdır.");
+                }
+
                 var isThereAnyUser = await _userRepository.GetAsync(u => u.Email == request.Email);
 
                 if (isThereAnyUser != null)
@@ -63,13 +69,14 @@ namespace Business.Handlers.Users.Commands
                     Gender = request.Gender,
                     Notes = request.Notes,
                     MobilePhones = request.MobilePhones,
-                    ReqLimit = request.ReqLimit
+                    ReqLimit = request.ReqLimit == default ? 5 : request.ReqLimit 
                 };
 
                 _userRepository.Add(user);
                 await _userRepository.SaveChangesAsync();
                 return new SuccessResult(Messages.Added);
             }
+
         }
     }
 }
