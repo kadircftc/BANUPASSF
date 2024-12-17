@@ -28,6 +28,7 @@ namespace Business.Handlers.Users.Commands
         public string Notes { get; set; }
         public DateTime UpdateContactDate { get; set; }
         public string Password { get; set; }
+        public int ReqLimit { get; set; } = 5;
 
 
         public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, IResult>
@@ -61,7 +62,8 @@ namespace Business.Handlers.Users.Commands
                     CitizenId = request.CitizenId,
                     Gender = request.Gender,
                     Notes = request.Notes,
-                    MobilePhones = request.MobilePhones
+                    MobilePhones = request.MobilePhones,
+                    ReqLimit = request.ReqLimit
                 };
 
                 _userRepository.Add(user);
