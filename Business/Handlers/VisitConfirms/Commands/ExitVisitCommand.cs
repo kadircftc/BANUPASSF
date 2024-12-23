@@ -62,7 +62,7 @@ namespace Business.Handlers.VisitConfirms.Commands
                 _visitConfirmRepository.Add(securityVisitConfirm);
                 await _visitRepository.SaveChangesAsync();
                 await _visitConfirmRepository.SaveChangesAsync();
-                return new SuccessResult($"{visitRecord.VisitorFullName} {DateTime.Now:dd-MM-yyyy HH.mm} tarihinde giriş yaptı");
+                return new SuccessResult($"{visitRecord.VisitorFullName} {DateTime.Now:dd-MM-yyyy HH.mm} tarihinde çıkış yaptı");
 
             }
         }
