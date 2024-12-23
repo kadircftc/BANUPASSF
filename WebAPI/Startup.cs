@@ -167,8 +167,7 @@ namespace WebAPI
 
             app.UseRouting();
 
-            var apiKey = app.ApplicationServices.GetRequiredService<IConfiguration>()["ApiKey"];
-            Console.WriteLine($"API Key from UserSecrets: {apiKey}");
+       
             app.UseAuthentication();
 
             app.UseAuthorization();
