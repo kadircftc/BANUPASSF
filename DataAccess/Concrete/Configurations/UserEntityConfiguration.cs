@@ -19,6 +19,7 @@ namespace DataAccess.Concrete.Configurations
             builder.Property(x => x.Address).HasMaxLength(200);
             builder.Property(x => x.MobilePhones).HasMaxLength(30);
             builder.Property(x => x.Notes).HasMaxLength(500);
+            builder.Property(x=> x.ReqLimit);
 
             builder.HasIndex(x => x.CitizenId);
             builder.HasIndex(x => x.MobilePhones);

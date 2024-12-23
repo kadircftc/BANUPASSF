@@ -28,6 +28,7 @@ namespace Business.Handlers.Users.Commands
         public string Notes { get; set; }
         public DateTime UpdateContactDate { get; set; }
         public string Password { get; set; }
+        public int ReqLimit { get; set; } = 5;
 
 
         public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, IResult>
@@ -44,6 +45,12 @@ namespace Business.Handlers.Users.Commands
             [LogAspect(typeof(FileLogger))]
             public async Task<IResult> Handle(CreateUserCommand request, CancellationToken cancellationToken)
             {
+
+                if (request.ReqLimit < 0 || request.ReqLimit > 50)
+                {
+                    return new ErrorResult("ReqLimit 0 ile 50 arasında olmalıdır.");
+                }
+
                 var isThereAnyUser = await _userRepository.GetAsync(u => u.Email == request.Email);
 
                 if (isThereAnyUser != null)
@@ -61,13 +68,15 @@ namespace Business.Handlers.Users.Commands
                     CitizenId = request.CitizenId,
                     Gender = request.Gender,
                     Notes = request.Notes,
-                    MobilePhones = request.MobilePhones
+                    MobilePhones = request.MobilePhones,
+                    ReqLimit = request.ReqLimit == default ? 5 : request.ReqLimit 
                 };
 
                 _userRepository.Add(user);
                 await _userRepository.SaveChangesAsync();
                 return new SuccessResult(Messages.Added);
             }
+
         }
     }
 }
