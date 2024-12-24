@@ -53,6 +53,7 @@ namespace Business.Handlers.Visits.Commands
             {
                 var isThereVisitRecord = await _visitRepository.GetAsync(u => u.Id == request.Id);
 
+                if (isThereVisitRecord.IsConfirm) return new ErrorResult(TransactionMessagesTR.ConfirmVisitNotUpdate);
 
                 isThereVisitRecord.CreatedDate = request.CreatedDate;
                 isThereVisitRecord.PersonnelId = request.PersonnelId;

@@ -152,7 +152,44 @@ namespace WebAPI.Controllers
             }
             return BadRequest(result.Message);
         }
-
+        /// <summary>
+		/// Add Visit.
+		/// </summary>
+		/// <param name="pedestrianEntrance"></param>
+		/// <returns></returns>
+		[Produces("application/json", "text/plain")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [HttpPost("pedestrianEntrance")]
+        [AllowAnonymous]
+        public async Task<IActionResult> AddPedestrianEntrance([FromBody] PedestrianEntranceCommand pedestrianEntrance)
+        {
+            var result = await Mediator.Send(pedestrianEntrance);
+            if (result.Success)
+            {
+                return Ok(result.Message);
+            }
+            return BadRequest(result.Message);
+        }
+        /// <summary>
+        /// Add Visit.
+        /// </summary>
+        /// <param name="vehicleEntranceCommand"></param>
+        /// <returns></returns>
+        [Produces("application/json", "text/plain")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [HttpPost("vehicleEntrance")]
+    
+        public async Task<IActionResult> AddVehicleEntrance([FromBody] VehicleEntranceCommand vehicleEntranceCommand)
+        {
+            var result = await Mediator.Send(vehicleEntranceCommand);
+            if (result.Success)
+            {
+                return Ok(result.Message);
+            }
+            return BadRequest(result.Message);
+        }
         /// <summary>
         /// Update Visit.
         /// </summary>

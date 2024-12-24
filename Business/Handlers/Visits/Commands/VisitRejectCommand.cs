@@ -56,9 +56,12 @@ namespace Business.Handlers.Visits.Commands
 
                 var userId = _userService.GetUserIdFromJwt(_httpContext.HttpContext.Request);
 
+                /*TransactionType false durumu red için geçerlidir.True durumunda onay olarak geçer.
+                 Enum olarak da kullanabilir fakat iki durum olduğu için boolean tercih edilmiştir.
+                 */
                 _visitConfirmRepository.Add(new Entities.Concrete.VisitConfirm
                 {
-                    SecurityId = userId,CreatedDate = DateTime.UtcNow,VisitId = request.Id,TransactionType = false
+                    SecurityId = userId,CreatedDate = DateTime.Now,VisitId = request.Id,TransactionType = false
                 });
 
                 _visitRepository.Update(isThereVisitRecord);

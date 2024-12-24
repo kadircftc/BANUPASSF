@@ -1,4 +1,5 @@
 ﻿
+using Business.Constants;
 using Business.Handlers.Visits.Commands;
 using FluentValidation;
 
@@ -45,8 +46,25 @@ namespace Business.Handlers.Visits.ValidationRules
     {
         public VisitRejectValidator()
         {
-            //RuleFor(x => x.ReasonForRejection).NotEmpty();
+            RuleFor(x => x.ReasonForRejection).NotEmpty().WithMessage(TransactionMessagesTR.RejectForReasonNotNull);
             
+        }
+    }
+    public class PedestrianEntranceCommandValidator : AbstractValidator<PedestrianEntranceCommand>
+    {
+        public PedestrianEntranceCommandValidator()
+        {
+            RuleFor(x => x.VisitorFullName).NotEmpty().WithMessage(TransactionMessagesTR.NullName);
+
+        }
+    }
+    public class VehicleEntranceCommandValidator : AbstractValidator<VehicleEntranceCommand>
+    {
+        public VehicleEntranceCommandValidator()
+        {
+            RuleFor(x => x.VisitorFullName).NotEmpty().WithMessage(TransactionMessagesTR.NullName);
+            RuleFor(x => x.VisitorLicensePlate).NotEmpty().WithMessage(TransactionMessagesTR.NullLicensePlate);
+
         }
     }
 }
