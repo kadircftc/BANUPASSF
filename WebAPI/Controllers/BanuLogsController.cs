@@ -12,7 +12,7 @@ using System;
 using Core.Utilities.Results;
 
 using System.Linq;
-
+using Core.Entities;
 
 namespace WebAPI.Controllers
 {
@@ -49,7 +49,7 @@ namespace WebAPI.Controllers
             var data = new List<string> { "ApiKeys" };
             return Ok(data);
         }
-      
+
         ///<summary>
         ///It brings the details according to its id.
         ///</summary>
@@ -68,9 +68,30 @@ namespace WebAPI.Controllers
                 return Ok(result.Data);
             }
             return BadRequest(result.Message);
-        } 
-        
-        
+        }
+        ///<summary>
+        ///It brings the details according to its id.
+        ///</summary>
+        ///<remarks>BanuLogs</remarks>
+        ///<return>BanuLogs List</return>
+        ///<response code="200"></response>  
+        [Produces("application/json", "text/plain")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BanuLog))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [HttpPost("getGlobalFilterList")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetFilteredLogs([FromBody] Dictionary<string, GlobalFilterGeneric> filters)
+        {
+            var result = await Mediator.Send(new GetBanuLogsGlobalFilterListQuery { Filters = filters });
+
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
+
+            return Ok(result.Data);
+        }
+
         ///<summary>
         ///It brings the details according to its full name.
         ///</summary>

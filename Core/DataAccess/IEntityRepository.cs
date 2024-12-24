@@ -1,6 +1,7 @@
 ﻿using Core.Entities;
 using Core.Entities.Concrete;
 using Core.Utilities.Results;
+using Nest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,10 +23,12 @@ namespace Core.DataAccess
         T Get(Expression<Func<T, bool>> expression);
         Task<T> GetAsync(Expression<Func<T, bool>> expression);
         int SaveChanges();
+        Task<IEnumerable<T>> GetFilteredListAsync(Dictionary<string, GlobalFilterGeneric> filters);
         Task<int> SaveChangesAsync();
         IQueryable<T> Query();
         Task<int> Execute(FormattableString interpolatedQueryString);
-
+        Task<IEnumerable<T>> BulkInsert(int TId, IEnumerable<T> TIds);
+        
         TResult InTransaction<TResult>(Func<TResult> action, Action successAction = null, Action<Exception> exceptionAction = null);
 
         Task<int> GetCountAsync(Expression<Func<T, bool>> expression = null);

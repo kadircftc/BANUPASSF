@@ -30,8 +30,8 @@ namespace Business.Helpers
             var user = await mediator.Send(new RegisterUserInternalCommand
             {
                 FullName = "System Admin",
-                Password = "adminQxUa",
-                Email = "admin@banupass.edu.tr",
+                Password = "Q1w212*_*",
+                Email = "admin@adminmail.com",
             });
             await mediator.Send(new CreateUserClaimsInternalCommand
             {

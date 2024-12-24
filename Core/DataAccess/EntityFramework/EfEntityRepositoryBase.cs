@@ -4,11 +4,14 @@ using Core.Enums;
 using Core.Extensions;
 using Core.Utilities.Results;
 using Microsoft.EntityFrameworkCore;
+using Nest;
 using ServiceStack;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Core.DataAccess.EntityFramework
@@ -230,5 +233,134 @@ namespace Core.DataAccess.EntityFramework
         {
             return expression == null ? Context.Set<TEntity>().Count() : Context.Set<TEntity>().Count(expression);
         }
+
+        public async Task<IEnumerable<TEntity>> BulkInsert(int TId, IEnumerable<TEntity> TIds)
+        {
+                await Context.Set<TEntity>().AddRangeAsync(TIds);
+                return TIds;   
+        }
+        public class Filter
+        {
+            public string Operation { get; set; }
+            public object Value { get; set; }
+        }
+
+
+
+        public async Task<IEnumerable<TEntity>> GetFilteredListAsync(Dictionary<string, GlobalFilterGeneric> filters)
+        {
+            var query = Context.Set<TEntity>().AsQueryable();
+
+            foreach (var filter in filters)
+            {
+                var parameter = Expression.Parameter(typeof(TEntity), "x");
+                var property = Expression.PropertyOrField(parameter, filter.Key);
+
+                var value = filter.Value.Value;
+
+                if (value is JsonElement jsonValue && filter.Key.Contains("Date"))
+                {
+                    if (jsonValue.ValueKind == JsonValueKind.String)
+                    {
+                        var stringValue = jsonValue.GetString();
+
+                        if (DateTime.TryParseExact(stringValue, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateTimeValue))
+                        {
+                            value = dateTimeValue;
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException($"Invalid date format: {stringValue}. Expected format is 'dd-MM-yyyy'.");
+                        }
+                    }
+                }
+
+                if (value is JsonElement jsonElement)
+                {
+                    switch (jsonElement.ValueKind)
+                    {
+                        case JsonValueKind.String:
+                            value = jsonElement.GetString();
+                            break;
+                        case JsonValueKind.Number:
+                            if (property.Type == typeof(int))
+                            {
+                                value = jsonElement.GetInt32();
+                            }
+                            else if (property.Type == typeof(decimal))
+                            {
+                                value = jsonElement.GetDecimal();
+                            }
+                            else if (property.Type == typeof(double))
+                            {
+                                value = jsonElement.GetDouble();
+                            }
+                            break;
+                        case JsonValueKind.True:
+                        case JsonValueKind.False:
+                            if (property.Type == typeof(bool))
+                            {
+                                value = jsonElement.GetBoolean();
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                var valueExpression = Expression.Constant(value);
+
+                Expression predicate;
+
+                switch (filter.Value.Operation)
+                {
+                    case "Equals":
+                        predicate = property.Type == typeof(string)
+                            ? Expression.Equal(property, valueExpression)
+                            : Expression.Equal(property, valueExpression);
+                        break;
+
+                    case "Contains":
+                        if (property.Type == typeof(string))
+                        {
+                            predicate = Expression.Call(property, typeof(string).GetMethod("Contains", new[] { typeof(string) }), valueExpression);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException($"'Contains' operation is only supported for type 'string'.");
+                        }
+                        break;
+
+                    case "GreaterThan":
+                        predicate = Expression.GreaterThan(property, valueExpression);
+                        break;
+
+                    case "LessThan":
+                        predicate = Expression.LessThan(property, valueExpression);
+                        break;
+
+                    case "GreaterThanOrEqual":
+                        predicate = Expression.GreaterThanOrEqual(property, valueExpression);
+                        break;
+
+                    case "LessThanOrEqual":
+                        predicate = Expression.LessThanOrEqual(property, valueExpression);
+                        break;
+
+                    default:
+                        throw new InvalidOperationException($"Operation '{filter.Value.Operation}' is not supported");
+                }
+
+                var lambda = Expression.Lambda<Func<TEntity, bool>>(predicate, parameter);
+
+                query = query.Where(lambda);
+            }
+
+            return await query.ToListAsync();
+        }
+
+
+
+
     }
 }

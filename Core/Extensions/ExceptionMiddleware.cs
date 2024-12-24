@@ -1,10 +1,13 @@
 ﻿using Core.Utilities.Messages;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
+using MongoDB.Driver.Core.WireProtocol.Messages;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Security;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Core.Extensions
 {
@@ -37,10 +40,21 @@ namespace Core.Extensions
             httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             _ = e.Message;
             string message;
-            if (e.GetType() == typeof(ValidationException))
+            if (e is FluentValidation.ValidationException validationException)
             {
-                message = e.Message;
                 httpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+
+               
+                var errors = validationException.Errors
+                    .Select(err => new { PropertyName = err.PropertyName, ErrorMessage = err.ErrorMessage })
+                    .ToList();
+
+                message = System.Text.Json.JsonSerializer.Serialize(new
+                {
+                    StatusCode = httpContext.Response.StatusCode,
+                    Message = "Validation failed",
+                    Errors = errors
+                });
             }
             else if (e.GetType() == typeof(ApplicationException))
             {
