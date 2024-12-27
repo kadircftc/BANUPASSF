@@ -1,25 +1,26 @@
 import {
   AfterViewInit,
   Component,
-  ElementRef,
+  OnDestroy,
   OnInit,
-  ViewChild,
+  ViewChild
 } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { User } from "./models/user";
-import { UserService } from "./services/user.service";
-import { IDropdownSettings } from "ng-multiselect-dropdown";
+import { MatPaginator } from "@angular/material/paginator";
+import { MatSort } from "@angular/material/sort";
+import { MatTableDataSource } from "@angular/material/table";
+import * as signalR from '@microsoft/signalr';
+import { MustMatch } from "app/core/directives/must-match";
 import { LookUp } from "app/core/models/lookUp";
 import { AlertifyService } from "app/core/services/alertify.service";
 import { LookUpService } from "app/core/services/lookUp.service";
-import { AuthService } from "../login/services/auth.service";
-import { MustMatch } from "app/core/directives/must-match";
-import { PasswordDto } from "./models/passwordDto";
 import { environment } from "environments/environment";
-import { MatSort } from "@angular/material/sort";
-import { MatPaginator } from "@angular/material/paginator";
-import { MatTableDataSource } from "@angular/material/table";
-
+import { IDropdownSettings } from "ng-multiselect-dropdown";
+import { AuthService } from "../login/services/auth.service";
+import { PasswordDto } from "./models/passwordDto";
+import { User } from "./models/user";
+import { SignalRService } from "./Services/signalr.service";
+import { UserService } from "./services/user.service";
 declare var jQuery: any;
 
 @Component({
@@ -27,7 +28,7 @@ declare var jQuery: any;
   templateUrl: "./user.component.html",
   styleUrls: ["./user.component.scss"],
 })
-export class UserComponent implements AfterViewInit, OnInit {
+export class UserComponent implements AfterViewInit, OnInit ,OnDestroy{
   dataSource: MatTableDataSource<any>;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -45,7 +46,7 @@ export class UserComponent implements AfterViewInit, OnInit {
     "update",
     "delete",
   ];
-
+  visits: string[] = ["jhnuıohıuj"];
   user: User;
   userList: User[];
   groupDropdownList: LookUp[];
@@ -54,7 +55,7 @@ export class UserComponent implements AfterViewInit, OnInit {
 
   claimDropdownList: LookUp[];
   claimSelectedItems: LookUp[];
-
+  private hubConnection!: signalR.HubConnection;
   isGroupChange: boolean = false;
   isClaimChange: boolean = false;
 
@@ -65,7 +66,8 @@ export class UserComponent implements AfterViewInit, OnInit {
     private formBuilder: FormBuilder,
     private alertifyService: AlertifyService,
     private lookUpService: LookUpService,
-    private authService: AuthService
+    private authService: AuthService,
+    private signalRService: SignalRService
   ) {}
 
   ngAfterViewInit(): void {
@@ -88,6 +90,7 @@ export class UserComponent implements AfterViewInit, OnInit {
     this.lookUpService.getOperationClaimLookUp().subscribe((data) => {
       this.claimDropdownList = data;
     });
+  
   }
 
   getUserGroupPermissions(userId: number) {
@@ -97,7 +100,16 @@ export class UserComponent implements AfterViewInit, OnInit {
       this.groupSelectedItems = data;
     });
   }
-
+  ngOnDestroy(): void {
+    if (this.hubConnection) {
+      this.hubConnection.stop()
+        .then(() => console.log('Hub connection stopped'))
+        .catch(err => console.error('Error while stopping connection:', err));
+    } else {
+      console.warn('Hub connection is undefined, cannot stop.');
+    }
+  }
+  
   getUserClaimsPermissions(userId: number) {
     this.userId = userId;
 

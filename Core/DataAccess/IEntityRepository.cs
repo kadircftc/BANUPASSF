@@ -23,7 +23,7 @@ namespace Core.DataAccess
         T Get(Expression<Func<T, bool>> expression);
         Task<T> GetAsync(Expression<Func<T, bool>> expression);
         int SaveChanges();
-        Task<IEnumerable<T>> GetFilteredListAsync(Dictionary<string, GlobalFilterGeneric> filters);
+        Task<IEnumerable<T>> GetFilteredListAsync(List<GlobalFilterGeneric> filters);
         Task<int> SaveChangesAsync();
         IQueryable<T> Query();
         Task<int> Execute(FormattableString interpolatedQueryString);

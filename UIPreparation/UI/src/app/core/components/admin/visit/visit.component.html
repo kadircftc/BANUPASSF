@@ -1,0 +1,307 @@
+﻿<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header card-header-danger">
+            <h4 class="card-title ">{{'VisitList'| translate}}</h4>
+            <a *ngIf="checkClaim('CreateVisitCommand')" class="pull-right" data-toggle="modal" data-target="#visit"> <i style="color:white"  title="{{'Add'| translate}}" class="far fa-plus-square fa-2x"></i></a>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              
+              <div class="col-md-4 pull-right">
+                <mat-form-field>
+                  <mat-label>Filter</mat-label>
+                  <input matInput (keyup)="applyFilter($event)" placeholder="" #input>
+                </mat-form-field>
+              </div>
+							<table mat-table [dataSource]="dataSource" matSort>
+
+
+								
+                   <ng-container matColumnDef="id">
+                     <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'Id'|translate}}</th>
+                     <td mat-cell *matCellDef="let element">{{element.id}}</td>
+				   </ng-container>
+	
+                   <ng-container matColumnDef="createdDate">
+                     <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'CreatedDate'|translate}}</th>
+                     <td mat-cell *matCellDef="let element">{{element.createdDate}}</td>
+				   </ng-container>
+	
+                   <ng-container matColumnDef="personnelId">
+                     <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'PersonnelId'|translate}}</th>
+                     <td mat-cell *matCellDef="let element">{{element.personnelId}}</td>
+				   </ng-container>
+	
+                   <ng-container matColumnDef="visitorFullName">
+                     <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'VisitorFullName'|translate}}</th>
+                     <td mat-cell *matCellDef="let element">{{element.visitorFullName}}</td>
+				   </ng-container>
+	
+                   <ng-container matColumnDef="visitorLicensePlate">
+                     <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'VisitorLicensePlate'|translate}}</th>
+                     <td mat-cell *matCellDef="let element">{{element.visitorLicensePlate}}</td>
+				   </ng-container>
+	
+                   <ng-container matColumnDef="vehicleEntry">
+                     <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'VehicleEntry'|translate}}</th>
+                     <td mat-cell *matCellDef="let element"> 
+                        <mat-checkbox [checked]="element.vehicleEntry" [disabled]="true"></mat-checkbox>
+                     </td>
+				   </ng-container>
+	
+                   <ng-container matColumnDef="multiPersonVisit">
+                     <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'MultiPersonVisit'|translate}}</th>
+                     <td mat-cell *matCellDef="let element"> 
+                        <mat-checkbox [checked]="element.multiPersonVisit" [disabled]="true"></mat-checkbox>
+                     </td>
+				   </ng-container>
+	
+                   <ng-container matColumnDef="isConfirm">
+                     <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'IsConfirm'|translate}}</th>
+                     <td mat-cell *matCellDef="let element"> 
+                        <mat-checkbox [checked]="element.isConfirm" [disabled]="true"></mat-checkbox>
+                     </td>
+				   </ng-container>
+	
+                   <ng-container matColumnDef="isExit">
+                     <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'IsExit'|translate}}</th>
+                     <td mat-cell *matCellDef="let element"> 
+                        <mat-checkbox [checked]="element.isExit" [disabled]="true"></mat-checkbox>
+                     </td>
+				   </ng-container>
+	
+                   <ng-container matColumnDef="status">
+                     <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'Status'|translate}}</th>
+                     <td mat-cell *matCellDef="let element"> 
+                        <mat-checkbox [checked]="element.status" [disabled]="true"></mat-checkbox>
+                     </td>
+				   </ng-container>
+	
+                   <ng-container matColumnDef="reasonForRejection">
+                     <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'ReasonForRejection'|translate}}</th>
+                     <td mat-cell *matCellDef="let element">{{element.reasonForRejection}}</td>
+				   </ng-container>
+	
+                   <ng-container matColumnDef="isReject">
+                     <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'IsReject'|translate}}</th>
+                     <td mat-cell *matCellDef="let element">{{element.isReject}}</td>
+				   </ng-container>
+	
+                   <ng-container matColumnDef="approvalDate">
+                     <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'ApprovalDate'|translate}}</th>
+                     <td mat-cell *matCellDef="let element">{{element.approvalDate}}</td>
+				   </ng-container>
+	
+                   <ng-container matColumnDef="exitDate">
+                     <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'ExitDate'|translate}}</th>
+                     <td mat-cell *matCellDef="let element">{{element.exitDate}}</td>
+				   </ng-container>
+	
+                   <ng-container matColumnDef="visitStartDate">
+                     <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'VisitStartDate'|translate}}</th>
+                     <td mat-cell *matCellDef="let element">{{element.visitStartDate}}</td>
+				   </ng-container>
+	
+                   <ng-container matColumnDef="visitEndDate">
+                     <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'VisitEndDate'|translate}}</th>
+                     <td mat-cell *matCellDef="let element">{{element.visitEndDate}}</td>
+				   </ng-container>
+
+
+
+
+								<ng-container matColumnDef="update" >
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td style="width: 25px;" mat-cell
+                    *matCellDef="let element">
+                    <a *ngIf="checkClaim('UpdateVisitCommand')" data-toggle="modal" data-target="#visit"  (click)="getVisitById(element.id)">
+                      <i title="{{'Update'| translate}}" style="color:#ff5722;" class="far fa-edit"></i>
+                    </a>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="delete" >
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td  style="width: 25px;" mat-cell
+                    *matCellDef="let element">
+                    <a *ngIf="checkClaim('DeleteVisitCommand')" (confirm)="deleteVisit(element.id)" [swal]="deleteSwal"><i title="{{'Delete'| translate}}" style="color: #D9534E;"class="fas fa-trash-alt"></i></a>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+                <tr class="mat-row" *matNoDataRow style="text-align: center;">
+                  <td class="mat-cell" colspan="4">{{'NoRecordsFound' |translate}} "{{input.value}}"</td>
+                </tr>
+							</table>
+							<mat-paginator [pageSizeOptions]="[10, 25, 50, 100]"></mat-paginator>
+							</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal modal-angular fade" id="visit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+          (click)="clearFormGroup(visitAddForm)"><span aria-hidden="true">&times;</span></button>
+        <h4 class="margin-top">
+           {{'VisitForm'| translate}}
+        </h4>
+        <div class="separator"></div>
+        <form *ngIf="visitAddForm" [formGroup]="visitAddForm" (ngSubmit)="save()">
+          
+					<div class="row">
+            <div class="col col-md-12">
+              <mat-form-field class="example-full-width">
+                <input matInput placeholder="createdDate" type="date" id="createdDate" name="createdDate"
+                       formControlName="createdDate" />
+                <div class="alert alert-danger"
+                     *ngIf="visitAddForm.get('createdDate')!.hasError('createdDate') && visitAddForm.get('createdDate')!.dirty">
+                </div>
+              </mat-form-field>
+            </div>
+          </div>
+					<div class="row">
+						<div class="col-md-12">
+							<select class="browser-default custom-select" formControlName="personnelId">
+								<option *ngFor="let item of visitlookUp" [value]="item.id"> {{item.label}}</option>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+            <div class="col col-md-12">
+              <mat-form-field class="example-full-width">
+                <input matInput placeholder="visitorFullName" type="text" id="visitorFullName" name="visitorFullName"
+                       formControlName="visitorFullName" />
+                <div class="alert alert-danger"
+                     *ngIf="visitAddForm.get('visitorFullName')!.hasError('visitorFullName') && visitAddForm.get('visitorFullName')!.dirty">
+                </div>
+              </mat-form-field>
+            </div>
+          </div>
+					<div class="row">
+            <div class="col col-md-12">
+              <mat-form-field class="example-full-width">
+                <input matInput placeholder="visitorLicensePlate" type="text" id="visitorLicensePlate" name="visitorLicensePlate"
+                       formControlName="visitorLicensePlate" />
+                <div class="alert alert-danger"
+                     *ngIf="visitAddForm.get('visitorLicensePlate')!.hasError('visitorLicensePlate') && visitAddForm.get('visitorLicensePlate')!.dirty">
+                </div>
+              </mat-form-field>
+            </div>
+          </div><div class="row">
+            <div class="col col-md-2">
+                       <mat-checkbox  formControlName="vehicleEntry" id="vehicleEntry" name="vehicleEntry" > vehicleEntry
+                      </mat-checkbox>
+            </div>
+          </div><div class="row">
+            <div class="col col-md-2">
+                       <mat-checkbox  formControlName="multiPersonVisit" id="multiPersonVisit" name="multiPersonVisit" > multiPersonVisit
+                      </mat-checkbox>
+            </div>
+          </div><div class="row">
+            <div class="col col-md-2">
+                       <mat-checkbox  formControlName="isConfirm" id="isConfirm" name="isConfirm" > isConfirm
+                      </mat-checkbox>
+            </div>
+          </div><div class="row">
+            <div class="col col-md-2">
+                       <mat-checkbox  formControlName="isExit" id="isExit" name="isExit" > isExit
+                      </mat-checkbox>
+            </div>
+          </div><div class="row">
+            <div class="col col-md-2">
+                       <mat-checkbox  formControlName="status" id="status" name="status" > status
+                      </mat-checkbox>
+            </div>
+          </div>
+					<div class="row">
+            <div class="col col-md-12">
+              <mat-form-field class="example-full-width">
+                <input matInput placeholder="reasonForRejection" type="text" id="reasonForRejection" name="reasonForRejection"
+                       formControlName="reasonForRejection" />
+                <div class="alert alert-danger"
+                     *ngIf="visitAddForm.get('reasonForRejection')!.hasError('reasonForRejection') && visitAddForm.get('reasonForRejection')!.dirty">
+                </div>
+              </mat-form-field>
+            </div>
+          </div>
+					<div class="row">
+            <div class="col col-md-12">
+              <mat-form-field class="example-full-width">
+                <input matInput placeholder="isReject" type="text" id="isReject" name="isReject"
+                       formControlName="isReject" />
+                <div class="alert alert-danger"
+                     *ngIf="visitAddForm.get('isReject')!.hasError('isReject') && visitAddForm.get('isReject')!.dirty">
+                </div>
+              </mat-form-field>
+            </div>
+          </div>
+					<div class="row">
+            <div class="col col-md-12">
+              <mat-form-field class="example-full-width">
+                <input matInput placeholder="approvalDate" type="text" id="approvalDate" name="approvalDate"
+                       formControlName="approvalDate" />
+                <div class="alert alert-danger"
+                     *ngIf="visitAddForm.get('approvalDate')!.hasError('approvalDate') && visitAddForm.get('approvalDate')!.dirty">
+                </div>
+              </mat-form-field>
+            </div>
+          </div>
+					<div class="row">
+            <div class="col col-md-12">
+              <mat-form-field class="example-full-width">
+                <input matInput placeholder="exitDate" type="date" id="exitDate" name="exitDate"
+                       formControlName="exitDate" />
+                <div class="alert alert-danger"
+                     *ngIf="visitAddForm.get('exitDate')!.hasError('exitDate') && visitAddForm.get('exitDate')!.dirty">
+                </div>
+              </mat-form-field>
+            </div>
+          </div>
+					<div class="row">
+            <div class="col col-md-12">
+              <mat-form-field class="example-full-width">
+                <input matInput placeholder="visitStartDate" type="date" id="visitStartDate" name="visitStartDate"
+                       formControlName="visitStartDate" />
+                <div class="alert alert-danger"
+                     *ngIf="visitAddForm.get('visitStartDate')!.hasError('visitStartDate') && visitAddForm.get('visitStartDate')!.dirty">
+                </div>
+              </mat-form-field>
+            </div>
+          </div>
+					<div class="row">
+            <div class="col col-md-12">
+              <mat-form-field class="example-full-width">
+                <input matInput placeholder="visitEndDate" type="date" id="visitEndDate" name="visitEndDate"
+                       formControlName="visitEndDate" />
+                <div class="alert alert-danger"
+                     *ngIf="visitAddForm.get('visitEndDate')!.hasError('visitEndDate') && visitAddForm.get('visitEndDate')!.dirty">
+                </div>
+              </mat-form-field>
+            </div>
+          </div>
+                   
+          <button mat-raised-button type="submit" class="btn btn-danger pull-right">{{'Save'|translate}}</button>
+          <div class="clearfix"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<swal #deleteSwal title="{{'DeleteConfirm' | translate}}" icon = "error" [showCancelButton]="true"
+	[confirmButtonText] = "'OK'"[cancelButtonText] = "'Cancel'" >
+</swal>
+

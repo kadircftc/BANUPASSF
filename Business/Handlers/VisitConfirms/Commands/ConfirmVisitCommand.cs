@@ -59,7 +59,8 @@ namespace Business.Handlers.VisitConfirms.Commands
                 _visitConfirmRepository.Add(securityVisitConfirm);
                 await _visitRepository.SaveChangesAsync();
                 await _visitConfirmRepository.SaveChangesAsync();
-                return new SuccessResult($"{visitRecord.VisitorFullName} {DateTime.Now.Date} tarihinde giriş yaptı");
+                return new SuccessResult($"{visitRecord.VisitorFullName} {DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss")} tarihinde giriş yaptı");
+
             }
         }
     }

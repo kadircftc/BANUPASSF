@@ -19,7 +19,7 @@ namespace WebAPI.Controllers
     /// <summary>
     /// BanuLogs If controller methods will not be Authorize, [AllowAnonymous] is used.
     /// </summary>
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class BanuLogsController : BaseApiController
     {
@@ -80,7 +80,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpPost("getGlobalFilterList")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetFilteredLogs([FromBody] Dictionary<string, GlobalFilterGeneric> filters)
+        public async Task<IActionResult> GetFilteredLogs([FromBody] List<GlobalFilterGeneric> filters)
         {
             var result = await Mediator.Send(new GetBanuLogsGlobalFilterListQuery { Filters = filters });
 
@@ -146,9 +146,11 @@ namespace WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpGet("getbypdf")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetByDate(String date)
+        public async Task<IActionResult> GetByDate(string date,List<BanuLog>? list)
         {
+
             var result = await Mediator.Send(new GetBanuLogsByPdfQuery { QueryDate = date });
+           
             if (result.Success)
             {   
                 ConvertPdfService convertPdfService = new ConvertPdfService();
@@ -169,8 +171,37 @@ namespace WebAPI.Controllers
             }
 
             return BadRequest(result.Message);
-        } 
-        
+        }
+        [Produces("application/pdf", "text/plain")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BanuLog))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [HttpPost("getbylisttopdf")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetByListToPdf([FromBody] List<BanuLog> list)
+        {
+
+
+            if (list!=null)
+            {
+                ConvertPdfService convertPdfService = new ConvertPdfService();
+                if (list.Count() > 35)
+                {
+                    var logGroups = convertPdfService.SplitLogs(list, 35);
+
+                    var zipBytes = convertPdfService.GenerateZipWithPdfs(logGroups,"");
+
+                    return File(zipBytes, "application/zip", $"BanuLogs_{""}.zip");
+                }
+                else
+                {
+                    var pdfBytes = convertPdfService.GeneratePdf(list.ToList(), 1, "");
+
+                    return File(pdfBytes, "application/pdf", $"BanuLogs_{""}.pdf");
+                }
+            }
+
+            return BadRequest("Pdf oluşturulacak herhangi bir veri yoktur.");
+        }
 
         /// <summary>
         /// Add BanuLog.

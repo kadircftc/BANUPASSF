@@ -247,7 +247,7 @@ namespace Core.DataAccess.EntityFramework
 
 
 
-        public async Task<IEnumerable<TEntity>> GetFilteredListAsync(Dictionary<string, GlobalFilterGeneric> filters)
+        public async Task<IEnumerable<TEntity>> GetFilteredListAsync(List<GlobalFilterGeneric> filters)
         {
             var query = Context.Set<TEntity>().AsQueryable();
 
@@ -256,7 +256,7 @@ namespace Core.DataAccess.EntityFramework
                 var parameter = Expression.Parameter(typeof(TEntity), "x");
                 var property = Expression.PropertyOrField(parameter, filter.Key);
 
-                var value = filter.Value.Value;
+                var value = filter.Value;
 
                 if (value is JsonElement jsonValue && filter.Key.Contains("Date"))
                 {
@@ -266,7 +266,7 @@ namespace Core.DataAccess.EntityFramework
 
                         if (DateTime.TryParseExact(stringValue, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateTimeValue))
                         {
-                            value = dateTimeValue;
+                            value = dateTimeValue.Date;
                         }
                         else
                         {
@@ -312,12 +312,18 @@ namespace Core.DataAccess.EntityFramework
 
                 Expression predicate;
 
-                switch (filter.Value.Operation)
+                switch (filter.Operation)
                 {
                     case "Equals":
-                        predicate = property.Type == typeof(string)
-                            ? Expression.Equal(property, valueExpression)
-                            : Expression.Equal(property, valueExpression);
+                        if (property.Type == typeof(DateTime))
+                        {
+                            var dateProperty = Expression.Property(property, "Date");
+                            predicate = Expression.Equal(dateProperty, valueExpression);
+                        }
+                        else
+                        {
+                            predicate = Expression.Equal(property, valueExpression);
+                        }
                         break;
 
                     case "Contains":
@@ -348,12 +354,13 @@ namespace Core.DataAccess.EntityFramework
                         break;
 
                     default:
-                        throw new InvalidOperationException($"Operation '{filter.Value.Operation}' is not supported");
+                        throw new InvalidOperationException($"Operation '{filter.Operation}' is not supported");
                 }
 
                 var lambda = Expression.Lambda<Func<TEntity, bool>>(predicate, parameter);
 
                 query = query.Where(lambda);
+
             }
 
             return await query.ToListAsync();

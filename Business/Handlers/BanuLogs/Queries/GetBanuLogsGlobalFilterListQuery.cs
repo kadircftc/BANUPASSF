@@ -14,7 +14,7 @@ namespace Business.Handlers.BanuLogs.Queries
 {
     public class GetBanuLogsGlobalFilterListQuery:IRequest<IDataResult< IEnumerable<BanuLog>>>
     {
-        public Dictionary<string ,GlobalFilterGeneric> Filters { get; set; }
+        public List<GlobalFilterGeneric> Filters { get; set; }
       
         public class GetBanuLogsGlobalFilterListQueryHandler : IRequestHandler<GetBanuLogsGlobalFilterListQuery, IDataResult<IEnumerable<BanuLog>>>
         {

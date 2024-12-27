@@ -20,7 +20,7 @@ namespace Business.Handlers.BanuLogs.Queries
         {
             public string QueryDate { get; set; }
 
-            public class GetBanuLogsByPdfQueryHandler : IRequestHandler<GetBanuLogsByPdfQuery, IDataResult<IEnumerable<BanuLog>>>
+        public class GetBanuLogsByPdfQueryHandler : IRequestHandler<GetBanuLogsByPdfQuery, IDataResult<IEnumerable<BanuLog>>>
             {
                 private readonly IBanuLogRepository _banuLogRepository;
 

@@ -8,6 +8,7 @@ namespace Core.Entities
 {
     public class GlobalFilterGeneric
     {
+        public string Key { get; set; }
         public string Operation { get; set; }
         public object Value { get; set; }
     }

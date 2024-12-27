@@ -1,0 +1,135 @@
+﻿<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header card-header-danger">
+            <h4 class="card-title ">{{'MultiVisitersList'| translate}}</h4>
+            <a *ngIf="checkClaim('CreateMultiVisitersCommand')" class="pull-right" data-toggle="modal" data-target="#multivisiters"> <i style="color:white"  title="{{'Add'| translate}}" class="far fa-plus-square fa-2x"></i></a>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              
+              <div class="col-md-4 pull-right">
+                <mat-form-field>
+                  <mat-label>Filter</mat-label>
+                  <input matInput (keyup)="applyFilter($event)" placeholder="" #input>
+                </mat-form-field>
+              </div>
+							<table mat-table [dataSource]="dataSource" matSort>
+
+
+								
+                   <ng-container matColumnDef="id">
+                     <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'Id'|translate}}</th>
+                     <td mat-cell *matCellDef="let element">{{element.id}}</td>
+				   </ng-container>
+	
+                   <ng-container matColumnDef="createdDate">
+                     <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'CreatedDate'|translate}}</th>
+                     <td mat-cell *matCellDef="let element">{{element.createdDate}}</td>
+				   </ng-container>
+	
+                   <ng-container matColumnDef="visitId">
+                     <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'VisitId'|translate}}</th>
+                     <td mat-cell *matCellDef="let element">{{element.visitId}}</td>
+				   </ng-container>
+	
+                   <ng-container matColumnDef="visitorFullName">
+                     <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'VisitorFullName'|translate}}</th>
+                     <td mat-cell *matCellDef="let element">{{element.visitorFullName}}</td>
+				   </ng-container>
+
+
+
+
+								<ng-container matColumnDef="update" >
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td style="width: 25px;" mat-cell
+                    *matCellDef="let element">
+                    <a *ngIf="checkClaim('UpdateMultiVisitersCommand')" data-toggle="modal" data-target="#multivisiters"  (click)="getMultiVisitersById(element.id)">
+                      <i title="{{'Update'| translate}}" style="color:#ff5722;" class="far fa-edit"></i>
+                    </a>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="delete" >
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td  style="width: 25px;" mat-cell
+                    *matCellDef="let element">
+                    <a *ngIf="checkClaim('DeleteMultiVisitersCommand')" (confirm)="deleteMultiVisiters(element.id)" [swal]="deleteSwal"><i title="{{'Delete'| translate}}" style="color: #D9534E;"class="fas fa-trash-alt"></i></a>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+                <tr class="mat-row" *matNoDataRow style="text-align: center;">
+                  <td class="mat-cell" colspan="4">{{'NoRecordsFound' |translate}} "{{input.value}}"</td>
+                </tr>
+							</table>
+							<mat-paginator [pageSizeOptions]="[10, 25, 50, 100]"></mat-paginator>
+							</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal modal-angular fade" id="multivisiters" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+          (click)="clearFormGroup(multiVisitersAddForm)"><span aria-hidden="true">&times;</span></button>
+        <h4 class="margin-top">
+           {{'MultiVisitersForm'| translate}}
+        </h4>
+        <div class="separator"></div>
+        <form *ngIf="multiVisitersAddForm" [formGroup]="multiVisitersAddForm" (ngSubmit)="save()">
+          
+					<div class="row">
+            <div class="col col-md-12">
+              <mat-form-field class="example-full-width">
+                <input matInput placeholder="createdDate" type="date" id="createdDate" name="createdDate"
+                       formControlName="createdDate" />
+                <div class="alert alert-danger"
+                     *ngIf="multiVisitersAddForm.get('createdDate')!.hasError('createdDate') && multiVisitersAddForm.get('createdDate')!.dirty">
+                </div>
+              </mat-form-field>
+            </div>
+          </div>
+					<div class="row">
+						<div class="col-md-12">
+							<select class="browser-default custom-select" formControlName="visitId">
+								<option *ngFor="let item of multiVisiterslookUp" [value]="item.id"> {{item.label}}</option>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+            <div class="col col-md-12">
+              <mat-form-field class="example-full-width">
+                <input matInput placeholder="visitorFullName" type="text" id="visitorFullName" name="visitorFullName"
+                       formControlName="visitorFullName" />
+                <div class="alert alert-danger"
+                     *ngIf="multiVisitersAddForm.get('visitorFullName')!.hasError('visitorFullName') && multiVisitersAddForm.get('visitorFullName')!.dirty">
+                </div>
+              </mat-form-field>
+            </div>
+          </div>
+                   
+          <button mat-raised-button type="submit" class="btn btn-danger pull-right">{{'Save'|translate}}</button>
+          <div class="clearfix"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<swal #deleteSwal title="{{'DeleteConfirm' | translate}}" icon = "error" [showCancelButton]="true"
+	[confirmButtonText] = "'OK'"[cancelButtonText] = "'Cancel'" >
+</swal>
+

@@ -1,12 +1,12 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { Location, LocationStrategy, PathLocationStrategy, PopStateEvent } from '@angular/common';
-import 'rxjs/add/operator/filter';
-import { Router, NavigationEnd, NavigationStart } from '@angular/router';
-import { Subscription } from 'rxjs/Subscription';
-import PerfectScrollbar from 'perfect-scrollbar';
-import * as $ from "jquery";
-import { AuthService } from 'app/core/components/admin/login/services/auth.service';
+import { Location, PopStateEvent } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { AuthService } from 'app/core/components/admin/login/services/auth.service';
+import * as $ from "jquery";
+import PerfectScrollbar from 'perfect-scrollbar';
+import 'rxjs/add/operator/filter';
+import { Subscription } from 'rxjs/Subscription';
 
 
 @Component({
