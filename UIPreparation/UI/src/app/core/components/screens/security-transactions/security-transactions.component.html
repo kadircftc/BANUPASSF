@@ -1,0 +1,286 @@
+<div class="container-fluid" style="padding-top: 35px;">
+  <div class="card">
+    <div class="card-header card-header-primary">
+      <h4 class="card-title">Güvenlik İşlemleri</h4>
+      <p class="card-category" style="margin-top: 25px;">Ziyaretçi Giriş/Çıkış Takibi</p>
+    </div>
+    <div class="card-body">
+      <!-- Tab Butonları -->
+      <div class="date-tabs">
+        <button mat-button 
+                [class.active]="selectedTab === 'today'"
+                (click)="filterByDate('today')"
+                [@tabAnimation]>
+          Bugün
+        </button>
+        <button mat-button 
+                [class.active]="selectedTab === 'yesterday'"
+                (click)="filterByDate('yesterday')"
+                [@tabAnimation]>
+          Dün
+        </button>
+        <button mat-button 
+                [class.active]="selectedTab === 'twoDaysAgo'"
+                (click)="filterByDate('twoDaysAgo')"
+                [@tabAnimation]>
+          Evvelsi Gün
+        </button>
+      </div>
+
+      <!-- Arama Alanı -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Ara</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="İsim, soyisim veya plaka ile arama yapın" #input>
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <!-- Tablo -->
+      <div class="mat-elevation-z8">
+        <table mat-table [dataSource]="dataSource" matSort>
+          
+          <ng-container matColumnDef="visitors">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Ziyaretçiler </th>
+            <td mat-cell *matCellDef="let row">
+              <div class="visitor-info">
+                <div class="visitor-chips">
+                  <mat-chip-list>
+                    <!-- Tüm ziyaretçiler -->
+                    <mat-chip *ngFor="let visitorName of (getAllVisitorNames(row)).visitorNames; let i = index" 
+                             [class.primary-visitor-chip]="i === 0"
+                             [class.secondary-visitor-chip]="i !== 0">
+                      <mat-icon class="visitor-icon">{{i === 0 ? 'person' : 'person_outline'}}</mat-icon>
+                      {{visitorName}}
+                    </mat-chip>
+                  </mat-chip-list>
+                </div>
+                <mat-chip class="total-visitor-chip">
+                  <mat-icon>group</mat-icon>
+                  {{(getAllVisitorNames(row)).totalVisitors}} Kişi
+                </mat-chip>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="licensePlate">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Araç/Yaya </th>
+            <td mat-cell *matCellDef="let row">
+              <mat-chip-list>
+                <ng-container *ngIf="row.visit.vehicleEntry; else pedestrian">
+                  <mat-chip class="vehicle-chip">
+                    <mat-icon>directions_car</mat-icon>
+                    {{row.visit.visitorLicensePlate || 'Plaka Girilmemiş'}}
+                  </mat-chip>
+                </ng-container>
+                <ng-template #pedestrian>
+                  <mat-chip class="pedestrian-chip">
+                    <mat-icon>directions_walk</mat-icon>
+                    Yaya
+                  </mat-chip>
+                </ng-template>
+              </mat-chip-list>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="entryDate">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Giriş Tarihi </th>
+            <td mat-cell *matCellDef="let row"> 
+              {{row.visit.visitStartDate | date:'dd/MM/yyyy HH:mm'}} 
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="exitDate">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Çıkış Tarihi </th>
+            <td mat-cell *matCellDef="let row"> 
+              {{row.visit.visitEndDate && row.visit.visitEndDate !== '0001-01-01T00:00:00' ? 
+                (row.visit.visitEndDate | date:'dd/MM/yyyy HH:mm') : 'Çıkış Yapılmadı'}} 
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef> İşlemler </th>
+            <td mat-cell *matCellDef="let row">
+              <button mat-mini-fab color="primary" class="mr-2" 
+                      (click)="approveVisit(row)"
+                      [disabled]="row.status === 'approved'"
+                      matTooltip="Ziyareti Onayla">
+                <mat-icon>check</mat-icon>
+              </button>
+              <button mat-mini-fab color="warn" 
+                      (click)="rejectVisit(row)"
+                      [disabled]="row.status === 'rejected'"
+                      matTooltip="Ziyareti Reddet">
+                <mat-icon>close</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <mat-paginator [pageSizeOptions]="[50, 100]" aria-label="Sayfa başına kayıt seç"></mat-paginator>
+      </div>
+
+      <div class="status-tables">
+        <div class="status-table">
+          <div class="card">
+            <div class="card-header card-header-success">
+              <h4 class="card-title">Onaylanan Ziyaretler</h4>
+              <p class="card-category" style="margin-top: 25px;">Ziyaret Durum</p>
+            </div>
+            <div class="card-body">
+              <div class="mat-elevation-z8">
+                <table mat-table [dataSource]="approvedDataSource" matSort #approvedSort="matSort" *ngIf="approvedDataSource.data.length > 0">
+                  
+                  <ng-container matColumnDef="visitors">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Ziyaretçiler </th>
+                    <td mat-cell *matCellDef="let row">
+                      <div class="visitor-info">
+                        <div class="visitor-chips">
+                          <mat-chip-list>
+                            <mat-chip *ngFor="let visitorName of (getAllVisitorNames(row)).visitorNames; let i = index" 
+                                     [class.primary-visitor-chip]="i === 0"
+                                     [class.secondary-visitor-chip]="i !== 0">
+                              <mat-icon class="visitor-icon">{{i === 0 ? 'person' : 'person_outline'}}</mat-icon>
+                              {{visitorName}}
+                            </mat-chip>
+                          </mat-chip-list>
+                        </div>
+                        <mat-chip class="total-visitor-chip">
+                          <mat-icon>group</mat-icon>
+                          {{getAllVisitorNames(row).totalVisitors}} Kişi
+                        </mat-chip>
+                      </div>
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="licensePlate">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Araç/Yaya </th>
+                    <td mat-cell *matCellDef="let row">
+                      <mat-chip-list>
+                        <ng-container *ngIf="row.isVehicle; else pedestrianApproved">
+                          <mat-chip class="vehicle-chip">
+                            <mat-icon>directions_car</mat-icon>
+                            {{row.licensePlate}}
+                          </mat-chip>
+                        </ng-container>
+                        <ng-template #pedestrianApproved>
+                          <mat-chip class="pedestrian-chip">
+                            <mat-icon>directions_walk</mat-icon>
+                            Yaya
+                          </mat-chip>
+                        </ng-template>
+                      </mat-chip-list>
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="entryDate">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Giriş Tarihi </th>
+                    <td mat-cell *matCellDef="let row"> {{row.entryDate | date:'dd/MM/yyyy HH:mm'}} </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="exitDate">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Çıkış Tarihi </th>
+                    <td mat-cell *matCellDef="let row"> {{row.exitDate | date:'dd/MM/yyyy HH:mm' || 'Çıkış Yapılmadı'}} </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="approvedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: approvedColumns;"></tr>
+                </table>
+
+                <div class="no-data-message" *ngIf="!approvedDataSource.data.length">
+                  <mat-icon>info</mat-icon>
+                  <p>Henüz onaylanan ziyaret bulunmamaktadır.</p>
+                </div>
+
+                <mat-paginator #approvedPaginator [pageSizeOptions]="[5, 10, 25]"></mat-paginator>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="status-table">
+          <div class="card">
+            <div class="card-header card-header-danger">
+              <h4 class="card-title">Reddedilen Ziyaretler</h4>
+              <p class="card-category" style="margin-top: 25px;">Ziyaret Durum</p>
+            </div>
+            <div class="card-body">
+              <div class="mat-elevation-z8">
+                <table mat-table [dataSource]="rejectedDataSource" matSort #rejectedSort="matSort" *ngIf="rejectedDataSource.data.length > 0">
+                  
+                  <ng-container matColumnDef="visitors">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Ziyaretçiler </th>
+                    <td mat-cell *matCellDef="let row">
+                      <div class="visitor-info">
+                        <div class="visitor-chips">
+                          <mat-chip-list>
+                            <mat-chip *ngFor="let visitorName of (getAllVisitorNames(row)).visitorNames; let i = index" 
+                                     [class.primary-visitor-chip]="i === 0"
+                                     [class.secondary-visitor-chip]="i !== 0">
+                              <mat-icon class="visitor-icon">{{i === 0 ? 'person' : 'person_outline'}}</mat-icon>
+                              {{visitorName}}
+                            </mat-chip>
+                          </mat-chip-list>
+                        </div>
+                        <mat-chip class="total-visitor-chip">
+                          <mat-icon>group</mat-icon>
+                          {{(getAllVisitorNames(row)).totalVisitors}} Kişi
+                        </mat-chip>
+                      </div>
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="licensePlate">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Araç/Yaya </th>
+                    <td mat-cell *matCellDef="let row">
+                      <mat-chip-list>
+                        <ng-container *ngIf="row.visit.vehicleEntry; else pedestrianRejected">
+                          <mat-chip class="vehicle-chip">
+                            <mat-icon>directions_car</mat-icon>
+                            {{row.visit.visitorLicensePlate}}
+                          </mat-chip>
+                        </ng-container>
+                        <ng-template #pedestrianRejected>
+                          <mat-chip class="pedestrian-chip">
+                            <mat-icon>directions_walk</mat-icon>
+                            Yaya
+                          </mat-chip>
+                        </ng-template>
+                      </mat-chip-list>
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="entryDate">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Giriş Tarihi </th>
+                    <td mat-cell *matCellDef="let row"> {{row.visit.visitStartDate | date:'dd/MM/yyyy HH:mm'}} </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="exitDate">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Çıkış Tarihi </th>
+                    <td mat-cell *matCellDef="let row"> {{row.visit.visitEndDate | date:'dd/MM/yyyy HH:mm' || 'Çıkış Yapılmadı'}} </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="rejectReason">
+                    <th mat-header-cell *matHeaderCellDef> Red Sebebi </th>
+                    <td mat-cell *matCellDef="let row"> {{row.visit.reasonForRejection}} </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="rejectedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: rejectedColumns;"></tr>
+                </table>
+
+                <div class="no-data-message" *ngIf="!rejectedDataSource.data.length">
+                  <mat-icon>info</mat-icon>
+                  <p>Henüz reddedilen ziyaret bulunmamaktadır.</p>
+                </div>
+
+                <mat-paginator #rejectedPaginator [pageSizeOptions]="[5, 10, 25]"></mat-paginator>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

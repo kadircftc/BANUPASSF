@@ -1,4 +1,3 @@
-import { HostListener } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -19,11 +18,15 @@ export const ADMINROUTES: RouteInfo[] = [
   { path: '/operationclaim', title: 'OperationClaim', icon:'local_police', class: '', claim:"GetOperationClaimsQuery"},
   { path: '/language', title: 'Languages', icon:'language', class: '', claim:"GetLanguagesQuery" },
   { path: '/translate', title: 'TranslateWords', icon: 'translate', class: '', claim: "GetTranslatesQuery" },
-  { path: '/log', title: 'Logs', icon: 'update', class: '', claim: "GetLogDtoQuery" }
+  { path: '/log', title: 'Logs', icon: 'update', class: '', claim: "GetLogDtoQuery" },
+  { path: '/banu-log', title: 'Ziyaret İşlem Kayıtları', icon: 'update', class: '', claim: "GetUsersQuery" },
+  { path: '/visit', title: 'Ziyaret İşlem Kayıtları', icon: 'update', class: '', claim: "GetUsersQuery" }
 ];
 
 export const USERROUTES: RouteInfo[] = [ 
-  //{ path: '/log', title: 'Logs', icon: 'update', class: '', claim: "GetLogDtoQuery" }
+  { path: '/banu-logs', title: 'Admin Kullanıcı', icon: 'update', class: '', claim: "GetUsersQuery" },
+  { path: '/security-transactions', title: 'Admin Kullanıcı', icon: 'update', class: '', claim: "GetUsersQuery" }
+
 ];
 
 @Component({

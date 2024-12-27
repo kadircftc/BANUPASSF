@@ -101,6 +101,10 @@ namespace Business.CrossCuttingConcernsBS.Logging
             {
                 transactionType = "Güvenlik Onay";
             }
+            else if (logParameters[0].Type == "VisitRejectCommand")
+            {
+                transactionType = "Güvenlik Red";
+            }
             var log = new BanuLog { CreatedDate = DateTime.Now, TransactionsDescription = transactionDescription, TransactorFullName = user.FullName, TransactorId = user.UserId, TransactionType = transactionType };
             SaveLog(log);
 
@@ -135,7 +139,15 @@ namespace Business.CrossCuttingConcernsBS.Logging
                 Visit visit = GetVisit(confirmVisitCommand.VisitId).Result;
                 return $"{user.FullName}-{user.Email}, {visit.VisitorFullName} ziyaretçisine {formattedDate} tarihinde geçiş izni verdi.";
             }
+            if (logParameters[0].Type == "VisitRejectCommand")
+            {
+                DateTime now = DateTime.Now;
+                string formattedDate = now.ToString("yyyy-MM-dd HH:mm");
+                var confirmVisitCommand = logParameters[0].Value as ConfirmVisitCommand;
 
+                Visit visit = GetVisit(confirmVisitCommand.VisitId).Result;
+                return $"{user.FullName}-{user.Email}, {visit.VisitorFullName} ziyaretçisine {formattedDate} tarihinde red verdi.";
+            }
             return "Bilinmeyen işlem türü.";
         }
         private async Task<Visit> GetVisit(Guid id)

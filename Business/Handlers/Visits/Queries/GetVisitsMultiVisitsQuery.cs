@@ -1,4 +1,6 @@
-﻿using Core.Utilities.Results;
+﻿using Core.Aspects.Autofac.Caching;
+using Core.Aspects.Autofac.Performance;
+using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Dtos;
 using MediatR;
@@ -29,8 +31,9 @@ namespace Business.Handlers.Visits.Queries
 			{
 				_visitRepository = visitRepository;
 			}
-
-			public async Task<IDataResult<List<VisitMultiVisitMergeDto>>> Handle(GetVisitsMultiVisitsQuery request, CancellationToken cancellationToken)
+            [PerformanceAspect(5)]
+            [CacheAspect(60)]
+            public async Task<IDataResult<List<VisitMultiVisitMergeDto>>> Handle(GetVisitsMultiVisitsQuery request, CancellationToken cancellationToken)
 			{
 				// Gelen tarih stringini doğrula
 				DateTime parsedDate;

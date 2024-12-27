@@ -62,7 +62,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Hubs\Concrete\" />
 		<Folder Include="logs\" />
 	</ItemGroup>
 

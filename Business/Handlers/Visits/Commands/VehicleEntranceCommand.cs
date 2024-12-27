@@ -1,13 +1,17 @@
 ﻿using Business.BusinessAspects;
+using Business.Connected_Services.SignalR.Concrete;
 using Business.Constants;
 using Business.Handlers.Visits.ValidationRules;
 using Business.Services.UserService.Abstract;
+using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,17 +42,21 @@ namespace Business.Handlers.Visits.Commands
             private readonly IVisitRepository _visitRepository;
             private readonly IMultiVisitersRepository _multiVisitersRepository;
             private readonly IHttpContextAccessor _context;
+            private readonly IHubContext<VisitHub> _hubContext;
 
-            public VehicleEntranceCommandHandler(IUserService userService, IMediator mediator, IVisitRepository visitRepository, IMultiVisitersRepository multiVisitersRepository, IHttpContextAccessor context)
+            public VehicleEntranceCommandHandler(IUserService userService, IMediator mediator, IVisitRepository visitRepository, IMultiVisitersRepository multiVisitersRepository, IHttpContextAccessor context, IHubContext<VisitHub> hubContext)
             {
                 _userService = userService;
                 _mediator = mediator;
                 _visitRepository = visitRepository;
                 _multiVisitersRepository = multiVisitersRepository;
                 _context = context;
+                _hubContext = hubContext;
             }
+
             [ValidationAspect(typeof(VehicleEntranceCommandValidator), Priority = 2)]
             [SecuredOperation(Priority = 1)]
+            [CacheRemoveAspect("Get")]
             public async Task<Core.Utilities.Results.IResult> Handle(VehicleEntranceCommand request, CancellationToken cancellationToken)
             {
                 var userId = _userService.GetUserIdFromJwt(_context.HttpContext.Request);
@@ -68,7 +76,7 @@ namespace Business.Handlers.Visits.Commands
                 {
                     CreatedDate = DateTime.Now,
                     PersonnelId = userId,
-                    VisitorFullName = request.VisitorFullName,
+                    VisitorFullName = request.VisitorFullName,VisitorLicensePlate=request.VisitorLicensePlate,
                     VehicleEntry = true,
                     MultiPersonVisit = request.MultiVisitersList.Count > 0 && request.MultiVisitersList != null ? true : false,
                     IsConfirm = false,
@@ -92,6 +100,7 @@ namespace Business.Handlers.Visits.Commands
                 }
                 
                 await _multiVisitersRepository.SaveChangesAsync();
+                await _hubContext.Clients.All.SendAsync("VisitAdded", new VisitMultiVisitMergeDto { Visit=addedVisit,MultiVisiters=request.MultiVisitersList });
                 return new SuccessResult(Messages.Added);
 
             }

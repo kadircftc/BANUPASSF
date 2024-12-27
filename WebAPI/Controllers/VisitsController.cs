@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Http;
 using Entities.Concrete;
 using System.Collections.Generic;
 using System;
+using Microsoft.AspNetCore.SignalR;
+using Business.Services.UserService.Concrete;
 
 namespace WebAPI.Controllers
 {
@@ -18,6 +20,10 @@ namespace WebAPI.Controllers
     [ApiController]
     public class VisitsController : BaseApiController
     {
+       
+
+
+
         ///<summary>
         ///List Visits
         ///</summary>

@@ -1,13 +1,19 @@
-﻿using Business.Constants;
+﻿using Business.Connected_Services.SignalR.Abstract;
+using Business.Connected_Services.SignalR.Concrete;
+using Business.Constants;
 using Business.Handlers.Visits.ValidationRules;
 using Business.Services.UserService.Abstract;
+using Business.Services.UserService.Concrete;
+using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
+using Entities.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,13 +21,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+
 namespace Business.Handlers.Visits.Commands
 {
     public class PedestrianEntranceCommand : IRequest<Core.Utilities.Results.IResult>
     {
         public int PersonnelId { get; set; }
         public string VisitorFullName { get; set; }
-        public string VisitorLicensePlate { get; set; }
+        //public string VisitorLicensePlate { get; set; }
         public bool VehicleEntry { get; set; }
         public bool MultiPersonVisit { get; set; }
         public bool IsExit { get; set; }
@@ -38,26 +45,30 @@ namespace Business.Handlers.Visits.Commands
             private readonly IVisitRepository _visitRepository;
             private readonly IMultiVisitersRepository _multiVisitersRepository;
             private readonly IHttpContextAccessor _context;
+            private readonly IHubContext<VisitHub> _hubContext;
 
-            public PedestrianEntranceCommandHandler(IUserService userService, IMediator mediator, IVisitRepository visitRepository, IMultiVisitersRepository multiVisitersRepository, IHttpContextAccessor context)
+            public PedestrianEntranceCommandHandler(IUserService userService, IMediator mediator, IVisitRepository visitRepository, IMultiVisitersRepository multiVisitersRepository, IHttpContextAccessor context, IHubContext<VisitHub> hubContext)
             {
                 _userService = userService;
                 _mediator = mediator;
                 _visitRepository = visitRepository;
                 _multiVisitersRepository = multiVisitersRepository;
                 _context = context;
+                _hubContext = hubContext;
             }
+
             [ValidationAspect(typeof(PedestrianEntranceCommandValidator), Priority = 1)]
+            [CacheRemoveAspect("Get")]
             public async Task<Core.Utilities.Results.IResult> Handle(PedestrianEntranceCommand request, CancellationToken cancellationToken)
             {
                 var userId = _userService.GetUserIdFromJwt(_context.HttpContext.Request);
 
                 IEnumerable<Visit> userTransactionCount = await _visitRepository.GetListAsync(v => v.PersonnelId == userId && v.CreatedDate.Date == DateTime.Now.Date);
 
-                if (userTransactionCount.Count() > 4)
-                {
-                    return new ErrorResult(TransactionMessagesTR.DefaultVisitTransactionCountReached);
-                }
+                //if (userTransactionCount.Count() > 4)
+                //{
+                //    return new ErrorResult(TransactionMessagesTR.DefaultVisitTransactionCountReached);
+                //}
 
                 var isThereVisitRecord = _visitRepository.Query().Any(u => u.PersonnelId == userId && request.VisitStartDate.Date == u.VisitStartDate.Date && u.VisitorFullName == request.VisitorFullName);
 
@@ -75,6 +86,7 @@ namespace Business.Handlers.Visits.Commands
                     VisitEndDate = request.VisitEndDate,
                     IsExit = false,
                     Status = true,
+                    
                 };
 
                 _visitRepository.Add(addedVisit);
@@ -93,6 +105,7 @@ namespace Business.Handlers.Visits.Commands
                 }
 
                 await _multiVisitersRepository.SaveChangesAsync();
+                await _hubContext.Clients.All.SendAsync("VisitAdded", new VisitMultiVisitMergeDto { Visit = addedVisit, MultiVisiters = request.MultiVisitersList });
                 return new SuccessResult(Messages.Added);
 
             }

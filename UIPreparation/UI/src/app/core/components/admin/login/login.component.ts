@@ -18,6 +18,7 @@ export class LoginComponent implements OnInit {
   username:string="";
   loginUser:LoginUser=new LoginUser();
   langugelookUp:LookUp[];
+  hidePassword = true;
 
 
   constructor(private auth:AuthService,

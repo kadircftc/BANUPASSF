@@ -1,0 +1,98 @@
+<div class="dialog-container">
+  <!-- Header -->
+  <div class="dialog-header">
+    <mat-icon class="warning-icon">warning</mat-icon>
+    <h2 mat-dialog-title>Ziyaret Reddetme</h2>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div mat-dialog-content>
+    <div class="visit-info">
+      <!-- Ziyaretçiler Bölümü -->
+      <div class="info-section visitors-section">
+        <div class="section-header">
+          <mat-icon class="section-icon">people</mat-icon>
+          <h3>Ziyaretçiler <span class="visitor-count">({{getAllVisitorNames().length}} Kişi)</span></h3>
+        </div>
+        <div class="visitor-chips-container">
+          <mat-chip-list>
+            <mat-chip *ngFor="let visitorName of getAllVisitorNames(); let i = index" 
+                     [class.primary-visitor-chip]="i === 0"
+                     [class.secondary-visitor-chip]="i !== 0"
+                     class="visitor-chip">
+              <mat-icon class="chip-icon">{{i === 0 ? 'person' : 'person_outline'}}</mat-icon>
+              {{visitorName}}
+            </mat-chip>
+          </mat-chip-list>
+        </div>
+      </div>
+
+      <!-- Ziyaret Türü Bölümü -->
+      <div class="info-section visit-type-section">
+        <div class="section-header">
+          <mat-icon class="section-icon">
+            {{data.visit.vehicleEntry ? 'directions_car' : 'directions_walk'}}
+          </mat-icon>
+          <h3>Ziyaret Türü</h3>
+        </div>
+        <div class="visit-type-info">
+          <mat-chip-list>
+            <mat-chip [class.vehicle-chip]="data.visit.vehicleEntry" 
+                     [class.pedestrian-chip]="!data.visit.vehicleEntry"
+                     class="type-chip">
+              <mat-icon class="chip-icon">
+                {{data.visit.vehicleEntry ? 'directions_car' : 'directions_walk'}}
+              </mat-icon>
+              {{data.visit.vehicleEntry ? 'Araçlı Ziyaret' : 'Yaya Ziyaret'}}
+            </mat-chip>
+            <mat-chip *ngIf="data.visit.vehicleEntry" 
+                     class="plate-chip">
+              <mat-icon class="chip-icon">pin</mat-icon>
+              {{data.visit.visitorLicensePlate || 'Plaka Girilmemiş'}}
+            </mat-chip>
+          </mat-chip-list>
+        </div>
+      </div>
+
+      <!-- Red Sebebi Bölümü -->
+      <div class="info-section reason-section">
+        <div class="section-header">
+          <mat-icon class="section-icon">report_problem</mat-icon>
+          <h3>Red Sebebi</h3>
+        </div>
+        <mat-form-field appearance="outline" class="reason-field">
+          <mat-label>Lütfen red sebebini yazınız</mat-label>
+          <textarea matInput 
+                    [formControl]="rejectReason" 
+                    placeholder="Red sebebini buraya yazın..."
+                    rows="4"></textarea>
+          <mat-error *ngIf="rejectReason.hasError('required')">
+            Red sebebi zorunludur
+          </mat-error>
+          <mat-error *ngIf="rejectReason.hasError('minlength')">
+            Red sebebi en az 3 karakter olmalıdır
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div mat-dialog-actions class="dialog-actions">
+    <button mat-stroked-button 
+            (click)="onCancel()"
+            class="cancel-button">
+      <mat-icon>close</mat-icon>
+      İptal
+    </button>
+    <button mat-raised-button 
+            color="warn" 
+            (click)="onConfirm()"
+            [disabled]="!rejectReason.valid"
+            class="reject-button">
+      <mat-icon>block</mat-icon>
+      Reddet
+    </button>
+  </div>
+</div>

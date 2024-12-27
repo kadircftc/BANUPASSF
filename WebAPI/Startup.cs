@@ -23,10 +23,11 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using WebAPI.Hubs;
 using System.Text.Json.Serialization;
 using ConfigurationManager = Business.ConfigurationManager;
-using WebAPI.Hubs.Abstract;
+using Business.Connected_Services.SignalR.Abstract;
+using Business.Connected_Services.SignalR.Concrete;
+using System.Text.Json;
 
 namespace WebAPI
 {
@@ -77,7 +78,7 @@ namespace WebAPI
                 options.AddPolicy(
                     "AllowOrigin",
                     builder => builder.AllowAnyMethod().AllowAnyHeader().AllowCredentials()
-                    .WithOrigins("http://localhost:5500", "http://127.0.0.1:5500")
+                    .WithOrigins("http://localhost:5500", "http://127.0.0.1:5500", "http://localhost:4200")
                     
                     
                     );
@@ -109,9 +110,10 @@ namespace WebAPI
             services.AddTransient<FileLogger>();
             services.AddTransient<PostgreSqlLogger>();
             services.AddTransient<MsSqlLogger>();
-            services.AddTransient<IChatHub, ChatHub>();
+            services.AddTransient<IVisitHub, VisitHub>();
             services.AddTransient<MsSqlLoggerProcess>();
             services.AddScoped<IpControlAttribute>();
+
             base.ConfigureServices(services);
         }
 
@@ -145,7 +147,7 @@ namespace WebAPI
 
             app.UseDeveloperExceptionPage();
             app.UseMiddleware<ApiKeyMiddleware>();
-
+         
             app.ConfigureCustomExceptionMiddleware();
 
             _ = app.UseDbOperationClaimCreator();
@@ -183,13 +185,12 @@ namespace WebAPI
 
             CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
             CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
-
             app.UseStaticFiles();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<ChatHub>("/chat"); // SignalR endpoint.
+                endpoints.MapHub<VisitHub>("/chat");
             });
         }
     }

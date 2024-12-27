@@ -45,7 +45,6 @@
  </ItemGroup>
  <ItemGroup>
    <Folder Include="Adapters\" />
-   <Folder Include="Connected Services\" />
  </ItemGroup> 
 
 </Project>
