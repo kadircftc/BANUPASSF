@@ -62,6 +62,7 @@ export class SidebarComponent implements OnInit {
   }
   ngOnDestroy() {
     if (!this.authService.loggedIn()) {
+      localStorage.removeItem('token')
       this.authService.logOut();
       this.router.navigateByUrl("/login");
     }

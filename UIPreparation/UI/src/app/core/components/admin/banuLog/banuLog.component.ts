@@ -5,6 +5,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { AuthService } from 'app/core/components/admin/login/services/auth.service';
+import { PrivPagingResult } from 'app/core/models/privPaging';
 import { Filter } from 'app/core/search-settings/global-filter';
 import { AlertifyService } from 'app/core/services/alertify.service';
 import { LookUpService } from 'app/core/services/lookUp.service';
@@ -23,7 +24,7 @@ export class BanuLogComponent implements AfterViewInit, OnInit {
 	dataSource: MatTableDataSource<any>;
 	@ViewChild(MatPaginator) paginator: MatPaginator;
 	@ViewChild(MatSort) sort: MatSort;
-	displayedColumns: string[] = ['id', 'createdDate', 'transactorFullName', 'transactorId', 'transactionsDescription', 'transactionType', 'update', 'delete'];
+	displayedColumns: string[] = [ 'createdDate', 'transactorFullName', 'transactorId', 'transactionsDescription', 'transactionType'];
 
 	banuLogList: BanuLog[];
 	banuLog: BanuLog = new BanuLog();
@@ -39,8 +40,44 @@ export class BanuLogComponent implements AfterViewInit, OnInit {
 	banuLogId: number;
 	isSearch:boolean=false;
 	filters: Filter[] = [];
+	filteredAllResult:PrivPagingResult<BanuLog>=null
 	filterResult: BanuLog[] = [];
-
+	page:number=1;
+	pageCount:number[]=[];
+	pageSize:number=5;
+	selectedPageCount: number = null;
+	
+	getVisiblePages(): number[] {
+		const totalPages = this.pageCount.length;
+		const currentPage = this.page;
+		const visiblePages: number[] = [];
+	
+		if (totalPages <= 7) {
+			// Toplam sayfa sayısı 7 veya daha azsa hepsini göster
+			return this.pageCount;
+		}
+	
+		// İlk sayfayı her zaman göster
+		visiblePages.push(1);
+	
+		if (currentPage > 4) {
+			visiblePages.push(-1); // "..." için
+		}
+	
+		// Aktif sayfanın etrafındaki sayfaları göster
+		for (let i = Math.max(2, currentPage - 2); i <= Math.min(totalPages - 1, currentPage + 2); i++) {
+			visiblePages.push(i);
+		}
+	
+		if (currentPage < totalPages - 3) {
+			visiblePages.push(-1); // "..." için
+		}
+	
+		// Son sayfayı her zaman göster
+		visiblePages.push(totalPages);
+	
+		return visiblePages;
+	}
 	
 	constructor(private banuLogService: BanuLogService, private lookupService: LookUpService, private alertifyService: AlertifyService, private formBuilder: FormBuilder, private authService: AuthService, private datePipe: DatePipe) { }
 
@@ -115,6 +152,17 @@ export class BanuLogComponent implements AfterViewInit, OnInit {
 			transactionType: ["", Validators.required]
 		})
 	}
+	onPageCountChange(event: any) {
+		this.page = event.value; 
+		this.onSearch();
+	}
+
+	onPageChange(newPage: number) {
+		if (newPage >= 1 && newPage <= this.pageCount.length) {
+			this.page = newPage;
+			this.onSearch();
+		}
+	}
 
 	deleteBanuLog(banuLogId: string) {
 		this.banuLogService.deleteBanuLog(banuLogId).subscribe(data => {
@@ -129,6 +177,7 @@ export class BanuLogComponent implements AfterViewInit, OnInit {
 		if (this.startDate) {
 			this.formattedStartDate = this.datePipe.transform(this.startDate, 'dd-MM-yyyy') || '';
 			console.log(this.formattedStartDate)
+			this.page=1;
 		}
 	}
 
@@ -136,6 +185,7 @@ export class BanuLogComponent implements AfterViewInit, OnInit {
 		if (this.endDate) {
 			this.formattedEndDate = this.datePipe.transform(this.endDate, 'dd-MM-yyyy') || '';
 			console.log(this.formattedEndDate)
+			this.page=1;
 		}
 	}
 	getBanuLogById(banuLogId: number) {
@@ -156,7 +206,7 @@ export class BanuLogComponent implements AfterViewInit, OnInit {
 			  const fileURL = URL.createObjectURL(response); 
 			  const a = document.createElement('a'); 
 			  a.href = fileURL; 
-			  a.download = 'BanuLogs.pdf'; 
+			  a.download = this.banuLogList.length<=35? 'BanuLogs.pdf':'BanuLogs.zip'; 
 			  document.body.appendChild(a);
 			  a.click(); 
 			  document.body.removeChild(a); 
@@ -208,10 +258,16 @@ export class BanuLogComponent implements AfterViewInit, OnInit {
 			}
 		  
 		  
-			this.banuLogService.getBanuLogGlobalFilterList(this.filters).subscribe(data => {
-				this.dataSource = new MatTableDataSource(data);
-				this.filterResult = data;
+			this.banuLogService.getBanuLogGlobalFilterList(this.filters,this.page,this.pageSize).subscribe(res => {
+				this.dataSource = new MatTableDataSource(res.data);
+				this.filteredAllResult=res
+				this.filterResult = res.data;
 				this.configDataTable();
+				this.pageCount=[];
+					for (let index = 1; index < res.totalPages+1; index++) {
+						this.pageCount.push(index);
+						console.log(this.pageCount)
+					}
 			});
 		}
 		

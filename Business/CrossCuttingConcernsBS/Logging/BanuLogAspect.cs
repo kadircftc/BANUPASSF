@@ -143,9 +143,9 @@ namespace Business.CrossCuttingConcernsBS.Logging
             {
                 DateTime now = DateTime.Now;
                 string formattedDate = now.ToString("yyyy-MM-dd HH:mm");
-                var confirmVisitCommand = logParameters[0].Value as ConfirmVisitCommand;
+                var rejectVisitCommand = logParameters[0].Value as VisitRejectCommand;
 
-                Visit visit = GetVisit(confirmVisitCommand.VisitId).Result;
+                Visit visit = GetVisit(rejectVisitCommand.Id).Result;
                 return $"{user.FullName}-{user.Email}, {visit.VisitorFullName} ziyaretçisine {formattedDate} tarihinde red verdi.";
             }
             return "Bilinmeyen işlem türü.";

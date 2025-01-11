@@ -60,6 +60,7 @@ registerLocaleData(localeTr);
   declarations: [
     AppComponent,
     AdminLayoutComponent,
+
   ],
 
   providers: [DatePipe, 

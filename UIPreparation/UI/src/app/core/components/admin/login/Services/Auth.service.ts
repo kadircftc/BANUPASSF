@@ -4,10 +4,10 @@ import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { AlertifyService } from 'app/core/services/alertify.service';
 import { LocalStorageService } from 'app/core/services/local-storage.service';
+import { SharedService } from 'app/core/services/shared.service';
 import { environment } from 'environments/environment';
 import { LoginUser } from '../model/login-user';
 import { TokenModel } from '../model/token-model';
-import { SharedService } from 'app/core/services/shared.service';
 
 
 @Injectable({
