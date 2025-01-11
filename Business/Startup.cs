@@ -123,6 +123,7 @@ namespace Business
             services.AddTransient<IVisitRepository, VisitRepository>();
             services.AddTransient<IVisitConfirmRepository, VisitConfirmRepository>();
             services.AddTransient<ILogRepository, LogRepository>();
+
             services.AddTransient<ITranslateRepository, TranslateRepository>();
             services.AddTransient<ILanguageRepository, LanguageRepository>();
 
@@ -134,7 +135,7 @@ namespace Business
             services.AddTransient<IGroupRepository, GroupRepository>();
             services.AddTransient<IGroupClaimRepository, GroupClaimRepository>();
             services.AddTransient<IUserGroupRepository, UserGroupRepository>();
-            services.AddDbContext<ProjectDbContext ,MsDbContext>();
+            services.AddDbContext<ProjectDbContext ,PostgreDbContext>();
 
             services.AddSingleton<MongoDbContextBase, MongoDbContext>();
 

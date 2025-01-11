@@ -16,11 +16,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Business.Handlers.BanuLogs.Queries
 {
-    public class GetBanuLogsByPagingQuery : IRequest<IDataResult<PagingResult<BanuLog>>>
+    public class GetBanuLogsByPagingQuery : IRequest<IDataResult<PrivPagingResult<BanuLog>>>
     {
        
-        public int page { get; set; }
-        public class GetBanuLogsByPagingQueryHandler : IRequestHandler<GetBanuLogsByPagingQuery, IDataResult<PagingResult<BanuLog>>>
+        public int Page { get; set; }
+        public int PageSize { get; set; }
+        public class GetBanuLogsByPagingQueryHandler : IRequestHandler<GetBanuLogsByPagingQuery, IDataResult<PrivPagingResult<BanuLog>>>
 
         {
             private readonly IBanuLogRepository _banuLogRepository;
@@ -32,13 +33,13 @@ namespace Business.Handlers.BanuLogs.Queries
                 _mediator = mediator;
             }
             [LogAspect(typeof(FileLogger))]
-            [SecuredOperation(Priority = 1)]
-            public async Task<IDataResult<PagingResult<BanuLog>>> Handle(GetBanuLogsByPagingQuery request, CancellationToken cancellationToken)
+            //[SecuredOperation(Priority = 1)]
+            public async Task<IDataResult<PrivPagingResult<BanuLog>>> Handle(GetBanuLogsByPagingQuery request, CancellationToken cancellationToken)
             {
-                var banulogs = await _banuLogRepository.GetListForPaging(request.page, "TransactorFullName", true);
+                var banulogs = await _banuLogRepository.GetListForPaging(request.Page,request.PageSize, "TransactorFullName", false);
 
 
-                return new SuccessDataResult<PagingResult<BanuLog>>(banulogs);
+                return new SuccessDataResult<PrivPagingResult<BanuLog>>(banulogs);
             }
         }
     }

@@ -1221,7 +1221,7 @@ namespace DataAccess.Migrations.Ms
                     b.Property<string>("RefreshToken")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ReqLimit")
+                    b.Property<int?>("ReqLimit")
                         .HasColumnType("int");
 
                     b.Property<bool>("Status")
@@ -1317,7 +1317,7 @@ namespace DataAccess.Migrations.Ms
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("ApprovalDate")
+                    b.Property<DateTime?>("ApprovalDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("CreatedDate")
@@ -1332,7 +1332,7 @@ namespace DataAccess.Migrations.Ms
                     b.Property<bool>("IsExit")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsReject")
+                    b.Property<bool?>("IsReject")
                         .HasColumnType("bit");
 
                     b.Property<bool>("MultiPersonVisit")

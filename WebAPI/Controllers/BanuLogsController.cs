@@ -76,13 +76,33 @@ namespace WebAPI.Controllers
         ///<return>BanuLogs List</return>
         ///<response code="200"></response>  
         [Produces("application/json", "text/plain")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedResult<BanuLog>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [HttpGet("getBanuLogTransactions")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetById(int page,int pageSize,string type)
+        {
+            var result = await Mediator.Send(new GetBanuLogTransactionsQuery {Page=page,Type=type,PageSize=pageSize });
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(result.Message);
+        }
+        ///<summary>
+        ///It brings the details according to its id.
+        ///</summary>
+        ///<remarks>BanuLogs</remarks>
+        ///<return>BanuLogs List</return>
+        ///<response code="200"></response>  
+        [Produces("application/json", "text/plain")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BanuLog))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpPost("getGlobalFilterList")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetFilteredLogs([FromBody] List<GlobalFilterGeneric> filters)
+        public async Task<IActionResult> GetFilteredLogs([FromBody] List<GlobalFilterGeneric> filters ,  int page,  int pageSize)
         {
-            var result = await Mediator.Send(new GetBanuLogsGlobalFilterListQuery { Filters = filters });
+            var result = await Mediator.Send(new GetBanuLogsGlobalFilterListQuery { Filters = filters ,Page=page,PageSize=pageSize});
 
             if (!result.Success)
             {
@@ -127,12 +147,13 @@ namespace WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PagingResult<BanuLog>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpGet("getbypaging")]
+        [AllowAnonymous]
         
-        public async Task<IActionResult> GetByPagination(int page)
+        public async Task<IActionResult> GetByPagination(int page,int pageSize)
         {
             var result = await Mediator.Send(new GetBanuLogsByPagingQuery
             {
-                page = page
+                Page = page,PageSize=pageSize
             });
             if (result.Success)
             {
@@ -146,7 +167,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpGet("getbypdf")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetByDate(string date,List<BanuLog>? list)
+        public async Task<IActionResult> GetByDate(string date)
         {
 
             var result = await Mediator.Send(new GetBanuLogsByPdfQuery { QueryDate = date });
@@ -176,7 +197,6 @@ namespace WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BanuLog))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpPost("getbylisttopdf")]
-        [AllowAnonymous]
         public async Task<IActionResult> GetByListToPdf([FromBody] List<BanuLog> list)
         {
 

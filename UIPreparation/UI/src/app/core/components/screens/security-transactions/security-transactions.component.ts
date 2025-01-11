@@ -9,6 +9,7 @@ import { AlertifyService } from 'app/core/services/alertify.service';
 import { SignalRService } from '../../admin/user/Services/signalr.service';
 import { MergeMultiVisit } from '../../admin/visit/models/mergeMultiVisit';
 import { VisitService } from '../../admin/visit/services/Visit.service';
+import { AllVisitorsDialogComponent } from './all-visitors-dialog/all-visitors-dialog.component';
 import { RejectDialogComponent } from './reject-dialog/reject-dialog.component';
 
 interface Visitor {
@@ -58,6 +59,7 @@ export class SecurityTransactionsComponent implements OnInit, OnDestroy {
   allmergeData: MergeMultiVisit[] = [];
   selectedTab = 'today';
   pendingData: MergeMultiVisit[] = [];
+  filteredPendingData: MergeMultiVisit[] = [];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild('approvedPaginator') approvedPaginator: MatPaginator;
@@ -77,15 +79,19 @@ export class SecurityTransactionsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.loadVisits();
+
+    this.loadVisits(this.getSelectedDateText());
     this.signalRService.startConnection();
 
-    // "VisitAdded" olayını dinliyoruz ve gelen mesajı ekliyoruz
     this.signalRService.addVisitAddedListener((visit: MergeMultiVisit) => {
-      this.pendingData.push(visit);
+      visit.animated=true;
+      this.pendingData.unshift(visit);
       this.dataSource = new MatTableDataSource(this.pendingData);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      setTimeout(() => {
+        visit.animated = false;
+      }, 20000);
       this.alertifyService.success(`${visit.visit.visitorFullName} adına yeni ziyaret kaydı var!`)
     });
   }
@@ -98,8 +104,9 @@ export class SecurityTransactionsComponent implements OnInit, OnDestroy {
       console.warn('Hub connection is undefined, cannot stop.');
     }
   }
-  private loadVisits() {
-    this.visitService.getVisitMergeMultiVisitList("25-12-2024").subscribe({
+
+  private loadVisits(date:string) {
+    this.visitService.getVisitMergeMultiVisitList(date).subscribe({
       next: (data: MergeMultiVisit[]) => {
 
         this.pendingData = data.filter(v => !v.visit.isConfirm && !v.visit.isReject);
@@ -114,7 +121,7 @@ export class SecurityTransactionsComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('Ziyaret verileri yüklenirken hata oluştu:', error);
-        this.snackBar.open('Veriler yüklenirken bir hata oluştu', 'Kapat', {
+        this.snackBar.open('Gösterilecek veri bulunamadı', 'Kapat', {
           duration: 3000,
           panelClass: ['error-snackbar']
         });
@@ -123,15 +130,12 @@ export class SecurityTransactionsComponent implements OnInit, OnDestroy {
   }
 
   private configDataTable() {
-    // Ana tablo için
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
 
-    // Onaylanan tablo için
     this.approvedDataSource.paginator = this.approvedPaginator;
     this.approvedDataSource.sort = this.approvedSort;
 
-    // Reddedilen tablo için
     this.rejectedDataSource.paginator = this.rejectedPaginator;
     this.rejectedDataSource.sort = this.rejectedSort;
 
@@ -144,7 +148,7 @@ export class SecurityTransactionsComponent implements OnInit, OnDestroy {
             duration: 3000,
             panelClass: ['success-snackbar']
           });
-          this.loadVisits();
+          this.loadVisits(this.getSelectedDateText());
         });
       }
 
@@ -187,7 +191,7 @@ export class SecurityTransactionsComponent implements OnInit, OnDestroy {
             });
 
             // Tabloları güncelle
-            this.loadVisits();
+            this.loadVisits(this.getSelectedDateText());
           },
           error: (error) => {
             console.error('Ziyaret reddetme hatası:', error);
@@ -233,30 +237,91 @@ export class SecurityTransactionsComponent implements OnInit, OnDestroy {
       this.rejectedDataSource.sort.sortChange.emit();
     }
   }
-
   applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
+    const target = event.target as HTMLInputElement;
+    if (!target) {
+      console.error("Event target is not an input element.");
+      return;
+    }
+  
+    const filterValue = target.value?.trim().toLowerCase();
+  
+    // Eğer filtre değeri boşsa, tüm veriyi geri yükle ve işlemi durdur
+    if (!filterValue) {
+      console.warn("Filter value is empty or not valid. Resetting to all data.");
+      this.filteredPendingData = this.pendingData;
+      this.dataSource = new MatTableDataSource(this.filteredPendingData);
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
+      return;
+    }
+  
+    // pendingData'nın geçerli bir array olduğunu kontrol et
+    if (!Array.isArray(this.pendingData)) {
+      console.error("pendingData is not an array:", this.pendingData);
+      return;
+    }
+  
+    // Filtreleme işlemi
+    this.filteredPendingData = this.pendingData.filter(v =>
+      v?.visit?.visitorFullName?.toLowerCase().includes(filterValue) ||
+      v?.visit?.visitorLicensePlate?.toLowerCase().includes(filterValue)
+    );
+  
+    this.dataSource = new MatTableDataSource(this.filteredPendingData);
+  
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
   }
+  
+  
 
   filterByDate(tab: string) {
+    this.selectedTab = tab;
+    this.loadVisits(this.getSelectedDateText());
+  }
+  getSelectedDateText(): string {
+    const today = new Date();
+    
+    switch(this.selectedTab) {
+      case 'today':
+        return `${this.formatDate(today)}`;
+      
+      case 'tomorrow': {
+        const tomorrow = new Date();
+        tomorrow.setDate(today.getDate() + 1);
+        return `${this.formatDate(tomorrow)}`;
+      }
+      
+      case 'twoDaysLater': {
+        const twoDaysLater = new Date(); 
+        twoDaysLater.setDate(today.getDate() + 2);
+        return `${this.formatDate(twoDaysLater)}`;
+      }
+
+      default:
+        return '';
+    }
+  }
+
+  private formatDate(date: Date): string {
+    const day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate().toString();
+    const month = (date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1).toString();
+    const year = date.getFullYear();
+    console.log(day,month,year)
+    return `${day}-${month}-${year}`;
   }
 
   getAllVisitorNames(row: MergeMultiVisit): { visitorNames: string[], totalVisitors: number } {
     const allVisitors: string[] = [];
 
-    // Ana ziyaretçiyi ekle
     if (row.visit?.visitorFullName) {
       allVisitors.push(row.visit.visitorFullName);
     }
 
-    // Çoklu ziyaretçi kontrolü
     if (row.multiVisiters && row.multiVisiters.length > 2) {
-      // İlk iki ziyaretçiyi ekle
       for (let index = 0; index < 2; index++) {
         allVisitors.push(row.multiVisiters[index].visitorFullName);
       }
@@ -270,6 +335,13 @@ export class SecurityTransactionsComponent implements OnInit, OnDestroy {
     const totalVisitors = (row.multiVisiters?.length || 0) + 1;
 
     return { visitorNames: allVisitors, totalVisitors };
+  }
+
+  showAllVisitors(row: MergeMultiVisit) {
+    this.dialog.open(AllVisitorsDialogComponent, {
+      width: '500px',
+      data: row
+    });
   }
 
 }

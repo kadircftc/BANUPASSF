@@ -63,15 +63,5 @@ export class MobileSidebarComponent implements OnInit {
     return window.innerWidth <= 991;
   }
 
-  getTitle(): string {
-    if (!this.menuItems) return 'Dashboard';
-    
-    let title = this.location.prepareExternalUrl(this.location.path());
-    if (title.charAt(0) === '#') {
-      title = title.slice(1);
-    }
-    
-    const matchingItem = this.menuItems.find(item => item.path === title);
-    return matchingItem ? matchingItem.title : 'Dashboard';
-  }
+ 
 } 

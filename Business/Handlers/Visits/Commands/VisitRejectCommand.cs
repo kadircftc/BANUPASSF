@@ -1,5 +1,6 @@
 ﻿using Business.BusinessAspects;
 using Business.Constants;
+using Business.CrossCuttingConcernsBS.Logging;
 using Business.Handlers.VisitConfirms.Commands;
 using Business.Handlers.Visits.ValidationRules;
 using Business.Services.UserService.Abstract;
@@ -44,7 +45,7 @@ namespace Business.Handlers.Visits.Commands
 
             [ValidationAspect(typeof(VisitRejectValidator), Priority = 1)]
             [CacheRemoveAspect("Get")]
-            [LogAspect(typeof(FileLogger))]
+            [BanuLogAspect(typeof(MsSqlLoggerProcess))]
             [SecuredOperation(Priority = 1)]
             public async Task<IResult> Handle(VisitRejectCommand request, CancellationToken cancellationToken)
             {

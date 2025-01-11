@@ -23,6 +23,7 @@ namespace Business.BusinessAspects
 
 
         public SecuredOperation()
+        
         {
             _httpContextAccessor = ServiceTool.ServiceProvider.GetService<IHttpContextAccessor>();
             _cacheManager = ServiceTool.ServiceProvider.GetService<ICacheManager>();

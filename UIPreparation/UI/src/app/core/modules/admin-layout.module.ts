@@ -28,6 +28,7 @@ import { GroupComponent } from 'app/core/components/admin/group/group.component'
 import { LoginComponent } from 'app/core/components/admin/login/login.component';
 import { UserComponent } from 'app/core/components/admin/user/user.component';
 import { TranslationService } from 'app/core/services/translation.service';
+import { SparkTableComponent } from 'app/core/tables/spark-table/spark-table.component';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { BanuLogComponent } from '../components/admin/banuLog/banuLog.component';
 import { LanguageComponent } from '../components/admin/language/language.component';
@@ -38,6 +39,7 @@ import { VisitComponent } from '../components/admin/visit/visit.component';
 import { DashboardComponent } from '../components/app/dashboard/dashboard.component';
 import { AdminLayoutRoutes } from '../components/app/layouts/admin-layout/admin-layout.routing';
 import { BanuLogsComponent } from '../components/screens/banu-logs/banu-logs.component';
+import { AllVisitorsDialogComponent } from '../components/screens/security-transactions/all-visitors-dialog/all-visitors-dialog.component';
 import { RejectDialogComponent } from '../components/screens/security-transactions/reject-dialog/reject-dialog.component';
 import { SecurityTransactionsComponent } from '../components/screens/security-transactions/security-transactions.component';
 // export function layoutHttpLoaderFactory(http: HttpClient) {
@@ -94,7 +96,8 @@ import { SecurityTransactionsComponent } from '../components/screens/security-tr
         BanuLogComponent,BanuLogsComponent,
         SecurityTransactionsComponent,
         RejectDialogComponent,
-        VisitComponent
+        VisitComponent,
+        SparkTableComponent,AllVisitorsDialogComponent
     ]
 })
 

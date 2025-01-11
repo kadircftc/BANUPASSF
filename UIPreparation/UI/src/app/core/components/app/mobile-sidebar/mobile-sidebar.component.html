@@ -5,12 +5,7 @@
 <div class="mobile-sidebar" [class.open]="isOpen">
   <div class="sidebar-overlay" (click)="toggleSidebar()" *ngIf="isOpen"></div>
   <div class="sidebar-content">
-    <div class="sidebar-header">
-      <h4>{{getTitle()}}</h4>
-      <button class="close-btn" (click)="toggleSidebar()">
-        <i class="material-icons">close</i>
-      </button>
-    </div>
+    
     <div class="sidebar-menu">
       <div class="logo">
         <a class="simple-text">

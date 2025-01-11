@@ -12,11 +12,14 @@ using System.Threading.Tasks;
 
 namespace Business.Handlers.BanuLogs.Queries
 {
-    public class GetBanuLogsGlobalFilterListQuery:IRequest<IDataResult< IEnumerable<BanuLog>>>
+    public class GetBanuLogsGlobalFilterListQuery:IRequest<IDataResult< PrivPagingResult<BanuLog>>>
     {
         public List<GlobalFilterGeneric> Filters { get; set; }
-      
-        public class GetBanuLogsGlobalFilterListQueryHandler : IRequestHandler<GetBanuLogsGlobalFilterListQuery, IDataResult<IEnumerable<BanuLog>>>
+        public int Page { get; set; }
+        public int PageSize { get; set; }
+  
+
+        public class GetBanuLogsGlobalFilterListQueryHandler : IRequestHandler<GetBanuLogsGlobalFilterListQuery, IDataResult<PrivPagingResult<BanuLog>>>
         {
             private readonly IMediator _mediator;
             private readonly IBanuLogRepository _banuLogsRepository;
@@ -27,10 +30,10 @@ namespace Business.Handlers.BanuLogs.Queries
                 _banuLogsRepository = banuLogsRepository;
             }
 
-            public async Task<IDataResult<IEnumerable<BanuLog>>> Handle(GetBanuLogsGlobalFilterListQuery request, CancellationToken cancellationToken)
+            public async Task<IDataResult<PrivPagingResult<BanuLog>>> Handle(GetBanuLogsGlobalFilterListQuery request, CancellationToken cancellationToken)
             {
-                var list = await _banuLogsRepository.GetFilteredListAsync(request.Filters);
-                return new SuccessDataResult<IEnumerable<BanuLog>>(list);
+                var list = await _banuLogsRepository.GetFilteredAndPagedListAsync(request.Filters,request.Page,request.PageSize,"TransactorFullName",false);
+                return new SuccessDataResult<PrivPagingResult<BanuLog>>(list);
             }
         }
     }

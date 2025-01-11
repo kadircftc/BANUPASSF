@@ -1,5 +1,6 @@
 ﻿import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { PrivPagingResult } from 'app/core/models/privPaging';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 import { BanuLog } from '../models/BanuLog';
@@ -17,9 +18,9 @@ export class BanuLogService {
 
     return this.httpClient.get<BanuLog[]>(environment.getApiUrl + '/BanuLogs/getall')
   }
-  getBanuLogGlobalFilterList(filters:any): Observable<BanuLog[]> {
+  getBanuLogGlobalFilterList(filters:any,page:number,pageSize:number): Observable<PrivPagingResult<BanuLog>> {
 
-    return this.httpClient.post<BanuLog[]>(environment.getApiUrl + '/BanuLogs/getGlobalFilterList',filters)
+    return this.httpClient.post<PrivPagingResult<BanuLog>>(environment.getApiUrl + `/BanuLogs/getGlobalFilterList?page=${page}&pageSize=${pageSize}`,filters)
   }
 
   getBanuLogListToPdf(logList: any[]): Observable<Blob> {
