@@ -31,6 +31,13 @@ export class VisitService {
     return this.httpClient.post(environment.getApiUrl + '/Visits/', visit, { responseType: 'text' });
   }
 
+  pedestrianEntrance(visit: Visit): Observable<any> {
+    return this.httpClient.post(environment.getApiUrl + '/Visits/pedestrianEntrance', visit, { responseType: 'text' });
+  }
+  vehicleEntrance(visit: Visit): Observable<any> {
+    return this.httpClient.post(environment.getApiUrl + '/Visits/vehicleEntrance', visit, { responseType: 'text' });
+  }
+
   updateVisit(visit: Visit): Observable<any> {
     return this.httpClient.put(environment.getApiUrl + '/Visits/', visit, { responseType: 'text' });
 

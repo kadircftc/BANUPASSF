@@ -12,6 +12,7 @@ import { BanuLogsComponent } from 'app/core/components/screens/banu-logs/banu-lo
 import { SecurityTransactionsComponent } from 'app/core/components/screens/security-transactions/security-transactions.component';
 import { LoginGuard } from 'app/core/guards/login-guard';
 import { DashboardComponent } from '../../dashboard/dashboard.component';
+import { VisitAddComponent } from 'app/core/components/screens/visit-add/visit-add.component';
 
 
 
@@ -30,5 +31,6 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'banu-log',            component: BanuLogComponent, canActivate:[LoginGuard]},
     { path: 'banu-logs',            component: BanuLogsComponent, canActivate:[LoginGuard]},
     { path: 'security-transactions',            component: SecurityTransactionsComponent, canActivate:[LoginGuard]},
-    { path: 'visit',            component: VisitComponent, canActivate:[LoginGuard]}
+    { path: 'visit',            component: VisitComponent, canActivate:[LoginGuard]},
+    { path: 'visit-add',            component: VisitAddComponent,canActivate:[LoginGuard]},
 ];
