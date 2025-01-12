@@ -24,7 +24,8 @@ export const ADMINROUTES: RouteInfo[] = [
 
 export const USERROUTES: RouteInfo[] = [ 
   { path: '/banu-logs', title: 'Admin Kullanıcı', icon: 'update', class: '', claim: "GetUsersQuery" },
-  { path: '/security-transactions', title: 'Admin Kullanıcı', icon: 'update', class: '', claim: "GetUsersQuery" }
+  { path: '/security-transactions', title: 'Admin Kullanıcı', icon: 'update', class: '', claim: "GetUsersQuery" },
+  { path: '/visit-add', title: 'Ziyaret', icon: 'update', class: '', claim: "GetUsersQuery" }
 ];
 
 @Component({

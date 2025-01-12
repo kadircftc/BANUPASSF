@@ -42,6 +42,7 @@ import { BanuLogsComponent } from '../components/screens/banu-logs/banu-logs.com
 import { AllVisitorsDialogComponent } from '../components/screens/security-transactions/all-visitors-dialog/all-visitors-dialog.component';
 import { RejectDialogComponent } from '../components/screens/security-transactions/reject-dialog/reject-dialog.component';
 import { SecurityTransactionsComponent } from '../components/screens/security-transactions/security-transactions.component';
+import { VisitAddComponent } from '../components/screens/visit-add/visit-add.component';
 // export function layoutHttpLoaderFactory(http: HttpClient) {
 // 
 //   return new TranslateHttpLoader(http,'../../../../../../assets/i18n/','.json');
@@ -93,11 +94,14 @@ import { SecurityTransactionsComponent } from '../components/screens/security-tr
         TranslateComponent,
         OperationClaimComponent,
         LogDtoComponent,
-        BanuLogComponent,BanuLogsComponent,
+        BanuLogComponent,
+        BanuLogsComponent,
         SecurityTransactionsComponent,
         RejectDialogComponent,
         VisitComponent,
-        SparkTableComponent,AllVisitorsDialogComponent
+        SparkTableComponent,
+        AllVisitorsDialogComponent,
+        VisitAddComponent
     ]
 })
 
