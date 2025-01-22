@@ -30,7 +30,7 @@ namespace WebAPI
             //    var services = scope.ServiceProvider;
             //    try
             //    {
-            //        var context = services.GetRequiredService<MsDbContext>();
+            //        var context = services.GetRequiredService<PostgreDbContext>();
             //        context.Database.Migrate();
             //        Console.WriteLine("Database migration completed.");
             //    }
@@ -39,7 +39,7 @@ namespace WebAPI
             //        Console.WriteLine($"Migration error: {ex.Message}");
             //    }
             //}
-          
+
             CreateHostBuilder(args).Build().Run();
         }
 

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SharedService } from 'app/core/services/shared.service';
 import { Subscription } from 'rxjs';
-import { AuthService } from '../../admin/login/services/auth.service';
+import { AuthService } from '../../admin/login/Services/auth.service';
 
 
 @Component({

@@ -6,7 +6,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { BanuLog } from 'app/core/components/admin/banuLog/models/BanuLog';
 import { BanuLogService } from 'app/core/components/admin/banuLog/services/BanuLog.service';
-import { AuthService } from 'app/core/components/admin/login/services/auth.service';
+import { AuthService } from 'app/core/components/admin/login/Services/auth.service';
 import { Filter } from 'app/core/search-settings/global-filter';
 import { AlertifyService } from 'app/core/services/alertify.service';
 import { LookUpService } from 'app/core/services/lookUp.service';

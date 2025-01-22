@@ -1,21 +1,21 @@
-import { Component, OnInit,AfterViewInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AlertifyService } from 'app/core/services/alertify.service';
-import { LookUpService } from 'app/core/services/lookUp.service';
-import { AuthService } from 'app/core/components/admin/login/services/auth.service';
-import { LogDto } from './models/LogDto';
-import { LogDtoService } from './services/LogDto.service';
-import { Subject } from 'rxjs/Rx';
-import { MatTableDataSource } from '@angular/material/table';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { AuthService } from 'app/core/components/admin/login/Services/auth.service';
+import { AlertifyService } from 'app/core/services/alertify.service';
+import { LookUpService } from 'app/core/services/lookUp.service';
+import { Subject } from 'rxjs/Rx';
+import { LogDto } from './models/LogDto';
+import { LogDtoService } from './services/LogDto.service';
 
 
 declare var jQuery: any;
 
 @Component({
 	selector: 'app-logDto',
-	templateUrl: './logDto.component.html',
+	templateUrl: './logdto.component.html',
 	styleUrls: ['./logDto.component.scss']
 })
 export class LogDtoComponent implements AfterViewInit, OnInit {

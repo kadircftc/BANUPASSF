@@ -6,9 +6,9 @@ import { MatTableDataSource } from '@angular/material/table';
 import { AlertifyService } from 'app/core/services/alertify.service';
 import { LookUpService } from 'app/core/services/lookUp.service';
 import { LookUp } from '../../../models/LookUp';
-import { AuthService } from '../login/services/auth.service';
-import { Translate } from './Models/Translate';
-import { TranslateService } from './Services/Translate.service';
+import { AuthService } from '../login/Services/auth.service';
+import { Translate } from './models/Translate';
+import { TranslateService } from './services/Translate.service';
 
 
 declare var jQuery: any;

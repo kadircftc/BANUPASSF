@@ -3,17 +3,17 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { AuthService } from 'app/core/components/admin/login/services/auth.service';
+import { AuthService } from 'app/core/components/admin/login/Services/auth.service';
 import { AlertifyService } from 'app/core/services/alertify.service';
 import { LookUpService } from 'app/core/services/lookUp.service';
-import { MultiVisiters } from './models/MultiVisiters';
-import { MultiVisitersService } from './services/MultiVisiters.service';
+import { MultiVisiters } from './models/multivisiters';
+import { MultiVisitersService } from './services/multivisiters.service';
 
 declare var jQuery: any;
 
 @Component({
 	selector: 'app-multiVisiters',
-	templateUrl: './multiVisiters.component.html',
+	templateUrl: './multivisiters.component.html',
 	styleUrls: ['./multiVisiters.component.scss']
 })
 export class MultiVisitersComponent implements AfterViewInit, OnInit {

@@ -4,6 +4,7 @@ import localeTr from '@angular/common/locales/tr';
 import { CUSTOM_ELEMENTS_SCHEMA, LOCALE_ID, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -17,7 +18,7 @@ import { LoginGuard } from './core/guards/login-guard';
 import { AuthInterceptorService } from './core/interceptors/auth-interceptor.service';
 import { ComponentsModule } from './core/modules/components.module';
 import { HttpEntityRepositoryService } from './core/services/http-entity-repository.service';
-import { TranslationService } from './core/services/translation.service';
+import { TranslationService } from './core/services/Translation.service';
 // i18 kullanıclak ise aşağıdaki metod aktif edilecek
 
 //  export function HttpLoaderFactory(http: HttpClient) {
@@ -42,7 +43,7 @@ registerLocaleData(localeTr);
     RouterModule,
     AppRoutingModule,
     MatInputModule,      
- 
+    MatPaginatorModule,
     NgMultiSelectDropDownModule.forRoot(),
     SweetAlert2Module.forRoot(),
     NgbModule,
