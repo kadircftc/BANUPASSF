@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { AuthService } from 'app/core/components/admin/login/services/auth.service';
+import { AuthService } from 'app/core/components/admin/login/Services/auth.service';
 import { PrivPagingResult } from 'app/core/models/privPaging';
 import { Filter } from 'app/core/search-settings/global-filter';
 import { AlertifyService } from 'app/core/services/alertify.service';
@@ -16,7 +16,7 @@ declare var jQuery: any;
 
 @Component({
 	selector: 'app-banuLog',
-	templateUrl: './banuLog.component.html',
+	templateUrl: './banulog.component.html',
 	styleUrls: ['./banuLog.component.scss']
 })
 export class BanuLogComponent implements AfterViewInit, OnInit {
@@ -30,7 +30,8 @@ export class BanuLogComponent implements AfterViewInit, OnInit {
 	banuLog: BanuLog = new BanuLog();
 
 	banuLogAddForm: FormGroup;
-
+	basePageIndex:number=1;
+	basePageCount:number=10;
 	startDate: Date | null = null;
 	endDate: Date | null = null;
 	formattedStartDate: string = '';
@@ -41,10 +42,12 @@ export class BanuLogComponent implements AfterViewInit, OnInit {
 	isSearch:boolean=false;
 	filters: Filter[] = [];
 	filteredAllResult:PrivPagingResult<BanuLog>=null
+	allResult:PrivPagingResult<BanuLog>=null
 	filterResult: BanuLog[] = [];
 	page:number=1;
 	pageCount:number[]=[];
-	pageSize:number=5;
+	allPageCount:number[]=[];
+	pageSize:number=2;
 	selectedPageCount: number = null;
 	
 	getVisiblePages(): number[] {
@@ -55,6 +58,37 @@ export class BanuLogComponent implements AfterViewInit, OnInit {
 		if (totalPages <= 7) {
 			// Toplam sayfa sayısı 7 veya daha azsa hepsini göster
 			return this.pageCount;
+		}
+	
+		// İlk sayfayı her zaman göster
+		visiblePages.push(1);
+	
+		if (currentPage > 4) {
+			visiblePages.push(-1); // "..." için
+		}
+	
+		// Aktif sayfanın etrafındaki sayfaları göster
+		for (let i = Math.max(2, currentPage - 2); i <= Math.min(totalPages - 1, currentPage + 2); i++) {
+			visiblePages.push(i);
+		}
+	
+		if (currentPage < totalPages - 3) {
+			visiblePages.push(-1); // "..." için
+		}
+	
+		// Son sayfayı her zaman göster
+		visiblePages.push(totalPages);
+	
+		return visiblePages;
+	}
+	getAllVisiblePages(): number[] {
+		const totalPages = this.allPageCount.length;
+		const currentPage = this.basePageIndex;
+		const visiblePages: number[] = [];
+	
+		if (totalPages <= 7) {
+			// Toplam sayfa sayısı 7 veya daha azsa hepsini göster
+			return this.allPageCount;
 		}
 	
 		// İlk sayfayı her zaman göster
@@ -92,9 +126,14 @@ export class BanuLogComponent implements AfterViewInit, OnInit {
 
 
 	getBanuLogList() {
-		this.banuLogService.getBanuLogList().subscribe(data => {
-			this.banuLogList = data;
-			this.dataSource = new MatTableDataSource(data);
+		this.banuLogService.getBanuLogByPagingList(this.basePageIndex,this.basePageCount).subscribe(res => {
+			this.banuLogList =res.data;
+			this.allResult =res;
+			this.dataSource = new MatTableDataSource(res.data);
+			this.allPageCount=[];
+					for (let index = 1; index < res.totalPages+1; index++) {
+						this.allPageCount.push(index);
+					}
 			this.configDataTable();
 		});
 	}
@@ -163,7 +202,17 @@ export class BanuLogComponent implements AfterViewInit, OnInit {
 			this.onSearch();
 		}
 	}
+    onAllPageCountChange(event: any) {
+		this.basePageIndex = event.value; 
+		this.getBanuLogList();
+	}
 
+	onAllPageChange(newPage: number) {
+		if (newPage >= 1 && newPage <= this.allPageCount.length) {
+			this.basePageIndex = newPage;
+			this.getBanuLogList();
+		}
+	}
 	deleteBanuLog(banuLogId: string) {
 		this.banuLogService.deleteBanuLog(banuLogId).subscribe(data => {
 			this.alertifyService.success(data.toString());
@@ -212,6 +261,7 @@ export class BanuLogComponent implements AfterViewInit, OnInit {
 			  document.body.removeChild(a); 
 			},
 			(error) => {
+				console.log(error)
 				this.alertifyService.error("PDF oluşturulurken bir hata oluştu!")
 			}
 		  );
@@ -221,7 +271,6 @@ export class BanuLogComponent implements AfterViewInit, OnInit {
 			this.isSearch = true;
 			this.filters = [];
 		  
-			// Start Date filtresi ekleniyor
 			if (this.formattedStartDate != '' && this.formattedStartDate != null) {
 				this.filters.push({
 					key: 'CreatedDate',
@@ -230,7 +279,6 @@ export class BanuLogComponent implements AfterViewInit, OnInit {
 				});
 			}
 		
-			// End Date filtresi ekleniyor
 			if (this.formattedEndDate != '' && this.formattedEndDate != null) {
 				this.filters.push({
 					key: 'CreatedDate',
@@ -239,7 +287,6 @@ export class BanuLogComponent implements AfterViewInit, OnInit {
 				});
 			}
 		  
-			// Name filtresi ekleniyor
 			if (this.searchName != '' && this.searchName != null) {
 				this.filters.push({
 					key: 'TransactorFullName',
@@ -248,7 +295,6 @@ export class BanuLogComponent implements AfterViewInit, OnInit {
 				});
 			}
 		  
-			// Process Type filtresi ekleniyor
 			if (this.selectedProcessType != '' && this.selectedProcessType != null) {
 				this.filters.push({
 					key: 'TransactionType',

@@ -505,8 +505,6 @@ namespace Core.DataAccess.EntityFramework
             return new PrivPagingResult<TEntity>(result, totalCount, true, $"{totalCount} records listed.", totalPages);
         }
 
-
-
-
+       
     }
 }

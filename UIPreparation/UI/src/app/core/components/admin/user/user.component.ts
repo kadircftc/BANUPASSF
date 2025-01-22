@@ -11,16 +11,16 @@ import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
 import * as signalR from '@microsoft/signalr';
 import { MustMatch } from "app/core/directives/must-match";
-import { LookUp } from "app/core/models/lookUp";
+import { LookUp } from "app/core/models/LookUp";
 import { AlertifyService } from "app/core/services/alertify.service";
 import { LookUpService } from "app/core/services/lookUp.service";
 import { environment } from "environments/environment";
 import { IDropdownSettings } from "ng-multiselect-dropdown";
-import { AuthService } from "../login/services/auth.service";
+import { AuthService } from "../login/Services/auth.service";
 import { PasswordDto } from "./models/passwordDto";
 import { User } from "./models/user";
 import { SignalRService } from "./Services/signalr.service";
-import { UserService } from "./services/user.service";
+import { UserService } from "./Services/user.service";
 declare var jQuery: any;
 
 @Component({

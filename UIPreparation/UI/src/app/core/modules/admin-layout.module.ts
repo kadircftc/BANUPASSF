@@ -27,7 +27,7 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import { GroupComponent } from 'app/core/components/admin/group/group.component';
 import { LoginComponent } from 'app/core/components/admin/login/login.component';
 import { UserComponent } from 'app/core/components/admin/user/user.component';
-import { TranslationService } from 'app/core/services/translation.service';
+import { TranslationService } from 'app/core/services/Translation.service';
 import { SparkTableComponent } from 'app/core/tables/spark-table/spark-table.component';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { BanuLogComponent } from '../components/admin/banuLog/banuLog.component';
@@ -93,7 +93,8 @@ import { SecurityTransactionsComponent } from '../components/screens/security-tr
         TranslateComponent,
         OperationClaimComponent,
         LogDtoComponent,
-        BanuLogComponent,BanuLogsComponent,
+        BanuLogComponent,
+        BanuLogsComponent,
         SecurityTransactionsComponent,
         RejectDialogComponent,
         VisitComponent,

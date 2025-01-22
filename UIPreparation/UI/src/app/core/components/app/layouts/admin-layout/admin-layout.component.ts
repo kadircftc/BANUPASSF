@@ -2,7 +2,7 @@ import { Location, PopStateEvent } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { AuthService } from 'app/core/components/admin/login/services/auth.service';
+import { AuthService } from 'app/core/components/admin/login/Services/auth.service';
 import * as $ from "jquery";
 import PerfectScrollbar from 'perfect-scrollbar';
 import 'rxjs/add/operator/filter';

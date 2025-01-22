@@ -7,26 +7,38 @@ import { MergeMultiVisit } from '../../visit/models/mergeMultiVisit';
 })
 export class SignalRService {
 
-  private hubConnection: HubConnection;
+  hubConnection: HubConnection;
+  private isConnected: boolean = false;  
 
   constructor() { }
 
   public startConnection(): void {
+    if (this.isConnected) {
+      return; 
+    }
+
     this.hubConnection = new HubConnectionBuilder()
-      .withUrl("https://localhost:5001/chat")  // SignalR Hub endpoint
+      .withUrl("http://localhost:5000/chat") 
       .configureLogging(LogLevel.Information)
       .build();
 
     this.hubConnection
       .start()
-      .then(() => console.log('SignalR Connected'))
-      .catch(err => console.log('Error while starting connection: ' + err));
+      .then(() => {
+        console.log('SignalR Connected');
+        this.isConnected = true;  
+      })
+      .catch(err => {
+        console.log('Error while starting connection: ' + err);
+        this.isConnected = false;  
+      });
   }
 
-  // "VisitAdded" metodunu dinlemek için
   public addVisitAddedListener(callback: (visit: MergeMultiVisit) => void): void {
-    this.hubConnection.on("VisitAdded", (visit: MergeMultiVisit) => {
-      callback(visit);
-    });
+    if (this.hubConnection) {
+      this.hubConnection.on("VisitAdded", (visit: MergeMultiVisit) => {
+        callback(visit);
+      });
+    }
   }
 }

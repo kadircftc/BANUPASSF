@@ -4,7 +4,9 @@
 /dist
 /tmp
 /out-tsc
-
+.env
+docker-compose.yml
+Dockerfile
 # dependencies
 /node_modules
 

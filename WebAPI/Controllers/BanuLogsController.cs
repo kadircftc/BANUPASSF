@@ -166,7 +166,6 @@ namespace WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BanuLog))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpGet("getbypdf")]
-        [AllowAnonymous]
         public async Task<IActionResult> GetByDate(string date)
         {
 
@@ -199,8 +198,6 @@ namespace WebAPI.Controllers
         [HttpPost("getbylisttopdf")]
         public async Task<IActionResult> GetByListToPdf([FromBody] List<BanuLog> list)
         {
-
-
             if (list!=null)
             {
                 ConvertPdfService convertPdfService = new ConvertPdfService();

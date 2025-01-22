@@ -4,6 +4,7 @@
       
       <img src="../../../../../assets/img/analogo.jpg" width="100" alt="Logo" class="logo">
       <h1 class="title">Misafir Takip Sistemi</h1>
+      <h1 class="title">Misafir dsadsa Sistemi</h1>
       <p class="subtitle">{{'Login' | translate}}</p>
     </div>
 
@@ -36,6 +37,11 @@
       <button mat-flat-button color="primary" type="submit" class="login-button">
         <mat-icon>login</mat-icon>
         {{'Login'| translate}}
+      </button>
+
+      <button mat-flat-button color="accent" type="button" (click)="getLanguageCodes()" class="language-button" style="margin-top: 10px;">
+        <mat-icon>language</mat-icon>
+        Dil Kodlarını Getir
       </button>
     </form>
   </div>

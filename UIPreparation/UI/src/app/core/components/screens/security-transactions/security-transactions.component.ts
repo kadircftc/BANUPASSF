@@ -96,14 +96,11 @@ export class SecurityTransactionsComponent implements OnInit, OnDestroy {
     });
   }
   ngOnDestroy(): void {
-    if (this.hubConnection) {
-      this.hubConnection.stop()
-        .then(() => console.log('Hub connection stopped'))
-        .catch(err => console.error('Error while stopping connection:', err));
-    } else {
-      console.warn('Hub connection is undefined, cannot stop.');
+    if (this.signalRService.hubConnection) {
+      this.signalRService.hubConnection.off("VisitAdded");  // Dinleyiciyi kaldır
     }
   }
+  
 
   private loadVisits(date:string) {
     this.visitService.getVisitMergeMultiVisitList(date).subscribe({

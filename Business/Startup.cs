@@ -107,7 +107,7 @@ namespace Business
             services.AddTransient<IGroupClaimRepository, GroupClaimRepository>();
             services.AddTransient<IUserGroupRepository, UserGroupRepository>();
 
-            services.AddDbContext<ProjectDbContext, MsDbContext>();
+            services.AddDbContext<ProjectDbContext, PostgreDbContext>();
             services.AddSingleton<MongoDbContextBase, MongoDbContext>();
         }
 
@@ -163,7 +163,7 @@ namespace Business
             services.AddTransient<IGroupRepository, GroupRepository>();
             services.AddTransient<IGroupClaimRepository, GroupClaimRepository>();
 
-            services.AddDbContext<ProjectDbContext,MsDbContext>();
+            services.AddDbContext<ProjectDbContext,PostgreDbContext>();
             services.AddSingleton<MongoDbContextBase, MongoDbContext>();
         }
 

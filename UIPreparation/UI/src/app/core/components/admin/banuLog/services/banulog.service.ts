@@ -18,6 +18,12 @@ export class BanuLogService {
 
     return this.httpClient.get<BanuLog[]>(environment.getApiUrl + '/BanuLogs/getall')
   }
+
+  getBanuLogByPagingList(page:number,pageSize:number): Observable<PrivPagingResult<BanuLog>> {
+
+    return this.httpClient.get<PrivPagingResult<BanuLog>>(environment.getApiUrl + '/BanuLogs/getbypaging?page='+page+'&pageSize='+pageSize)
+  }
+  
   getBanuLogGlobalFilterList(filters:any,page:number,pageSize:number): Observable<PrivPagingResult<BanuLog>> {
 
     return this.httpClient.post<PrivPagingResult<BanuLog>>(environment.getApiUrl + `/BanuLogs/getGlobalFilterList?page=${page}&pageSize=${pageSize}`,filters)
