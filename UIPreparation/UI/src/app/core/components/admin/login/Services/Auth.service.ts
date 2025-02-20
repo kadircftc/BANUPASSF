@@ -100,7 +100,13 @@ export class AuthService {
   }
 
   loggedIn(): boolean {
-    return !this.jwtHelper.isTokenExpired(this.storageService.getToken(), -120);
+    try {
+      return !this.jwtHelper.isTokenExpired(this.storageService.getToken(), -120);
+    } catch (error) {
+      this.logOut();
+      this.router.navigate(["/login"]);
+      return false;
+    }
   }
 
   getCurrentUserId() {
@@ -109,13 +115,19 @@ export class AuthService {
 
   claimGuard(claim: string): boolean {
      //this.loadClaims();
-    if (!this.loggedIn()) {
-      this.router.navigate(["/login"]);
-      return false;
-    }
+     try {
+      if (!this.loggedIn()) {
+        this.router.navigate(["/login"]);
+        return false;
+      }
 
     const currentClaims = this.claimsSubject.getValue();
     return currentClaims.includes(claim);
+    } catch (error) {
+      this.logOut();
+      this.router.navigate(["/login"]);
+      return false;
+    }
   }
 
   getUserName(): string {

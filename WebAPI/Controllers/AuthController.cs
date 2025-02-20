@@ -1,6 +1,7 @@
 ﻿using Business.Handlers.Authorizations.Commands;
 using Business.Handlers.Authorizations.Queries;
 using Business.Handlers.Users.Commands;
+using Core.CrossCuttingConcerns.Caching;
 using Core.Utilities.Results;
 using Core.Utilities.Security.Jwt;
 using Entities.Dtos;
@@ -8,6 +9,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using IResult = Core.Utilities.Results.IResult;
 
@@ -20,7 +24,35 @@ namespace WebAPI.Controllers
     [ApiController]
     public class AuthController : BaseApiController
     {
+        private readonly ICacheManager _cacheManager;
 
+        public AuthController(ICacheManager cacheManager)
+        {
+            this._cacheManager = cacheManager;
+        }
+
+        [Authorize]
+        [HttpGet("verify-token")]
+        public IActionResult VerifyToken()
+        {
+            try
+            {
+                var userId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value);
+
+                var cachedClaims = _cacheManager.Get<IEnumerable<string>>($"{CacheKeys.UserIdForClaim}={userId}");
+
+                if (cachedClaims == null)
+                {
+                    return Unauthorized(new { valid = false, message = "Oturum bulunamadı veya süresi doldu" });
+                }
+
+                return Ok(new { valid = true });
+            }
+            catch
+            {
+                return Unauthorized(new { valid = false, message = "Geçersiz oturum" });
+            }
+        }
         /// <summary>
         /// Make it User Login operations
         /// </summary>
