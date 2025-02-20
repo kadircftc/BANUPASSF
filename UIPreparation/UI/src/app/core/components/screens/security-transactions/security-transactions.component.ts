@@ -8,7 +8,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { AlertifyService } from 'app/core/services/alertify.service';
 import { SignalRService } from '../../admin/user/Services/signalr.service';
 import { MergeMultiVisit } from '../../admin/visit/models/mergeMultiVisit';
-import { VisitService } from '../../admin/visit/services/Visit.service';
+import { VisitService } from '../../admin/visit/services/visit.service';
 import { AllVisitorsDialogComponent } from './all-visitors-dialog/all-visitors-dialog.component';
 import { RejectDialogComponent } from './reject-dialog/reject-dialog.component';
 
@@ -79,25 +79,43 @@ export class SecurityTransactionsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-
     this.loadVisits(this.getSelectedDateText());
+    
+    // SignalR bağlantısını başlat
     this.signalRService.startConnection();
 
+    // 3 saniye sonra bağlantı durumunu kontrol et
+    setTimeout(() => {
+      if (!this.signalRService.hubConnection?.state) {
+        console.error('SignalR connection failed');
+        this.alertifyService.error('Gerçek zamanlı bildirimler için bağlantı kurulamadı. Sayfayı yenileyin veya daha sonra tekrar deneyin.');
+      } else {
+        this.setupVisitAddedListener();
+      }
+    }, 3000);
+  }
+
+  private setupVisitAddedListener(): void {
     this.signalRService.addVisitAddedListener((visit: MergeMultiVisit) => {
-      visit.animated=true;
+      if (!visit) return;
+      
+      visit.animated = true;
       this.pendingData.unshift(visit);
       this.dataSource = new MatTableDataSource(this.pendingData);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
+      this.configDataTable();
+      
       setTimeout(() => {
         visit.animated = false;
       }, 20000);
-      this.alertifyService.success(`${visit.visit.visitorFullName} adına yeni ziyaret kaydı var!`)
+      
+      this.alertifyService.success(`${visit.visit.visitorFullName} adına yeni ziyaret kaydı var!`);
     });
   }
+
   ngOnDestroy(): void {
     if (this.signalRService.hubConnection) {
-      this.signalRService.hubConnection.off("VisitAdded");  // Dinleyiciyi kaldır
+      this.signalRService.hubConnection.off("VisitAdded");
+      this.signalRService.stopConnection();
     }
   }
   

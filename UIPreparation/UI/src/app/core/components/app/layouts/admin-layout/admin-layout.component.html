@@ -1,4 +1,4 @@
-<app-mobile-sidebar></app-mobile-sidebar>
+<app-mobile-sidebar *ngIf="isLoggedIn()"></app-mobile-sidebar>
 <div class="wrapper">
   <div class="sidebar" data-color="danger" data-background-color="white" data-image="./assets/img/sidebar-1.jpg" *ngIf="isLoggedIn()">
     <app-sidebar></app-sidebar>

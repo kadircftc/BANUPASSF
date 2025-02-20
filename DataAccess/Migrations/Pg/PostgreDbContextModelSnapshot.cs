@@ -38,6 +38,28 @@ namespace DataAccess.Migrations.Pg
                     b.HasKey("Id");
 
                     b.ToTable("Groups");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            GroupName = "Personel"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            GroupName = "Admin"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            GroupName = "Güvenlik"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            GroupName = "Güvenlik Şefi"
+                        });
                 });
 
             modelBuilder.Entity("Core.Entities.Concrete.GroupClaim", b =>
@@ -51,6 +73,548 @@ namespace DataAccess.Migrations.Pg
                     b.HasKey("GroupId", "ClaimId");
 
                     b.ToTable("GroupClaims");
+
+                    b.HasData(
+                        new
+                        {
+                            GroupId = 1,
+                            ClaimId = 11
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            ClaimId = 9
+                        },
+                        new
+                        {
+                            GroupId = 1,
+                            ClaimId = 1
+                        },
+                        new
+                        {
+                            GroupId = 4,
+                            ClaimId = 85
+                        },
+                        new
+                        {
+                            GroupId = 4,
+                            ClaimId = 89
+                        },
+                        new
+                        {
+                            GroupId = 4,
+                            ClaimId = 88
+                        },
+                        new
+                        {
+                            GroupId = 4,
+                            ClaimId = 5
+                        },
+                        new
+                        {
+                            GroupId = 4,
+                            ClaimId = 15
+                        },
+                        new
+                        {
+                            GroupId = 4,
+                            ClaimId = 12
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            ClaimId = 5
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            ClaimId = 15
+                        },
+                        new
+                        {
+                            GroupId = 3,
+                            ClaimId = 12
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 1
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 2
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 3
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 4
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 5
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 6
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 7
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 8
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 9
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 10
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 11
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 12
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 13
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 14
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 15
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 16
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 17
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 18
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 19
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 20
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 21
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 22
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 23
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 24
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 25
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 26
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 27
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 28
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 29
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 30
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 31
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 32
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 33
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 34
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 35
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 36
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 37
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 38
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 39
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 40
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 41
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 42
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 43
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 44
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 45
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 46
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 47
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 48
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 49
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 50
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 51
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 52
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 53
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 54
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 55
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 56
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 57
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 58
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 59
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 60
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 61
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 62
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 63
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 64
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 65
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 66
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 67
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 68
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 69
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 70
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 71
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 72
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 73
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 74
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 75
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 76
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 77
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 78
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 79
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 80
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 81
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 82
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 83
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 84
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 85
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 86
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 87
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 88
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 89
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 90
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 91
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 92
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 93
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 94
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 95
+                        },
+                        new
+                        {
+                            GroupId = 2,
+                            ClaimId = 96
+                        });
                 });
 
             modelBuilder.Entity("Core.Entities.Concrete.Language", b =>

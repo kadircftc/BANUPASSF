@@ -21,6 +21,7 @@ using Newtonsoft.Json.Linq;
 using Business.Handlers.Visits.Commands;
 using Business.Handlers.VisitConfirms.Commands;
 using Business.Constants;
+using Business.Handlers.BanuLogs.Queries;
 
 namespace Business.CrossCuttingConcernsBS.Logging
 {
@@ -97,6 +98,22 @@ namespace Business.CrossCuttingConcernsBS.Logging
             {
                 transactionType = "Ziyaret Talebi";
             }
+           else if (logParameters[0].Type == "PedestrianEntranceCommand")
+            {
+                transactionType = "Yaya Ziyaret Talebi";
+            }
+            else if (logParameters[0].Type == "VehicleEntranceCommand")
+            {
+                transactionType = "Araçlı Ziyaret Talebi";
+            }
+            else if (logParameters[0].Type == "GetBanuLogsPdfGenerateQuery")
+            {
+                transactionType = "Admin Pdf Rapor Oluşturma";
+            }
+            else if (logParameters[0].Type == "GetBanuLogsPdfGenerateForSecurityQuery")
+            {
+                transactionType = "Güvenlik Pdf Rapor Oluşturma";
+            }
             else if (logParameters[0].Type == "ConfirmVisitCommand")
             {
                 transactionType = "Güvenlik Onay";
@@ -130,6 +147,26 @@ namespace Business.CrossCuttingConcernsBS.Logging
 
                 return $"{user.FullName}-{user.Email}, {visitorName} adına {visitStartDate}-{visitEndDate} aralığı için ziyaret talebi oluşturuldu.";
             }
+            if (logParameters[0].Type == "PedestrianEntranceCommand")
+            {
+                var pedestrianEntranceCommand = logParameters[0].Value as PedestrianEntranceCommand;
+                var visitStartDate = pedestrianEntranceCommand.VisitStartDate;
+                var visitEndDate = pedestrianEntranceCommand.VisitEndDate;
+                var visitorName = pedestrianEntranceCommand.VisitorFullName;
+
+
+                return $"{user.FullName}-{user.Email}, {visitorName} adına {visitStartDate}-{visitEndDate} aralığı için yaya ziyareti talebi oluşturuldu.";
+            }
+            if (logParameters[0].Type == "VehicleEntranceCommand")
+            {
+                var vehicleEntranceCommand = logParameters[0].Value as VehicleEntranceCommand;
+                var visitStartDate = vehicleEntranceCommand.VisitStartDate;
+                var visitEndDate = vehicleEntranceCommand.VisitEndDate;
+                var visitorName = vehicleEntranceCommand.VisitorFullName;
+
+
+                return $"{user.FullName}-{user.Email}, {visitorName} adına {visitStartDate}-{visitEndDate} aralığı için araç ziyareti talebi oluşturuldu.";
+            }
             if (logParameters[0].Type == "ConfirmVisitCommand")
             {
                 DateTime now = DateTime.Now; 
@@ -147,6 +184,22 @@ namespace Business.CrossCuttingConcernsBS.Logging
 
                 Visit visit = GetVisit(rejectVisitCommand.Id).Result;
                 return $"{user.FullName}-{user.Email}, {visit.VisitorFullName} ziyaretçisine {formattedDate} tarihinde red verdi.";
+            }
+            if (logParameters[0].Type == "GetBanuLogsPdfGenerateQuery")
+            {
+                DateTime now = DateTime.Now;
+                string formattedDate = now.ToString("yyyy-MM-dd HH:mm");
+                var getBanuLogsPdfGenerateQuery = logParameters[0].Value as GetBanuLogsPdfGenerateQuery;
+
+                return $"Admin {user.FullName}-{user.Email}, {formattedDate} tarihinde pdf raporu oluşturdu.";
+            }
+            if (logParameters[0].Type == "GetBanuLogsPdfGenerateForSecurityQuery")
+            {
+                DateTime now = DateTime.Now;
+                string formattedDate = now.ToString("yyyy-MM-dd HH:mm");
+                var getBanuLogsPdfGenerateForSecurityQuery = logParameters[0].Value as GetBanuLogsPdfGenerateForSecurityQuery;
+
+                return $"Güvenlik {user.FullName}-{user.Email}, {formattedDate} tarihinde pdf raporu oluşturdu.";
             }
             return "Bilinmeyen işlem türü.";
         }

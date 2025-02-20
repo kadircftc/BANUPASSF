@@ -1,22 +1,21 @@
-<button class="mobile-toggle-btn" (click)="toggleSidebar()" *ngIf="isMobileMenu()">
+<button class="mobile-toggle-btn" (click)="toggleSidebar()" *ngIf="isMobile">
   <i class="material-icons">{{isOpen ? 'chevron_right' : 'menu'}}</i>
 </button>
 
-<div class="mobile-sidebar" [class.open]="isOpen">
+<div class="mobile-sidebar" [class.open]="isOpen" *ngIf="isMobile">
   <div class="sidebar-overlay" (click)="toggleSidebar()" *ngIf="isOpen"></div>
   <div class="sidebar-content">
-    
     <div class="sidebar-menu">
       <div class="logo">
         <a class="simple-text">
           <div class="logo-img">
-            <img src="../../../../../assets/img/analogo.jpg" width="200"/>
+            <img src="../../../../../assets/img/analogo.jpg" width="200" alt="Logo"/>
           </div>
           Misafir Takip Sistemi
         </a>
       </div>
       <ul class="nav">
-        <li routerLinkActive="active" *ngFor="let menuItem of menuItems" class="nav-item">
+        <li routerLinkActive="active" *ngFor="let menuItem of menuItems; trackBy: trackByFn" class="nav-item">
           <a class="nav-link" [routerLink]="[menuItem.path]" (click)="toggleSidebar()" *ngIf="!menuItem.claim || checkClaim(menuItem.claim)">
             <i class="material-icons">{{menuItem.icon}}</i>
             <p>{{menuItem.title}}</p>

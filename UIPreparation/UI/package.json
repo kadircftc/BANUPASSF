@@ -62,7 +62,7 @@
     "ngx-tour-md-menu": "^4.2.0",
     "perfect-scrollbar": "1.5.0",
     "popper.js": "^1.16.1",
-    "rxjs": "6.6.3",
+    "rxjs": "^6.6.3",
     "rxjs-compat": "6.6.3",
     "sweetalert2": "^10.14.0",
     "web-animations-js": "2.3.2",

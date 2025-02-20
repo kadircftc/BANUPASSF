@@ -1,4 +1,5 @@
-﻿using Entities.Concrete;
+﻿using Core.Entities;
+using Entities.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace Business.Services.ConvertPdfService.Abstract
 
         List<List<BanuLog>> SplitLogs(IEnumerable<BanuLog> logs, int batchSize);
 
-        public byte[] GenerateZipWithPdfs(List<List<BanuLog>> logGroups, string date);
+        byte[] GenerateZipWithPdfs(List<List<BanuLog>> logGroups, string date);
+        Task SetFilters(List<GlobalFilterGeneric> filters);
     }
 }

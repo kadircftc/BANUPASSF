@@ -1,10 +1,10 @@
-import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { LookUp } from 'app/core/models/LookUp'; //hata olursa bak
 import { Observable } from 'rxjs';
-import { User } from '../models/user';
-import { environment } from '../../../../../../environments/environment'
-import { LookUp } from 'app/core/models/lookUp';
+import { environment } from '../../../../../../environments/environment';
 import { PasswordDto } from '../models/passwordDto';
+import { User } from '../models/user';
 
 
 @Injectable({
@@ -31,7 +31,13 @@ export class UserService {
     var result = this.httpClient.post(environment.getApiUrl + "/users/", user, { responseType: 'text' });
     return result;
   }
-
+  requestLimitIncrease(userId: number, reqLimit: number): Observable<any> {
+    return this.httpClient.post(
+      `${environment.getApiUrl}/users/reqLimitIncrease?userId=${userId}&reqNumber=${reqLimit}`,
+      {},
+      { responseType: 'text' }
+    );
+  }
   updateUser(user:User):Observable<any> {
     var result = this.httpClient.put(environment.getApiUrl + "/users/", user, { responseType: 'text' });
     return result;

@@ -28,7 +28,6 @@ namespace WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<VisitConfirm>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpGet("getall")]
-        [AllowAnonymous]
         public async Task<IActionResult> GetList()
         {
             var result = await Mediator.Send(new GetVisitConfirmsQuery());

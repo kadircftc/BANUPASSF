@@ -36,10 +36,12 @@ export class UserComponent implements AfterViewInit, OnInit ,OnDestroy{
     "userId",
     "email",
     "fullName",
+    "reqLimit",
     "status",
     "mobilePhones",
     "address",
     "notes",
+    "updateReqLimit",
     "passwordChange",
     "updateClaim",
     "updateGroupClaim",
@@ -60,6 +62,8 @@ export class UserComponent implements AfterViewInit, OnInit ,OnDestroy{
   isClaimChange: boolean = false;
 
   userId: number;
+  reqLimitForm: FormGroup;
+  selectedUserId: number;
 
   constructor(
     private userService: UserService,
@@ -80,6 +84,7 @@ export class UserComponent implements AfterViewInit, OnInit ,OnDestroy{
   ngOnInit() {
     this.createUserAddForm();
     this.createPasswordForm();
+    this.createReqLimitForm();
 
     this.dropdownSettings = environment.getDropDownSetting;
 
@@ -196,6 +201,12 @@ export class UserComponent implements AfterViewInit, OnInit ,OnDestroy{
     );
   }
 
+  createReqLimitForm() {
+    this.reqLimitForm = this.formBuilder.group({
+      reqLimit: ['', [Validators.required, Validators.min(1)]]
+    });
+  }
+
   getUserList() {
     this.userService.getUserList().subscribe((data) => {
       this.userList = data;
@@ -299,6 +310,56 @@ export class UserComponent implements AfterViewInit, OnInit ,OnDestroy{
 
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
+    }
+  }
+
+  requestLimitIncrease(userId: number) {
+    const newLimit = prompt('Enter new request limit:');
+    if (newLimit !== null) {
+      const limit = parseInt(newLimit);
+      if (!isNaN(limit)) {
+        this.userService.requestLimitIncrease(userId, limit).subscribe(
+          (response) => {
+            this.alertifyService.success(response);
+            this.getUserList();
+          },
+          (error) => {
+            this.alertifyService.error(error.error);
+          }
+        );
+      } else {
+        this.alertifyService.error('Please enter a valid number');
+      }
+    }
+  }
+
+  setSelectedUserId(userId: number) {
+    this.selectedUserId = userId;
+    // Get current req limit and set it in form
+    const user = this.userList.find(u => u.userId === userId);
+    if (user) {
+      this.reqLimitForm.patchValue({
+        reqLimit: user.reqLimit
+      });
+    }
+  }
+
+  saveRequestLimit() {
+    if (this.reqLimitForm.valid) {
+      const newLimit = this.reqLimitForm.get('reqLimit')?.value;
+      this.userService.requestLimitIncrease(this.selectedUserId, newLimit).subscribe({
+        next: (response) => {
+          jQuery('#reqLimitModal').modal('hide');
+          this.alertifyService.success(response);
+          this.getUserList();
+          this.clearFormGroup(this.reqLimitForm);
+        },
+        error: (error) => {
+          console.log('Error details:', error);
+          const errorMessage = error.error || error.message || 'An error occurred while updating request limit';
+          this.alertifyService.error(errorMessage);
+        }
+      });
     }
   }
 }

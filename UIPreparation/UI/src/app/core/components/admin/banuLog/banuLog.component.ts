@@ -1,4 +1,5 @@
 import { DatePipe } from '@angular/common';
+import { HttpResponse } from '@angular/common/http';
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
@@ -31,7 +32,7 @@ export class BanuLogComponent implements AfterViewInit, OnInit {
 
 	banuLogAddForm: FormGroup;
 	basePageIndex:number=1;
-	basePageCount:number=10;
+	basePageCount:number=100;
 	startDate: Date | null = null;
 	endDate: Date | null = null;
 	formattedStartDate: string = '';
@@ -47,7 +48,7 @@ export class BanuLogComponent implements AfterViewInit, OnInit {
 	page:number=1;
 	pageCount:number[]=[];
 	allPageCount:number[]=[];
-	pageSize:number=2;
+	pageSize:number=100;
 	selectedPageCount: number = null;
 	
 	getVisiblePages(): number[] {
@@ -244,28 +245,44 @@ export class BanuLogComponent implements AfterViewInit, OnInit {
 			this.banuLogAddForm.patchValue(data);
 		})
 	}
-	createPdf(){
-		if(this.filterResult.length==0 && this.isSearch==true){
-			this.alertifyService.error("Pdf oluşturulacak bir veri yok!");
-			return;
+	createPdf() {
+		if (this.filterResult.length == 0 && this.isSearch == true) {
+		  this.alertifyService.error("PDF oluşturulacak bir veri yok!");
+		  return;
 		}
-		this.banuLogService.getBanuLogListToPdf(this.filterResult.length==0 && this.isSearch==false ? this.banuLogList : this.filterResult).subscribe(
-			(response: Blob) => {
-			  // PDF dosyasını Blob olarak alıyoruz
-			  const fileURL = URL.createObjectURL(response); 
-			  const a = document.createElement('a'); 
-			  a.href = fileURL; 
-			  a.download = this.banuLogList.length<=35? 'BanuLogs.pdf':'BanuLogs.zip'; 
-			  document.body.appendChild(a);
-			  a.click(); 
-			  document.body.removeChild(a); 
-			},
-			(error) => {
-				console.log(error)
-				this.alertifyService.error("PDF oluşturulurken bir hata oluştu!")
+	  
+		this.banuLogService.getBanuLogFilterListToPdf(this.filters).subscribe(
+		  (response: HttpResponse<Blob>) => {
+			// Blob nesnesini oluştur
+			const file = new Blob([response.body!], { type: response.body?.type });
+			const contentType = response.headers.get('Content-Type');
+			const format = contentType?.split('/')[1];
+			// Dosya adını HTTP yanıt başlıklarından al
+			let fileName = `BanuLogs_${new Date().toISOString()}.${format}`; 
+			const contentDisposition = response.headers.get('Content-Disposition');
+			
+			if (contentDisposition) {
+			  const matches = contentDisposition.match(/filename="?([^"]+)"?/);
+			  if (matches?.length > 1) {
+				fileName = matches[1];
+			  }
 			}
-		  );
-		}
+	  
+			const fileURL = URL.createObjectURL(file);
+			const a = document.createElement('a');
+			a.href = fileURL;
+			a.download = fileName;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+		  },
+		  (error) => {
+			console.log(error);
+			this.alertifyService.error("PDF oluşturulurken bir hata oluştu!");
+		  }
+		);
+	  }
+	  
 	
 		onSearch() {
 			this.isSearch = true;

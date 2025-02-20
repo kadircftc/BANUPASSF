@@ -1,11 +1,14 @@
-﻿using Business.Connected_Services.SignalR.Abstract;
+﻿using Business.BusinessAspects;
+using Business.Connected_Services.SignalR.Abstract;
 using Business.Connected_Services.SignalR.Concrete;
 using Business.Constants;
+using Business.CrossCuttingConcernsBS.Logging;
 using Business.Handlers.Visits.ValidationRules;
 using Business.Services.UserService.Abstract;
 using Business.Services.UserService.Concrete;
 using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Validation;
+using Core.Entities.Concrete;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
@@ -43,32 +46,36 @@ namespace Business.Handlers.Visits.Commands
             private readonly IUserService _userService;
             private readonly IMediator _mediator;
             private readonly IVisitRepository _visitRepository;
+            private readonly IUserRepository _userRepository;
             private readonly IMultiVisitersRepository _multiVisitersRepository;
             private readonly IHttpContextAccessor _context;
             private readonly IHubContext<VisitHub> _hubContext;
 
-            public PedestrianEntranceCommandHandler(IUserService userService, IMediator mediator, IVisitRepository visitRepository, IMultiVisitersRepository multiVisitersRepository, IHttpContextAccessor context, IHubContext<VisitHub> hubContext)
+            public PedestrianEntranceCommandHandler(IUserService userService, IMediator mediator, IVisitRepository visitRepository, IUserRepository userRepository, IMultiVisitersRepository multiVisitersRepository, IHttpContextAccessor context, IHubContext<VisitHub> hubContext)
             {
                 _userService = userService;
                 _mediator = mediator;
                 _visitRepository = visitRepository;
+                _userRepository = userRepository;
                 _multiVisitersRepository = multiVisitersRepository;
                 _context = context;
                 _hubContext = hubContext;
             }
 
             [ValidationAspect(typeof(PedestrianEntranceCommandValidator), Priority = 1)]
+            [BanuLogAspect(typeof(MsSqlLoggerProcess))]
             [CacheRemoveAspect("Get")]
+            [SecuredOperation(Priority = 1)]
             public async Task<Core.Utilities.Results.IResult> Handle(PedestrianEntranceCommand request, CancellationToken cancellationToken)
             {
                 var userId = _userService.GetUserIdFromJwt(_context.HttpContext.Request);
-
+                User user= await _userRepository.GetAsync(u=>u.UserId == userId);
                 IEnumerable<Visit> userTransactionCount = await _visitRepository.GetListAsync(v => v.PersonnelId == userId && v.CreatedDate.Date == DateTime.Now.Date);
 
-                //if (userTransactionCount.Count() > 4)
-                //{
-                //    return new ErrorResult(TransactionMessagesTR.DefaultVisitTransactionCountReached);
-                //}
+                if (userTransactionCount.Count()+1 > user.ReqLimit)
+                {
+                    return new ErrorResult(TransactionMessagesTR.DefaultVisitTransactionCountReached);
+                }
 
                 var isThereVisitRecord = _visitRepository.Query().Any(u => u.PersonnelId == userId && request.VisitStartDate.Date == u.VisitStartDate.Date && u.VisitorFullName == request.VisitorFullName);
 

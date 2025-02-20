@@ -80,7 +80,23 @@ namespace WebAPI.Controllers
         {
             return GetResponseOnlyResultData(await Mediator.Send(new GetUserQuery { UserId = id }));
         }
-
+        /// <summary>
+		/// Add Visit.
+		/// </summary>
+		/// <returns></returns>
+		[Produces("application/json", "text/plain")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [HttpPost("reqLimitIncrease")]
+        public async Task<IActionResult> RequestLimitIncrease(int userId, int reqNumber)
+        {
+            var result = await Mediator.Send(new RequestLimitIncreaseCommand { IncreaseAmount = reqNumber, UserId = userId });
+            if (result.Success)
+            {
+                return Ok(result.Message);
+            }
+            return BadRequest(result.Message);
+        }
         /// <summary>
         /// Add User.
         /// </summary>

@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { Visitor, VehicleData, PedestrianEntranceRequest } from './models/visit-add.model';
-import { VisitService } from '../../admin/visit/services/Visit.service';
-import { MultiVisitersService } from '../../admin/multiVisiters/services/multivisiters.service';
-import { AlertifyService } from '../../../services/alertify.service';
+import { Component, OnInit } from '@angular/core';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
+import { AlertifyService } from '../../../services/alertify.service';
+import { MultiVisitersService } from '../../admin/multiVisiters/services/multivisiters.service';
+import { VisitService } from '../../admin/visit/services/visit.service';
+import { PedestrianEntranceRequest, VehicleData, Visitor } from './models/visit-add.model';
 
 @Component({
   selector: 'app-visit-add',

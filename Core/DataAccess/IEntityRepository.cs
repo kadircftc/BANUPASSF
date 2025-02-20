@@ -29,7 +29,7 @@ namespace Core.DataAccess
     string propertyName,
     bool asc,
     params Expression<Func<T, object>>[] includeEntities);
-        Task<IEnumerable<T>> GetFilteredListAsync(List<GlobalFilterGeneric> filters);
+        Task<IEnumerable<T>> GetFilteredListAsync(List<GlobalFilterGeneric> filters, Expression<Func<T, bool>> expression = null);
         Task<int> SaveChangesAsync();
         IQueryable<T> Query();
         Task<int> Execute(FormattableString interpolatedQueryString);

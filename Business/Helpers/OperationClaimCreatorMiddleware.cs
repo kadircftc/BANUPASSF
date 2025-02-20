@@ -6,6 +6,7 @@ using Core.Utilities.IoC;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -46,7 +47,7 @@ namespace Business.Helpers
                 .Where(x =>
                     x.Namespace != null && x.Namespace.StartsWith("Business.Handlers") &&
                     (x.Name.EndsWith("Command") || x.Name.EndsWith("Query")));
-
+            
             return (from assembly in assemblies
                     from nestedType in assembly.GetNestedTypes()
                     from method in nestedType.GetMethods()

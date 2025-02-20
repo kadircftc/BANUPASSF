@@ -246,7 +246,7 @@ namespace Core.DataAccess.EntityFramework
 
 
 
-        public async Task<IEnumerable<TEntity>> GetFilteredListAsync(List<GlobalFilterGeneric> filters)
+        public async Task<IEnumerable<TEntity>> GetFilteredListAsync(List<GlobalFilterGeneric> filters, Expression<Func<TEntity, bool>> expression = null)
         {
             var query = Context.Set<TEntity>().AsQueryable();
 

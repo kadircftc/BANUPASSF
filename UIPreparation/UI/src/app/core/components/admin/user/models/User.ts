@@ -5,5 +5,6 @@ export class User {
 	address: string;
 	notes: string;
 	status: boolean;
+	reqLimit: number;
 	mobilePhones: string;
 }

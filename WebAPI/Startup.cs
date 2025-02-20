@@ -28,6 +28,7 @@ using ConfigurationManager = Business.ConfigurationManager;
 using Business.Connected_Services.SignalR.Abstract;
 using Business.Connected_Services.SignalR.Concrete;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace WebAPI
 {
@@ -99,6 +100,22 @@ namespace WebAPI
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey),
                         ClockSkew = TimeSpan.Zero
+                    };
+
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+                            var path = context.HttpContext.Request.Path;
+
+                            if (!string.IsNullOrEmpty(accessToken) &&
+                                (path.StartsWithSegments("/chat")))
+                            {
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
                     };
                 });
             services.AddSwaggerGen(c =>

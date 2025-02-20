@@ -15,8 +15,8 @@ namespace Core.Utilities.Results
             TotalPages = totalPages;
         }
 
-        public List<T> Data { get; }
-        public int TotalItemCount { get; }
+        public List<T> Data { get; set; }
+        public int TotalItemCount { get; set; }
         public int TotalPages { get; set; }
     }
 }

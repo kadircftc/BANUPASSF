@@ -30,7 +30,7 @@ namespace Business.Handlers.BanuLogs.Queries
                 }
                     
             [LogAspect(typeof(FileLogger))]
-            //[BanuLogAspect(typeof(MsSqlLoggerProcess))]
+            [BanuLogAspect(typeof(MsSqlLoggerProcess))]
             [SecuredOperation(Priority = 1)]
             public async Task<IDataResult<IEnumerable<BanuLog>>> Handle(GetBanuLogsByPdfQuery request, CancellationToken cancellationToken)
             {

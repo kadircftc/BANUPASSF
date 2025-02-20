@@ -1,4 +1,5 @@
-﻿using Core.Entities;
+﻿using Business.BusinessAspects;
+using Core.Entities;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -29,7 +30,7 @@ namespace Business.Handlers.BanuLogs.Queries
                 _mediator = mediator;
                 _banuLogsRepository = banuLogsRepository;
             }
-
+            [SecuredOperation(Priority = 1)]
             public async Task<IDataResult<PrivPagingResult<BanuLog>>> Handle(GetBanuLogsGlobalFilterListQuery request, CancellationToken cancellationToken)
             {
                 var list = await _banuLogsRepository.GetFilteredAndPagedListAsync(request.Filters,request.Page,request.PageSize,"TransactorFullName",false);

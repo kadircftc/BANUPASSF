@@ -58,6 +58,10 @@
                   <th mat-header-cell *matHeaderCellDef mat-sort-header> {{'Notes' |translate}} </th>
                   <td mat-cell *matCellDef="let element"> {{element.notes}} </td>
                 </ng-container>
+                <ng-container matColumnDef="reqLimit" >
+                  <th mat-header-cell *matHeaderCellDef> {{'Req Limit' |translate}}</th>
+                  <td mat-cell *matCellDef="let element"> {{element.reqLimit}} </td>
+                </ng-container>
 
                 <ng-container matColumnDef="passwordChange" >
                   <th mat-header-cell *matHeaderCellDef></th>
@@ -77,6 +81,8 @@
                   </td>
                 </ng-container>
 
+               
+
                 <ng-container matColumnDef="updateGroupClaim">
                   <th mat-header-cell *matHeaderCellDef></th>
                   <td style="width: 25px;" mat-cell *matCellDef="let element">
@@ -91,6 +97,21 @@
                   <td style="width: 25px;" mat-cell *matCellDef="let element">
                     <a *ngIf="checkClaim('UpdateUserCommand')" data-toggle="modal" data-target="#user" (click)="getUserById(element.userId)"><i
                         title="{{'Update' | translate}}" style="color:#ff5722;" class="far fa-edit"></i></a>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="updateReqLimit">
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td style="width: 25px;" mat-cell *matCellDef="let element">
+                    <a *ngIf="checkClaim('UpdateUserCommand')" 
+                       data-toggle="modal" 
+                       data-target="#reqLimitModal"
+                       (click)="setSelectedUserId(element.userId)">
+                      <i title="{{'Update Request Limit' | translate}}" 
+                         style="color:#2196F3;" 
+                         class="fas fa-arrow-up">
+                      </i>
+                    </a>
                   </td>
                 </ng-container>
 
@@ -118,62 +139,88 @@
 </div>
 
 <div class="modal modal-angular fade" id="user" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
-      <div class="modal-body text-center">
-        <button type="button" #closeButton class="close" data-dismiss="modal" aria-label="Close"
-          (click)="clearFormGroup(userAddForm)"><span aria-hidden="true">&times;</span></button>
-        <h4 class="margin-top">
+      <div class="modal-header bg-primary text-white">
+        <h4 class="modal-title">
+          <i class="material-icons mr-2">person_add</i>
           {{'UserForm'| translate}}
         </h4>
-        <div class="separator"></div>
-        <form *ngIf="userAddForm" [formGroup]="userAddForm" (ngSubmit)="save()">
-          <div class="row">
+        <button type="button" #closeButton class="close text-white" data-dismiss="modal" aria-label="Close"
+          (click)="clearFormGroup(userAddForm)">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form *ngIf="userAddForm" [formGroup]="userAddForm" (ngSubmit)="save()" class="p-3">
+          <div class="row mb-4">
             <div class="col-md-6">
-              <mat-form-field class="example-full-width">
-                <input matInput placeholder=" {{'FullName'|translate}}" type="text" id="fullName" name="fullName"
-                  formControlName="fullName">
-                <div class="alert alert-danger"
-                     *ngIf="userAddForm.get('fullName')!.hasError('required') && userAddForm.get('fullName')!.touched">{{'Required'| translate}}
-                </div>
+              <mat-form-field class="w-100" appearance="outline">
+                <mat-label>{{'FullName'|translate}}</mat-label>
+                <input matInput type="text" formControlName="fullName">
+                <mat-icon matPrefix class="mr-2">person</mat-icon>
+                <mat-error *ngIf="userAddForm.get('fullName')!.hasError('required') && userAddForm.get('fullName')!.touched">
+                  {{'Required'| translate}}
+                </mat-error>
               </mat-form-field>
             </div>
 
             <div class="col-md-6">
-              <mat-form-field class="example-full-width">
-                <input matInput placeholder="{{'Email'|translate}}" type="email" id="email" name="email"
-                  formControlName="email">
-                <div class="alert alert-danger"
-                  *ngIf="userAddForm.get('email')!.hasError('required') && userAddForm.get('email')!.dirty"></div>
+              <mat-form-field class="w-100" appearance="outline">
+                <mat-label>{{'Email'|translate}}</mat-label>
+                <input matInput type="email" formControlName="email">
+                <mat-icon matPrefix class="mr-2">email</mat-icon>
+                <mat-error *ngIf="userAddForm.get('email')!.hasError('required') && userAddForm.get('email')!.touched">
+                  {{'Required'| translate}}
+                </mat-error>
+                <mat-error *ngIf="userAddForm.get('email')!.hasError('email')">
+                  {{'InvalidEmail'| translate}}
+                </mat-error>
               </mat-form-field>
             </div>
           </div>
+
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <mat-form-field class="w-100" appearance="outline">
+                <mat-label>{{'MobilePhones'|translate}}</mat-label>
+                <input matInput type="tel" formControlName="mobilePhones">
+                <mat-icon matPrefix class="mr-2">phone</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <div class="col-md-6">
+              <mat-form-field class="w-100" appearance="outline">
+                <mat-label>{{'Notes'|translate}}</mat-label>
+                <textarea matInput formControlName="notes" rows="1"></textarea>
+                <mat-icon matPrefix class="mr-2">note</mat-icon>
+              </mat-form-field>
+            </div>
+          </div>
+
+         
+        
+
           <div class="row">
             <div class="col-md-12">
-              <mat-form-field class="example-full-width">
-                <input matInput placeholder="{{'MobilePhones'|translate}}" type="text" id="mobilePhones"
-                  name="mobilePhones" formControlName="mobilePhones">
+              <mat-form-field class="w-100" appearance="outline">
+                <mat-label>{{'Address'|translate}}</mat-label>
+                <textarea matInput formControlName="address" rows="2"></textarea>
+                <mat-icon matPrefix class="mr-2">location_on</mat-icon>
               </mat-form-field>
             </div>
           </div>
-          <div class="row">
-            <div class="col-md-12">
-              <mat-form-field class="example-full-width">
-                <input matInput placeholder="{{'Adress'|translate}}" type="text" id="address" name="address"
-                  formControlName="address">
-              </mat-form-field>
-            </div>
+
+          <div class="d-flex justify-content-end mt-4">
+            <button mat-button type="button" class="mr-2" data-dismiss="modal" (click)="clearFormGroup(userAddForm)">
+              <mat-icon>close</mat-icon>
+              {{'Cancel' |translate}}
+            </button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="!userAddForm.valid">
+              <mat-icon>save</mat-icon>
+              {{'Save' |translate}}
+            </button>
           </div>
-          <div class="row">
-            <div class="col-md-12">
-              <mat-form-field class="example-full-width">
-                <input matInput placeholder="{{'Notes'|translate}}" type="text" id="notes" name="notes"
-                  formControlName="notes">
-              </mat-form-field>
-            </div>
-          </div>
-          <button mat-raised-button type="submit" class="btn btn-danger pull-right">{{'Save' |translate}}</button>
-          <div class="clearfix"></div>
         </form>
       </div>
     </div>
@@ -272,6 +319,48 @@
       </div>
       <div class="modal-footer">
         <a class="btn btn-primary pull-right" (click)="saveUserClaimsPermission()"> {{'Save' |translate}}</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal modal-angular fade" id="reqLimitModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h4 class="modal-title">
+          <i class="fas fa-arrow-up mr-2"></i>
+          {{'Update Request Limit' | translate}}
+        </h4>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="reqLimitForm" (ngSubmit)="saveRequestLimit()">
+          <div class="row">
+            <div class="col-md-12">
+              <mat-form-field class="w-100" appearance="outline">
+                <mat-label>{{'Request Limit' | translate}}</mat-label>
+                <input matInput type="number" formControlName="reqLimit" min="1">
+                <mat-error *ngIf="reqLimitForm.get('reqLimit')?.hasError('required')">
+                  {{'Required' | translate}}
+                </mat-error>
+                <mat-error *ngIf="reqLimitForm.get('reqLimit')?.hasError('min')">
+                  {{'Must be greater than 0' | translate}}
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="d-flex justify-content-end mt-3">
+            <button mat-button type="button" class="mr-2" data-dismiss="modal">
+              {{'Cancel' | translate}}
+            </button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="!reqLimitForm.valid">
+              {{'Save' | translate}}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>

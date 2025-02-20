@@ -31,7 +31,7 @@ namespace Business.Handlers.BanuLogs.Queries
                 _mediator = mediator;
             }
             [LogAspect(typeof(FileLogger))]
-            //[SecuredOperation(Priority = 1)]
+            [SecuredOperation(Priority = 1)]
             public async Task<IDataResult<PrivPagingResult<BanuLog>>> Handle(GetBanuLogTransactionsQuery request, CancellationToken cancellationToken)
             {
                 var banulogs = await _banuLogRepository.GetListForPaging(request.Page,request.PageSize, "TransactorFullName", true,b=>b.TransactionType.Contains(request.Type));

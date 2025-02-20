@@ -6,7 +6,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { AuthService } from 'app/core/components/admin/login/Services/auth.service';
 import { AlertifyService } from 'app/core/services/alertify.service';
 import { LookUpService } from 'app/core/services/lookUp.service';
-import { Subject } from 'rxjs/Rx';
+import { Subject } from 'rxjs';
 import { LogDto } from './models/LogDto';
 import { LogDtoService } from './services/LogDto.service';
 

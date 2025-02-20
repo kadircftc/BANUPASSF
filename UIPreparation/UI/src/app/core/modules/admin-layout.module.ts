@@ -27,6 +27,7 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import { GroupComponent } from 'app/core/components/admin/group/group.component';
 import { LoginComponent } from 'app/core/components/admin/login/login.component';
 import { UserComponent } from 'app/core/components/admin/user/user.component';
+import { LoginRouting } from 'app/core/guards/login-routing';
 import { TranslationService } from 'app/core/services/Translation.service';
 import { SparkTableComponent } from 'app/core/tables/spark-table/spark-table.component';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
@@ -102,6 +103,9 @@ import { VisitAddComponent } from '../components/screens/visit-add/visit-add.com
         SparkTableComponent,
         AllVisitorsDialogComponent,
         VisitAddComponent
+    ],
+    providers: [
+        LoginRouting
     ]
 })
 

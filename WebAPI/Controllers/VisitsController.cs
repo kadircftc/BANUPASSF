@@ -110,7 +110,6 @@ namespace WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Visit))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpGet("getByDate")]
-        [AllowAnonymous]
         public async Task<IActionResult> GetByDate( string startDate,string endDate)
         {
             var result = await Mediator.Send(new GetVisitsByDateQuery { StartDate=startDate,EndDate=endDate });
@@ -167,7 +166,6 @@ namespace WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpPost("pedestrianEntrance")]
-        [AllowAnonymous]
         public async Task<IActionResult> AddPedestrianEntrance([FromBody] PedestrianEntranceCommand pedestrianEntrance)
         {
             var result = await Mediator.Send(pedestrianEntrance);

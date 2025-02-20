@@ -7,7 +7,7 @@ import { AuthService } from 'app/core/components/admin/login/Services/auth.servi
 import { AlertifyService } from 'app/core/services/alertify.service';
 import { LookUpService } from 'app/core/services/lookUp.service';
 import { Visit } from './models/Visit';
-import { VisitService } from './services/Visit.service';
+import { VisitService } from './services/visit.service';
 
 declare var jQuery: any;
 
@@ -21,7 +21,7 @@ export class VisitComponent implements AfterViewInit, OnInit {
 	dataSource: MatTableDataSource<any>;
 	@ViewChild(MatPaginator) paginator: MatPaginator;
 	@ViewChild(MatSort) sort: MatSort;
-	displayedColumns: string[] = ['id','createdDate','personnelId','visitorFullName','visitorLicensePlate','vehicleEntry','multiPersonVisit','isConfirm','isExit','status','reasonForRejection','isReject','approvalDate','exitDate','visitStartDate','visitEndDate', 'update','delete'];
+	displayedColumns: string[] = ['createdDate','personnelId','visitorFullName','visitorLicensePlate','vehicleEntry','multiPersonVisit','isConfirm','isExit','status','isReject','approvalDate','exitDate','visitStartDate','visitEndDate'];
 
 	visitList:Visit[];
 	visit:Visit=new Visit();

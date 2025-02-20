@@ -7,6 +7,7 @@ using Core.Aspects.Autofac.Logging;
 using Core.CrossCuttingConcerns.Logging.Serilog.Loggers;
 using DataAccess.Abstract;
 using System.Threading;
+using Core.Aspects.Autofac.Caching;
 
 namespace Business.Handlers.Users.Commands
 {
@@ -25,7 +26,7 @@ namespace Business.Handlers.Users.Commands
                 _userRepository = userRepository;
                 _mediator = mediator;
             }
-
+            [CacheRemoveAspect("Get")]
             [SecuredOperation(Priority = 1)]
             [LogAspect(typeof(FileLogger))]
             public async Task<IResult> Handle(RequestLimitIncreaseCommand request, CancellationToken cancellationToken)

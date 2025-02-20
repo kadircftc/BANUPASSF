@@ -13,6 +13,7 @@ using Core.Utilities.Results;
 
 using System.Linq;
 using Core.Entities;
+using Business.Constants;
 
 namespace WebAPI.Controllers
 {
@@ -79,7 +80,6 @@ namespace WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedResult<BanuLog>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpGet("getBanuLogTransactions")]
-        [AllowAnonymous]
         public async Task<IActionResult> GetById(int page,int pageSize,string type)
         {
             var result = await Mediator.Send(new GetBanuLogTransactionsQuery {Page=page,Type=type,PageSize=pageSize });
@@ -99,7 +99,6 @@ namespace WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BanuLog))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpPost("getGlobalFilterList")]
-        [AllowAnonymous]
         public async Task<IActionResult> GetFilteredLogs([FromBody] List<GlobalFilterGeneric> filters ,  int page,  int pageSize)
         {
             var result = await Mediator.Send(new GetBanuLogsGlobalFilterListQuery { Filters = filters ,Page=page,PageSize=pageSize});
@@ -111,7 +110,27 @@ namespace WebAPI.Controllers
 
             return Ok(result.Data);
         }
+        ///<summary>
+        ///It brings the details according to its id.
+        ///</summary>
+        ///<remarks>BanuLogs</remarks>
+        ///<return>BanuLogs List</return>
+        ///<response code="200"></response>  
+        [Produces("application/json", "text/plain")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BanuLog))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [HttpPost("getGlobalFilterListSecurity")]
+        public async Task<IActionResult> GetFilteredLogsSecurity([FromBody] List<GlobalFilterGeneric> filters, int page, int pageSize)
+        {
+            var result = await Mediator.Send(new GetBanuLogsGlobalFilterListForSecurityQuery { Filters = filters, Page = page, PageSize = pageSize });
 
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
+
+            return Ok(result.Data);
+        }
         ///<summary>
         ///It brings the details according to its full name.
         ///</summary>
@@ -147,7 +166,6 @@ namespace WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PagingResult<BanuLog>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpGet("getbypaging")]
-        [AllowAnonymous]
         
         public async Task<IActionResult> GetByPagination(int page,int pageSize)
         {
@@ -161,7 +179,30 @@ namespace WebAPI.Controllers
             }
             return BadRequest(result.Message);
         }
+        ///<summary>
+        ///It brings the details according to its page number.
+        ///</summary>
+        ///<remarks>BanuLogs</remarks>
+        ///<return>BanuLogs List By Paging</return>
+        ///<response code="200"></response>  
+        [Produces("application/json", "text/plain")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PagingResult<BanuLog>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [HttpGet("getbypagingsecurity")]
 
+        public async Task<IActionResult> GetByPaginationSecurity(int page, int pageSize)
+        {
+            var result = await Mediator.Send(new GetBanuLogsForSecurityQuery
+            {
+                Page = page,
+                PageSize = pageSize
+            });
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(result.Message);
+        }
         [Produces("application/pdf", "text/plain")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BanuLog))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
@@ -191,6 +232,54 @@ namespace WebAPI.Controllers
             }
 
             return BadRequest(result.Message);
+        }
+        [Produces("application/pdf", "text/plain")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BanuLog))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [HttpPost("getbyglobalpdf")]
+        public async Task<IActionResult> GetBanuLogsGeneratePdfQuery(List<GlobalFilterGeneric> filters)
+        {
+
+            var result = await Mediator.Send(new GetBanuLogsPdfGenerateQuery { Filters = filters });
+
+            if (result.PdfBytes!=null)
+            {
+                
+                if (result.Type=="zip")
+                {
+                    return File(result.PdfBytes, "application/zip", $"BanuLogs_{DateTime.Now.ToString("yyyy-MM-dd")}.zip");
+                }
+                else
+                {
+                    return File(result.PdfBytes, "application/pdf", $"BanuLogs_{DateTime.Now.ToString("yyyy-MM-dd")}.pdf");
+                }
+            }
+
+            return BadRequest(Messages.Unknown);
+        }
+        [Produces("application/pdf", "text/plain")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BanuLog))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [HttpPost("getbyglobalpdfforSecurity")]
+        public async Task<IActionResult> GetBanuLogsGeneratePdfForSecurityQuery(List<GlobalFilterGeneric> filters)
+        {
+
+            var result = await Mediator.Send(new GetBanuLogsPdfGenerateForSecurityQuery { Filters = filters });
+
+            if (result.PdfBytes != null)
+            {
+
+                if (result.Type == "zip")
+                {
+                    return File(result.PdfBytes, "application/zip", $"BanuLogs_{DateTime.Now.ToString("yyyy-MM-dd")}.zip");
+                }
+                else
+                {
+                    return File(result.PdfBytes, "application/pdf", $"BanuLogs_{DateTime.Now.ToString("yyyy-MM-dd")}.pdf");
+                }
+            }
+
+            return BadRequest(Messages.Unknown);
         }
         [Produces("application/pdf", "text/plain")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BanuLog))]
