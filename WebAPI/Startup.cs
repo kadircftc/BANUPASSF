@@ -163,22 +163,22 @@ namespace WebAPI
             }
 
             app.UseDeveloperExceptionPage();
-            app.UseMiddleware<ApiKeyMiddleware>();
+            //app.UseMiddleware<ApiKeyMiddleware>();
          
             app.ConfigureCustomExceptionMiddleware();
 
             _ = app.UseDbOperationClaimCreator();
 
-            if (!env.IsProduction())
-            {
-                app.UseSwagger();
+            //if (!env.IsProduction())
+            //{
+            //    app.UseSwagger();
 
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("v1/swagger.json", "BANUPASS");
-                    c.DocExpansion(DocExpansion.None);
-                });
-            }
+            //    app.UseSwaggerUI(c =>
+            //    {
+            //        c.SwaggerEndpoint("v1/swagger.json", "BANUPASS");
+            //        c.DocExpansion(DocExpansion.None);
+            //    });
+            //}
           
             app.UseCors("AllowOrigin");
 

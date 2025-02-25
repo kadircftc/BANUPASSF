@@ -1,1 +1,0 @@
-2025-02-15 16:50:01.346 +03:00 [Information] {"FullName":null,"MethodName":"Handle","User":"Kadir","Parameters":[{"Name":"request","Value":{},"Type":"GetUsersQuery"},{"Name":"cancellationToken","Value":{"IsCancellationRequested":false,"CanBeCanceled":false,"WaitHandle":{"Handle":{"value":3248},"SafeWaitHandle":{"IsInvalid":false,"IsClosed":false}},"Type":"CancellationToken"}]}
