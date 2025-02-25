@@ -34,12 +34,14 @@ import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { BanuLogComponent } from '../components/admin/banuLog/banuLog.component';
 import { LanguageComponent } from '../components/admin/language/language.component';
 import { LogDtoComponent } from '../components/admin/log/logDto.component';
+import { MultiVisitersComponent } from '../components/admin/multiVisiters/multiVisiters.component';
 import { OperationClaimComponent } from '../components/admin/operationclaim/operationClaim.component';
 import { TranslateComponent } from '../components/admin/translate/translate.component';
 import { VisitComponent } from '../components/admin/visit/visit.component';
 import { DashboardComponent } from '../components/app/dashboard/dashboard.component';
 import { AdminLayoutRoutes } from '../components/app/layouts/admin-layout/admin-layout.routing';
 import { BanuLogsComponent } from '../components/screens/banu-logs/banu-logs.component';
+import { PersonelVisitComponent } from '../components/screens/personel-visit/personel-visit.component';
 import { AllVisitorsDialogComponent } from '../components/screens/security-transactions/all-visitors-dialog/all-visitors-dialog.component';
 import { RejectDialogComponent } from '../components/screens/security-transactions/reject-dialog/reject-dialog.component';
 import { SecurityTransactionsComponent } from '../components/screens/security-transactions/security-transactions.component';
@@ -102,7 +104,8 @@ import { VisitAddComponent } from '../components/screens/visit-add/visit-add.com
         VisitComponent,
         SparkTableComponent,
         AllVisitorsDialogComponent,
-        VisitAddComponent
+        VisitAddComponent,MultiVisitersComponent
+        ,PersonelVisitComponent
     ],
     providers: [
         LoginRouting

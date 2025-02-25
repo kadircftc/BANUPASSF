@@ -127,7 +127,6 @@ export class SecurityTransactionsComponent implements OnInit, OnDestroy {
         this.pendingData = data.filter(v => !v.visit.isConfirm && !v.visit.isReject);
         let approvedData = data.filter(v => v.visit.isConfirm);
         let rejectedData = data.filter(v => v.visit.isReject);
-        console.log(rejectedData)
         this.dataSource = new MatTableDataSource(this.pendingData);
         this.approvedDataSource.data = approvedData;
         this.rejectedDataSource.data = rejectedData;
@@ -325,7 +324,6 @@ export class SecurityTransactionsComponent implements OnInit, OnDestroy {
     const day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate().toString();
     const month = (date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1).toString();
     const year = date.getFullYear();
-    console.log(day,month,year)
     return `${day}-${month}-${year}`;
   }
 

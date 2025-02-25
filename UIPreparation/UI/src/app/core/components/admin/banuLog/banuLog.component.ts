@@ -226,7 +226,6 @@ export class BanuLogComponent implements AfterViewInit, OnInit {
 	onStartDateChange(): void {
 		if (this.startDate) {
 			this.formattedStartDate = this.datePipe.transform(this.startDate, 'dd-MM-yyyy') || '';
-			console.log(this.formattedStartDate)
 			this.page=1;
 		}
 	}
@@ -234,7 +233,7 @@ export class BanuLogComponent implements AfterViewInit, OnInit {
 	onEndDateChange(): void {
 		if (this.endDate) {
 			this.formattedEndDate = this.datePipe.transform(this.endDate, 'dd-MM-yyyy') || '';
-			console.log(this.formattedEndDate)
+			(this.formattedEndDate)
 			this.page=1;
 		}
 	}
@@ -277,7 +276,6 @@ export class BanuLogComponent implements AfterViewInit, OnInit {
 			document.body.removeChild(a);
 		  },
 		  (error) => {
-			console.log(error);
 			this.alertifyService.error("PDF oluşturulurken bir hata oluştu!");
 		  }
 		);
@@ -329,7 +327,6 @@ export class BanuLogComponent implements AfterViewInit, OnInit {
 				this.pageCount=[];
 					for (let index = 1; index < res.totalPages+1; index++) {
 						this.pageCount.push(index);
-						console.log(this.pageCount)
 					}
 			});
 		}

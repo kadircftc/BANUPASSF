@@ -24,7 +24,7 @@ namespace Core.DependencyResolvers
         {
             services.AddMemoryCache();
             services.AddSingleton<ICacheManager, MemoryCacheManager>();
-            services.AddSingleton<IMailService, MailManager>();
+            services.AddTransient<IMailService, MailManager>();
             services.AddScoped<IRateLimitingService,RateLimitingService>();
             services.AddSingleton<IEmailConfiguration, EmailConfiguration>();
 

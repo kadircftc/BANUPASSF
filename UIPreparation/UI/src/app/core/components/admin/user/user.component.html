@@ -157,7 +157,7 @@
             <div class="col-md-6">
               <mat-form-field class="w-100" appearance="outline">
                 <mat-label>{{'FullName'|translate}}</mat-label>
-                <input matInput type="text" formControlName="fullName">
+                <input matInput type="text" formControlName="fullName" required>
                 <mat-icon matPrefix class="mr-2">person</mat-icon>
                 <mat-error *ngIf="userAddForm.get('fullName')!.hasError('required') && userAddForm.get('fullName')!.touched">
                   {{'Required'| translate}}
@@ -168,15 +168,17 @@
             <div class="col-md-6">
               <mat-form-field class="w-100" appearance="outline">
                 <mat-label>{{'Email'|translate}}</mat-label>
-                <input matInput type="email" formControlName="email">
+                <input matInput type="email" formControlName="email" required minlength="10" maxlength="50" [(ngModel)]="userEmail" (ngModelChange)="validateEmail()">
                 <mat-icon matPrefix class="mr-2">email</mat-icon>
-                <mat-error *ngIf="userAddForm.get('email')!.hasError('required') && userAddForm.get('email')!.touched">
-                  {{'Required'| translate}}
+                
+                <mat-error *ngIf="userAddForm.get('email')!.hasError('minlength') && userAddForm.get('email')!.touched">
+                  E-posta en az 10 karakter olmalıdır.
                 </mat-error>
-                <mat-error *ngIf="userAddForm.get('email')!.hasError('email')">
-                  {{'InvalidEmail'| translate}}
+                <mat-error *ngIf="userAddForm.get('email')!.hasError('maxlength') && userAddForm.get('email')!.touched">
+                  E-posta en fazla 50 karakter olmalıdır.
                 </mat-error>
               </mat-form-field>
+              <div *ngIf="!notValidEmail" class="error-message">E-posta en az 10 karakter olmalıdır.</div>
             </div>
           </div>
 

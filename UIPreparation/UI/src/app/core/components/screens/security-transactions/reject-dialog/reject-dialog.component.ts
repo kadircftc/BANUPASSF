@@ -21,7 +21,6 @@ export class RejectDialogComponent {
     public dialogRef: MatDialogRef<RejectDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: RejectDialogData
   ) {
-    console.log('Dialog Data:', this.data); // Debug için
   }
 
   onCancel(): void {
@@ -34,7 +33,6 @@ export class RejectDialogComponent {
         visitId: this.data.visit.id,
         reason: this.rejectReason.value
       };
-      console.log('Dialog Result:', result); // Debug için
       this.dialogRef.close(result);
     }
   }

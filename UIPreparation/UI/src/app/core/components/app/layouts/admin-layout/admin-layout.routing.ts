@@ -9,6 +9,7 @@ import { TranslateComponent } from 'app/core/components/admin/translate/translat
 import { UserComponent } from 'app/core/components/admin/user/user.component';
 import { VisitComponent } from 'app/core/components/admin/visit/visit.component';
 import { BanuLogsComponent } from 'app/core/components/screens/banu-logs/banu-logs.component';
+import { PersonelVisitComponent } from 'app/core/components/screens/personel-visit/personel-visit.component';
 import { SecurityTransactionsComponent } from 'app/core/components/screens/security-transactions/security-transactions.component';
 import { VisitAddComponent } from 'app/core/components/screens/visit-add/visit-add.component';
 import { ClaimGuard } from 'app/core/guards/claim.guard';
@@ -71,6 +72,12 @@ export const AdminLayoutRoutes: Routes = [
         component: SecurityTransactionsComponent, 
         canActivate: [LoginGuard, ClaimGuard],
         data: { claim: 'GetVisitsMultiVisitsQuery' }
+    },
+    { 
+        path: 'personel-visit', 
+        component: PersonelVisitComponent, 
+        canActivate: [LoginGuard, ClaimGuard],
+        data: { claim: 'GetPersonnelVisitsQuery' }
     },
     { 
         path: 'visit', 

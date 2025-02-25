@@ -32,7 +32,9 @@ namespace Business.Helpers
             {
                 FullName = "System Admin",
                 Password = "Q1w212*_*",
-                Email = "admin@adminmail.com",
+                Email = "admin@adminmail.com"
+                ,IsExternalUser=false
+                
             });
             await mediator.Send(new CreateUserClaimsInternalCommand
             {

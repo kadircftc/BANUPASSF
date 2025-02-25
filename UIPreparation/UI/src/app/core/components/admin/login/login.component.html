@@ -27,21 +27,16 @@
         <mat-error>{{'Required' | translate}}</mat-error>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="form-field">
-        <mat-label>{{'Language' | translate}}</mat-label>
-        <mat-select name="lang" [(ngModel)]="loginUser.lang" (selectionChange)="changeLang($event.value)" required>
-          <mat-option *ngFor="let item of langugelookUp" [value]="item.id">
-            {{item.label}}
-          </mat-option>
-        </mat-select>
-        <mat-icon matPrefix>language</mat-icon>
-        <mat-error>{{'Required' | translate}}</mat-error>
-      </mat-form-field>
+     
 
       <button mat-flat-button color="primary" type="submit" class="login-button">
         <mat-icon>login</mat-icon>
         <span>{{'Login'| translate}}</span>
       </button>
+
+      <div class="forgot-password">
+        <a href="https://eposta.bandirma.edu.tr/SifreSifirla" target="_blank">Şifremi Unuttum?</a>
+      </div>
     </form>
   </div>
 </div>

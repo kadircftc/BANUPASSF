@@ -7,6 +7,8 @@ using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Logging;
 using Core.Aspects.Autofac.Validation;
 using Core.CrossCuttingConcerns.Logging.Serilog.Loggers;
+using Core.Entities.Concrete;
+using Core.Utilities.Mail;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -32,14 +34,18 @@ namespace Business.Handlers.VisitConfirms.Commands
             private readonly IMediator _mediator;
             private readonly IHttpContextAccessor _httpContextAccessor;
             private readonly IUserService _userService;
+            private readonly IUserRepository _userRepository;
+            private readonly IMailService _mailService;
 
-            public ConfirmVisitCommandHandler(IVisitConfirmRepository visitConfirmRepository, IVisitRepository visitRepository, IMediator mediator, IHttpContextAccessor httpContextAccessor, IUserService userService)
+            public ConfirmVisitCommandHandler(IVisitConfirmRepository visitConfirmRepository, IVisitRepository visitRepository, IMediator mediator, IHttpContextAccessor httpContextAccessor, IUserService userService, IUserRepository userRepository, IMailService mailService)
             {
                 _visitConfirmRepository = visitConfirmRepository;
                 _visitRepository = visitRepository;
                 _mediator = mediator;
                 _httpContextAccessor = httpContextAccessor;
                 _userService = userService;
+                _userRepository = userRepository;
+                _mailService = mailService;
             }
 
             [ValidationAspect(typeof(UpdateVisitConfirmValidator), Priority = 1)]
@@ -54,11 +60,18 @@ namespace Business.Handlers.VisitConfirms.Commands
                 visitRecord.IsConfirm =true;
                 var userId = _userService.GetUserIdFromJwt(_httpContextAccessor.HttpContext.Request);
                 var securityVisitConfirm=new VisitConfirm { CreatedDate = DateTime.Now ,SecurityId=userId,VisitId=request.VisitId};
+                User user = await _userRepository.GetAsync(u => u.UserId == visitRecord.PersonnelId);
 
                 _visitRepository.Update(visitRecord);
                 _visitConfirmRepository.Add(securityVisitConfirm);
                 await _visitRepository.SaveChangesAsync();
                 await _visitConfirmRepository.SaveChangesAsync();
+
+
+                _= Task.Run(async () =>
+                {
+                    await _mailService.SendAsync(user, visitRecord.VisitorFullName, true);
+                });
                 return new SuccessResult($"{visitRecord.VisitorFullName} {DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss")} tarihinde giriş yaptı");
 
             }

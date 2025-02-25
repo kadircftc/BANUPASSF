@@ -32,7 +32,7 @@ namespace WebAPI.Controllers
         }
 
         [Authorize]
-        [HttpGet("verify-token")]
+        [HttpGet("cx0_d_s91o2_xw24")]
         public IActionResult VerifyToken()
         {
             try
@@ -67,7 +67,7 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> Login([FromBody] LoginUserQuery loginModel)
         {
             var result = await Mediator.Send(loginModel);
-            return result.Success ? Ok(result) : Unauthorized(result.Message);
+            return result.Success ? Ok(result) : Unauthorized(result);
         }
 
         [AllowAnonymous]

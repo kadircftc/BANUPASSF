@@ -231,3 +231,25 @@
     }
   }
 } 
+
+.logout-btn {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  background-color: #f44336; /* Red color for exit */
+  color: white; /* Text color */
+  border-radius: 5px; /* Rounded corners */
+  padding: 10px 15px; /* Padding for better size */
+  transition: background-color 0.3s, transform 0.2s; /* Smooth transition */
+  width: 100%; /* Full width */
+  justify-content: center; /* Center the content */
+}
+
+.logout-btn:hover {
+  background-color: #d32f2f; /* Darker red on hover */
+  transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.logout-btn:focus {
+  outline: none; /* Remove default outline */
+}

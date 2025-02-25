@@ -26,21 +26,21 @@ namespace WebAPI
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
-            //var host = CreateHostBuilder(args).Build();
-            //using (var scope = host.Services.CreateScope())
-            //{
-            //    var services = scope.ServiceProvider;
-            //    try
-            //    {
-            //        var context = services.GetRequiredService<PostgreDbContext>();
-            //        context.Database.Migrate();
-            //        Console.WriteLine("Database migration completed.");
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        Console.WriteLine($"Migration error: {ex.Message}");
-            //    }
-            //}
+            var host = CreateHostBuilder(args).Build();
+            using (var scope = host.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    var context = services.GetRequiredService<PostgreDbContext>();
+                    context.Database.Migrate();
+                    Console.WriteLine("Database migration completed.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Migration error: {ex.Message}");
+                }
+            }
 
             CreateHostBuilder(args).Build().Run();
         }

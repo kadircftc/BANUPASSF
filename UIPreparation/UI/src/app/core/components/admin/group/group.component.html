@@ -134,7 +134,7 @@
         <ng-multiselect-dropdown 
           [settings]="dropdownSettings" 
           [placeholder]="'Users'" 
-          [data]="userDropdownList"
+          [data]="formattedUserDropdownList"
           [(ngModel)]="userSelectedItems" 
           (onSelect)="onItemSelect('User')" 
           (onSelectAll)="onSelectAll('User')"

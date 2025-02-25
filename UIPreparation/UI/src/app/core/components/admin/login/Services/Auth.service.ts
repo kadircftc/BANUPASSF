@@ -58,7 +58,6 @@ export class AuthService {
         this.claimsSubject.next(claims);
         this.claimsLoaded = true;
       } catch (error) {
-        console.error('Claims yüklenirken hata:', error);
         this.claimsSubject.next([]);
       }
     }

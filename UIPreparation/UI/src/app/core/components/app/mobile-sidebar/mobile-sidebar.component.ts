@@ -26,7 +26,8 @@ export const ADMINROUTES: RouteInfo[] = [
 export const USERROUTES: RouteInfo[] = [ 
   { path: '/banu-logs', title: 'Güvenlik Rapor İşlemleri', icon: 'admin_panel_settings', class: '', claim: "GetBanuLogsForSecurityQuery" },
   { path: '/security-transactions', title: 'Güvenlik Ziyaret İşlemleri', icon: 'security', class: '', claim: "GetVisitsMultiVisitsQuery" },
-  { path: '/visit-add', title: 'Ziyaret Talebi', icon: 'add_circle', class: '', claim: "VehicleEntranceCommand" }
+  { path: '/visit-add', title: 'Ziyaret Talebi', icon: 'add_circle', class: '', claim: "VehicleEntranceCommand" },
+  { path: '/personel-visit', title: 'Ziyaret Taleplerim', icon: 'event_note', class: '', claim: "GetPersonnelVisitsQuery" }
 ];
 
 @Component({
@@ -103,7 +104,10 @@ export class MobileSidebarComponent implements OnInit, OnDestroy {
       this.initializeMenuItems();
     }
   }
-
+  logOut() {
+    this.authService.logOut();
+    this.router.navigate(['/login']);
+  }
   trackByFn(index: number, item: RouteInfo): string {
     return item.path;
   }

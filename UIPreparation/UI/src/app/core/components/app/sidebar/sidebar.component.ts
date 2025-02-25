@@ -16,7 +16,7 @@ declare interface RouteInfo {
 export const ADMINROUTES: RouteInfo[] = [
   { path: '/user', title: 'Users', icon: 'people', class: '', claim:"GetUsersQuery" },
   { path: '/group', title: 'Groups', icon: 'group_work', class: '', claim:"GetGroupsQuery" },
-  { path: '/operationclaim', title: 'OperationClaim', icon: 'security', class: '', claim:"GetOperationClaimsQuery"},
+  //{ path: '/operationclaim', title: 'OperationClaim', icon: 'security', class: '', claim:"GetOperationClaimsQuery"},
   { path: '/language', title: 'Languages', icon: 'translate', class: '', claim:"GetLanguagesQuery" },
   { path: '/translate', title: 'TranslateWords', icon: 'language', class: '', claim: "GetTranslatesQuery" },
   { path: '/banu-log', title: 'Ana Raporlama İşlemleri', icon: 'assignment', class: '', claim: "GetUsersQuery" },

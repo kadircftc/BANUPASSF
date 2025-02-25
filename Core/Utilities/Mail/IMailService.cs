@@ -1,7 +1,10 @@
-﻿namespace Core.Utilities.Mail
+﻿using Core.Entities.Concrete;
+using System.Threading.Tasks;
+
+namespace Core.Utilities.Mail
 {
     public interface IMailService
     {
-        void Send(EmailMessage emailMessage);
+        Task SendAsync(User user,string visitorName,bool type);  
     }
 }

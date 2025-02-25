@@ -1,5 +1,6 @@
 ﻿import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { PrivPagingResult } from 'app/core/models/privPaging';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 import { Visit } from '../models/Visit';
@@ -18,6 +19,10 @@ export class VisitService {
 
     return this.httpClient.get<Visit[]>(environment.getApiUrl + '/Visits/getall')
   }
+  getVisitListByPaging(page: number, pageSize: number): Observable<PrivPagingResult<Visit>> {
+
+    return this.httpClient.get<PrivPagingResult<Visit>>(environment.getApiUrl + '/Visits/getVisitsByPagingQuery?page='+page+'&pageSize='+pageSize)
+  }
   getVisitMergeMultiVisitList(date:string): Observable<MergeMultiVisit[]> {
 
     return this.httpClient.get<MergeMultiVisit[]>(environment.getApiUrl + '/Visits/GetVisitsWithMultiVisits'+'?date='+date)
@@ -25,7 +30,9 @@ export class VisitService {
   getVisitById(id: number): Observable<Visit> {
     return this.httpClient.get<Visit>(environment.getApiUrl + '/Visits/getbyid?id='+id)
   }
-
+  getPersonnelVisitList(): Observable<Visit> {
+    return this.httpClient.get<Visit>(environment.getApiUrl + '/Visits/getpersonnelvisitlist')
+  }
   addVisit(visit: Visit): Observable<any> {
 
     return this.httpClient.post(environment.getApiUrl + '/Visits/', visit, { responseType: 'text' });

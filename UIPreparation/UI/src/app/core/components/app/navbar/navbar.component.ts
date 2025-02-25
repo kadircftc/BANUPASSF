@@ -40,12 +40,14 @@ export class NavbarComponent implements OnInit {
 		);
 	}
 	ngOnInit() {
-		console.log(this.userName);
 		this.userName = this.authService.getUserName();
 	}
 
 	setUserName(){
 
 		this.userName = this.authService.getUserName();
+	}
+	checkClaim(claim:string):boolean{
+		return this.authService.claimGuard(claim);
 	}
 }

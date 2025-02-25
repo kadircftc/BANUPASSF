@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpTransportType, HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import { LocalStorageService } from 'app/core/services/local-storage.service';
+import { environment } from 'environments/environment';
 import { MergeMultiVisit } from '../../visit/models/mergeMultiVisit';
 
 @Injectable({
@@ -20,45 +21,41 @@ export class SignalRService {
 
     const token = this.storageService.getToken();
     if (!token) {
-      console.error('No authentication token found');
       return;
     }
 
+    // API URL'den SignalR hub URL'sini oluştur
+    const hubUrl = environment.getApiUrl.replace('/api/v1', '/d_o10_sig_r');
+
     this.hubConnection = new HubConnectionBuilder()
-      .withUrl("https://localhost:5001/chat", {
+      .withUrl(hubUrl, {
         transport: HttpTransportType.WebSockets,
         accessTokenFactory: () => token,
         skipNegotiation: true
       })
-      .configureLogging(LogLevel.Debug) // Daha detaylı loglama için Debug seviyesine çektik
+      .configureLogging(environment.production ? LogLevel.Error : LogLevel.Debug)
       .withAutomaticReconnect([0, 2000, 5000, 10000])
       .build();
 
     this.hubConnection
       .start()
       .then(() => {
-        console.log('SignalR Connected Successfully');
         this.isConnected = true;
         
         // Bağlantı başarılı olduğunda mevcut connection ID'yi logla
-        console.log('Connection ID:', this.hubConnection.connectionId);
       })
       .catch(err => {
-        console.error('SignalR Connection Error:', err);
         this.isConnected = false;
         
         // Hata detaylarını logla
         if (err.statusCode) {
-          console.error('Status Code:', err.statusCode);
         }
         if (err.message) {
-          console.error('Error Message:', err.message);
         }
       });
 
     // Bağlantı durumu değişikliklerini dinle
     this.hubConnection.onclose((error) => {
-      console.error('SignalR Connection Closed:', error);
       this.isConnected = false;
     });
 
@@ -68,7 +65,6 @@ export class SignalRService {
     });
 
     this.hubConnection.onreconnected((connectionId) => {
-      console.log('SignalR Reconnected. ConnectionId:', connectionId);
       this.isConnected = true;
     });
   }
@@ -81,7 +77,6 @@ export class SignalRService {
 
     try {
       this.hubConnection.on("VisitAdded", (visit: MergeMultiVisit) => {
-        console.log('Received visit notification:', visit);
         callback(visit);
       });
     } catch (error) {
@@ -93,7 +88,6 @@ export class SignalRService {
     if (this.hubConnection) {
       this.hubConnection.stop()
         .then(() => {
-          console.log('SignalR Disconnected');
           this.isConnected = false;
         })
         .catch(err => {

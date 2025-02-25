@@ -125,7 +125,6 @@ export class VisitAddComponent implements OnInit {
 
       saveVisitObservable.subscribe({
         next: (response) => {
-          console.log('Visit created:', response);
           this.alertifyService.success(response);
           this.resetForm();
         },

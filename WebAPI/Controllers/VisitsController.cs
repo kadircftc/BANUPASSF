@@ -52,6 +52,25 @@ namespace WebAPI.Controllers
         [Produces("application/json", "text/plain")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Visit>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [HttpGet("getVisitsByPagingQuery")]
+        public async Task<IActionResult> GetList(int page, int pageSize)
+        {
+            var result = await Mediator.Send(new GetVisitsByPagingQuery{ Page=page,PageSize=pageSize});
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(result.Message);
+        }
+        ///<summary>
+        ///List Visits
+        ///</summary>
+        ///<remarks>Visits</remarks>
+        ///<return>List Visits</return>
+        ///<response code="200"></response>
+        [Produces("application/json", "text/plain")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Visit>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpGet("getpersonnelvisitlist")]
         public async Task<IActionResult> GetPersonnelVisitList()
         {

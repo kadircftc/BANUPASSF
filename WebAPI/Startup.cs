@@ -110,7 +110,7 @@ namespace WebAPI
                             var path = context.HttpContext.Request.Path;
 
                             if (!string.IsNullOrEmpty(accessToken) &&
-                                (path.StartsWithSegments("/chat")))
+                                (path.StartsWithSegments("/d_o10_sig_r")))
                             {
                                 context.Token = accessToken;
                             }
@@ -207,7 +207,7 @@ namespace WebAPI
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<VisitHub>("/chat");
+                endpoints.MapHub<VisitHub>("/d_o10_sig_r");
             });
         }
     }

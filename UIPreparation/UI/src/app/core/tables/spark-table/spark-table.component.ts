@@ -87,14 +87,12 @@ export class SparkTableComponent implements OnInit {
 	onStartDateChange(): void {
 		if (this.startDate) {
 			this.formattedStartDate = this.datePipe.transform(this.startDate, 'dd-MM-yyyy') || '';
-			console.log(this.formattedStartDate)
 		}
 	}
 
 	onEndDateChange(): void {
 		if (this.endDate) {
 			this.formattedEndDate = this.datePipe.transform(this.endDate, 'dd-MM-yyyy') || '';
-			console.log(this.formattedEndDate)
 		}
 	}
 	getBanuLogById(banuLogId: number) {

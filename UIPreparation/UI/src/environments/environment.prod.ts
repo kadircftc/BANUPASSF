@@ -1,6 +1,6 @@
 export const environment = {
     production: true,
-    getApiUrl: `http://banu-pass-api:5000/api/v1`, // Prodüksiyon API URL'si
+    getApiUrl: window.location.protocol + '//' + window.location.hostname + ':5000/api/v1', // Dinamik host URL
     getDropDownSetting: {
       singleSelection: false,
       idField: 'id',

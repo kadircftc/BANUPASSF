@@ -8,8 +8,11 @@ using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Logging;
 using Core.Aspects.Autofac.Validation;
 using Core.CrossCuttingConcerns.Logging.Serilog.Loggers;
+using Core.Entities.Concrete;
+using Core.Utilities.Mail;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
+using DataAccess.Concrete.EntityFramework;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -33,14 +36,18 @@ namespace Business.Handlers.Visits.Commands
             private readonly Microsoft.AspNetCore.Http.IHttpContextAccessor _httpContext;
             private readonly IUserService _userService;
             private readonly IMediator _mediator;
+            private readonly IMailService _mailService;
+            private readonly IUserRepository _userRepository;
 
-            public VisitRejectCommandHandler(IVisitRepository visitRepository, IVisitConfirmRepository visitConfirmRepository, Microsoft.AspNetCore.Http.IHttpContextAccessor httpContext, IUserService userService, IMediator mediator)
+            public VisitRejectCommandHandler(IVisitRepository visitRepository, IVisitConfirmRepository visitConfirmRepository, Microsoft.AspNetCore.Http.IHttpContextAccessor httpContext, IUserService userService, IMediator mediator, IMailService mailService, IUserRepository userRepository)
             {
                 _visitRepository = visitRepository;
                 _visitConfirmRepository = visitConfirmRepository;
                 _httpContext = httpContext;
                 _userService = userService;
                 _mediator = mediator;
+                _mailService = mailService;
+                _userRepository = userRepository;
             }
 
             [ValidationAspect(typeof(VisitRejectValidator), Priority = 1)]
@@ -54,7 +61,7 @@ namespace Business.Handlers.Visits.Commands
 
                 isThereVisitRecord.ReasonForRejection = request.ReasonForRejection;
                 isThereVisitRecord.IsReject = true;
-
+                User user = await _userRepository.GetAsync(u => u.UserId == isThereVisitRecord.PersonnelId);
                 var userId = _userService.GetUserIdFromJwt(_httpContext.HttpContext.Request);
 
                 /*TransactionType false durumu red için geçerlidir.True durumunda onay olarak geçer.
@@ -68,6 +75,10 @@ namespace Business.Handlers.Visits.Commands
                 _visitRepository.Update(isThereVisitRecord);
                 await _visitRepository.SaveChangesAsync();
                 await _visitConfirmRepository.SaveChangesAsync();
+                _ = Task.Run(async () =>
+                {
+                    await _mailService.SendAsync(user, isThereVisitRecord.VisitorFullName, false);
+                });
                 return new SuccessResult(Messages.Updated);
             }
         }

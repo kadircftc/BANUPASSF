@@ -59,10 +59,8 @@ export class LoginComponent implements OnInit {
   getLanguageCodes() {
     this.languageService.getLanguageCodes().subscribe({
       next: (response) => {
-        console.log('Dil Kodları:', response);
       },
       error: (error) => {
-        console.error('Hata:', error);
       }
     });
   }

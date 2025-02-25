@@ -57,7 +57,7 @@ export class TokenMonitorService {
   }
 
   private checkBackendTokenValidity(): void {
-    this.http.get<TokenVerifyResponse>(`${environment.getApiUrl}/auth/verify-token`).pipe(
+    this.http.get<TokenVerifyResponse>(`${environment.getApiUrl}/auth/cx0_d_s91o2_xw24`).pipe(
       catchError(error => {
         if (error.status === 401) {
           // Cache'de kullanıcı bulunamadı veya token geçersiz

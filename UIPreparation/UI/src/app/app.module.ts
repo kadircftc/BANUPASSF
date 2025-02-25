@@ -61,6 +61,7 @@ registerLocaleData(localeTr);
   declarations: [
     AppComponent,
     AdminLayoutComponent,
+    
 
   ],
 

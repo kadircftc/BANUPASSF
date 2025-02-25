@@ -8,11 +8,44 @@
           </div>
           <div class="card-body">
             <div class="table-responsive">
-              <div class="col-md-4 pull-right">
-                <mat-form-field>
-                  <mat-label>Filter</mat-label>
-                  <input matInput (keyup)="applyFilter($event)" placeholder="" #input>
-                </mat-form-field>
+              <div class="row" *ngIf="visitList">
+                <div style="font-weight: bold;" class="col-md-4">
+                  {{ totalItemCount }} kayıt arasından {{ visitList.length }} kayıt listeleniyor
+                </div>
+                <div class="col-md-4">
+                  <div class="pagination-container" *ngIf="totalPages > 0">
+                    <nav aria-label="Page navigation">
+                      <ul class="pagination">
+                        <!-- Önceki Sayfa Butonu -->
+                        <li class="page-item" [class.disabled]="page === 1">
+                          <a class="page-link" (click)="onPageChange(page - 1)" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                          </a>
+                        </li>
+                
+                        <!-- Sayfa Numaraları ve "..." İşaretleri -->
+                        <li class="page-item" *ngFor="let p of getPagination()" [class.active]="p === page">
+                          <a class="page-link" *ngIf="p !== -1" (click)="onPageChange(p)">{{ p }}</a>
+                          <span class="page-link dots" *ngIf="p === -1">...</span>
+                        </li>
+                
+                        <!-- Sonraki Sayfa Butonu -->
+                        <li class="page-item" [class.disabled]="page === totalPages">
+                          <a class="page-link" (click)="onPageChange(page + 1)" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                          </a>
+                        </li>
+                      </ul>
+                    </nav>
+                  </div>
+                </div>
+                
+                <div class="col-md-4">
+                  <mat-form-field class="float-right">
+                    <mat-label>Filter</mat-label>
+                    <input matInput (keyup)="applyFilter($event)" placeholder="" #input>
+                  </mat-form-field>
+                </div>
               </div>
 							<table mat-table [dataSource]="dataSource" matSort class="w-100">
 
@@ -147,7 +180,7 @@
                   </td>
                 </tr>
 							</table>
-							<mat-paginator [pageSizeOptions]="[10, 25, 50, 100]"></mat-paginator>
+							<mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" [pageSize]="pageSize"></mat-paginator>
 							</div>
           </div>
         </div>
@@ -158,157 +191,6 @@
 
 
 
-<div class="modal modal-angular fade" id="visit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-body text-center">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-          (click)="clearFormGroup(visitAddForm)"><span aria-hidden="true">&times;</span></button>
-        <h4 class="margin-top">
-           {{'VisitForm'| translate}}
-        </h4>
-        <div class="separator"></div>
-        <form *ngIf="visitAddForm" [formGroup]="visitAddForm" (ngSubmit)="save()">
-          
-					<div class="row">
-            <div class="col col-md-12">
-              <mat-form-field class="example-full-width">
-                <input matInput placeholder="createdDate" type="date" id="createdDate" name="createdDate"
-                       formControlName="createdDate" />
-                <div class="alert alert-danger"
-                     *ngIf="visitAddForm.get('createdDate')!.hasError('createdDate') && visitAddForm.get('createdDate')!.dirty">
-                </div>
-              </mat-form-field>
-            </div>
-          </div>
-					<div class="row">
-						<div class="col-md-12">
-							<select class="browser-default custom-select" formControlName="personnelId">
-								<option *ngFor="let item of visitlookUp" [value]="item.id"> {{item.label}}</option>
-							</select>
-						</div>
-					</div>
-					<div class="row">
-            <div class="col col-md-12">
-              <mat-form-field class="example-full-width">
-                <input matInput placeholder="visitorFullName" type="text" id="visitorFullName" name="visitorFullName"
-                       formControlName="visitorFullName" />
-                <div class="alert alert-danger"
-                     *ngIf="visitAddForm.get('visitorFullName')!.hasError('visitorFullName') && visitAddForm.get('visitorFullName')!.dirty">
-                </div>
-              </mat-form-field>
-            </div>
-          </div>
-					<div class="row">
-            <div class="col col-md-12">
-              <mat-form-field class="example-full-width">
-                <input matInput placeholder="visitorLicensePlate" type="text" id="visitorLicensePlate" name="visitorLicensePlate"
-                       formControlName="visitorLicensePlate" />
-                <div class="alert alert-danger"
-                     *ngIf="visitAddForm.get('visitorLicensePlate')!.hasError('visitorLicensePlate') && visitAddForm.get('visitorLicensePlate')!.dirty">
-                </div>
-              </mat-form-field>
-            </div>
-          </div><div class="row">
-            <div class="col col-md-2">
-                       <mat-checkbox  formControlName="vehicleEntry" id="vehicleEntry" name="vehicleEntry" > vehicleEntry
-                      </mat-checkbox>
-            </div>
-          </div><div class="row">
-            <div class="col col-md-2">
-                       <mat-checkbox  formControlName="multiPersonVisit" id="multiPersonVisit" name="multiPersonVisit" > multiPersonVisit
-                      </mat-checkbox>
-            </div>
-          </div><div class="row">
-            <div class="col col-md-2">
-                       <mat-checkbox  formControlName="isConfirm" id="isConfirm" name="isConfirm" > isConfirm
-                      </mat-checkbox>
-            </div>
-          </div><div class="row">
-            <div class="col col-md-2">
-                       <mat-checkbox  formControlName="isExit" id="isExit" name="isExit" > isExit
-                      </mat-checkbox>
-            </div>
-          </div><div class="row">
-            <div class="col col-md-2">
-                       <mat-checkbox  formControlName="status" id="status" name="status" > status
-                      </mat-checkbox>
-            </div>
-          </div>
-					<div class="row">
-            <div class="col col-md-12">
-              <mat-form-field class="example-full-width">
-                <input matInput placeholder="reasonForRejection" type="text" id="reasonForRejection" name="reasonForRejection"
-                       formControlName="reasonForRejection" />
-                <div class="alert alert-danger"
-                     *ngIf="visitAddForm.get('reasonForRejection')!.hasError('reasonForRejection') && visitAddForm.get('reasonForRejection')!.dirty">
-                </div>
-              </mat-form-field>
-            </div>
-          </div>
-					<div class="row">
-            <div class="col col-md-12">
-              <mat-form-field class="example-full-width">
-                <input matInput placeholder="isReject" type="text" id="isReject" name="isReject"
-                       formControlName="isReject" />
-                <div class="alert alert-danger"
-                     *ngIf="visitAddForm.get('isReject')!.hasError('isReject') && visitAddForm.get('isReject')!.dirty">
-                </div>
-              </mat-form-field>
-            </div>
-          </div>
-					<div class="row">
-            <div class="col col-md-12">
-              <mat-form-field class="example-full-width">
-                <input matInput placeholder="approvalDate" type="text" id="approvalDate" name="approvalDate"
-                       formControlName="approvalDate" />
-                <div class="alert alert-danger"
-                     *ngIf="visitAddForm.get('approvalDate')!.hasError('approvalDate') && visitAddForm.get('approvalDate')!.dirty">
-                </div>
-              </mat-form-field>
-            </div>
-          </div>
-					<div class="row">
-            <div class="col col-md-12">
-              <mat-form-field class="example-full-width">
-                <input matInput placeholder="exitDate" type="date" id="exitDate" name="exitDate"
-                       formControlName="exitDate" />
-                <div class="alert alert-danger"
-                     *ngIf="visitAddForm.get('exitDate')!.hasError('exitDate') && visitAddForm.get('exitDate')!.dirty">
-                </div>
-              </mat-form-field>
-            </div>
-          </div>
-					<div class="row">
-            <div class="col col-md-12">
-              <mat-form-field class="example-full-width">
-                <input matInput placeholder="visitStartDate" type="date" id="visitStartDate" name="visitStartDate"
-                       formControlName="visitStartDate" />
-                <div class="alert alert-danger"
-                     *ngIf="visitAddForm.get('visitStartDate')!.hasError('visitStartDate') && visitAddForm.get('visitStartDate')!.dirty">
-                </div>
-              </mat-form-field>
-            </div>
-          </div>
-					<div class="row">
-            <div class="col col-md-12">
-              <mat-form-field class="example-full-width">
-                <input matInput placeholder="visitEndDate" type="date" id="visitEndDate" name="visitEndDate"
-                       formControlName="visitEndDate" />
-                <div class="alert alert-danger"
-                     *ngIf="visitAddForm.get('visitEndDate')!.hasError('visitEndDate') && visitAddForm.get('visitEndDate')!.dirty">
-                </div>
-              </mat-form-field>
-            </div>
-          </div>
-                   
-          <button mat-raised-button type="submit" class="btn btn-danger pull-right">{{'Save'|translate}}</button>
-          <div class="clearfix"></div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
 
 <swal #deleteSwal title="{{'DeleteConfirm' | translate}}" icon = "error" [showCancelButton]="true"
 	[confirmButtonText] = "'OK'"[cancelButtonText] = "'Cancel'" >

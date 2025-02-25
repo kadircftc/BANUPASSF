@@ -37,15 +37,15 @@ namespace Business.Handlers.BanuLogs.Queries
             [BanuLogAspect(typeof(MsSqlLoggerProcess))]
             public async Task<ConfigurePdf> Handle(GetBanuLogsPdfGenerateForSecurityQuery request, CancellationToken cancellationToken)
             {
-                if (request.Filters == null || !request.Filters.Any())
-                {
-                    request.Filters = new List<GlobalFilterGeneric>
-                {
-                    new GlobalFilterGeneric {Operation="Contains", Key = "TransactionType", Value ="Güvenlik Onay" }
-                };
-                }
-                else
-                {
+                //if (request.Filters == null || !request.Filters.Any())
+                //{
+                //    request.Filters = new List<GlobalFilterGeneric>
+                //{
+                //    new GlobalFilterGeneric {Operation="Contains", Key = "TransactionType", Value ="Güvenlik Onay" }
+                //};
+                //}
+                 if(request.Filters.Any()) 
+                    {
                     foreach (var filter in request.Filters)
                     {
                         if (filter.Key == "TransactionType")

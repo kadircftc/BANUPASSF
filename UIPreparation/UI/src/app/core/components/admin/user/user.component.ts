@@ -16,6 +16,7 @@ import { AlertifyService } from "app/core/services/alertify.service";
 import { LookUpService } from "app/core/services/lookUp.service";
 import { environment } from "environments/environment";
 import { IDropdownSettings } from "ng-multiselect-dropdown";
+import { GroupService } from '../group/Services/group.service';
 import { AuthService } from "../login/Services/auth.service";
 import { PasswordDto } from "./models/passwordDto";
 import { User } from "./models/user";
@@ -33,7 +34,6 @@ export class UserComponent implements AfterViewInit, OnInit ,OnDestroy{
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   displayedColumns: string[] = [
-    "userId",
     "email",
     "fullName",
     "reqLimit",
@@ -43,18 +43,17 @@ export class UserComponent implements AfterViewInit, OnInit ,OnDestroy{
     "notes",
     "updateReqLimit",
     "passwordChange",
-    "updateClaim",
     "updateGroupClaim",
     "update",
-    "delete",
   ];
   visits: string[] = ["jhnuıohıuj"];
   user: User;
   userList: User[];
+  userEmail: string;
   groupDropdownList: LookUp[];
   groupSelectedItems: LookUp[];
   dropdownSettings: IDropdownSettings;
-
+  notValidEmail: boolean = true;
   claimDropdownList: LookUp[];
   claimSelectedItems: LookUp[];
   private hubConnection!: signalR.HubConnection;
@@ -71,7 +70,8 @@ export class UserComponent implements AfterViewInit, OnInit ,OnDestroy{
     private alertifyService: AlertifyService,
     private lookUpService: LookUpService,
     private authService: AuthService,
-    private signalRService: SignalRService
+    private signalRService: SignalRService,
+    private groupService: GroupService
   ) {}
 
   ngAfterViewInit(): void {
@@ -85,6 +85,7 @@ export class UserComponent implements AfterViewInit, OnInit ,OnDestroy{
     this.createUserAddForm();
     this.createPasswordForm();
     this.createReqLimitForm();
+    this.getGroupList();
 
     this.dropdownSettings = environment.getDropDownSetting;
 
@@ -95,7 +96,20 @@ export class UserComponent implements AfterViewInit, OnInit ,OnDestroy{
     this.lookUpService.getOperationClaimLookUp().subscribe((data) => {
       this.claimDropdownList = data;
     });
-  
+
+    // Real-time validation for email field
+    this.userAddForm.get('email')?.valueChanges.subscribe(() => {
+        this.validateEmail();
+    });
+  }
+
+  validateEmail() {
+    
+    if (this.userEmail.length < 10 || this.userEmail.length > 50) {
+      this.notValidEmail = false;
+    } else {
+      this.notValidEmail = true;
+    }
   }
 
   getUserGroupPermissions(userId: number) {
@@ -355,11 +369,16 @@ export class UserComponent implements AfterViewInit, OnInit ,OnDestroy{
           this.clearFormGroup(this.reqLimitForm);
         },
         error: (error) => {
-          console.log('Error details:', error);
           const errorMessage = error.error || error.message || 'An error occurred while updating request limit';
           this.alertifyService.error(errorMessage);
         }
       });
     }
+  }
+
+  getGroupList() {
+    this.groupService.getGroupList().subscribe(data => {
+        this.groupDropdownList = data.map(group => ({ id: group.id, label: group.groupName }));
+    });
   }
 }
