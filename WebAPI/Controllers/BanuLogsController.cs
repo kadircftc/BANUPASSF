@@ -328,42 +328,42 @@ namespace WebAPI.Controllers
             return BadRequest(result.Message);
         }
 
-        /// <summary>
-        /// Update BanuLog.
-        /// </summary>
-        /// <param name="updateBanuLog"></param>
-        /// <returns></returns>
-        [Produces("application/json", "text/plain")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        [HttpPut]
-        public async Task<IActionResult> Update([FromBody] UpdateBanuLogCommand updateBanuLog)
-        {
-            var result = await Mediator.Send(updateBanuLog);
-            if (result.Success)
-            {
-                return Ok(result.Message);
-            }
-            return BadRequest(result.Message);
-        }
+        ///// <summary>
+        ///// Update BanuLog.
+        ///// </summary>
+        ///// <param name="updateBanuLog"></param>
+        ///// <returns></returns>
+        //[Produces("application/json", "text/plain")]
+        //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        //[HttpPut]
+        //public async Task<IActionResult> Update([FromBody] UpdateBanuLogCommand updateBanuLog)
+        //{
+        //    var result = await Mediator.Send(updateBanuLog);
+        //    if (result.Success)
+        //    {
+        //        return Ok(result.Message);
+        //    }
+        //    return BadRequest(result.Message);
+        //}
 
-        /// <summary>
-        /// Delete BanuLog.
-        /// </summary>
-        /// <param name="deleteBanuLog"></param>
-        /// <returns></returns>
-        [Produces("application/json", "text/plain")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        [HttpDelete]
-        public async Task<IActionResult> Delete([FromBody] DeleteBanuLogCommand deleteBanuLog)
-        {
-            var result = await Mediator.Send(deleteBanuLog);
-            if (result.Success)
-            {
-                return Ok(result.Message);
-            }
-            return BadRequest(result.Message);
-        }
+        ///// <summary>
+        ///// Delete BanuLog.
+        ///// </summary>
+        ///// <param name="deleteBanuLog"></param>
+        ///// <returns></returns>
+        //[Produces("application/json", "text/plain")]
+        //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        //[HttpDelete]
+        //public async Task<IActionResult> Delete([FromBody] DeleteBanuLogCommand deleteBanuLog)
+        //{
+        //    var result = await Mediator.Send(deleteBanuLog);
+        //    if (result.Success)
+        //    {
+        //        return Ok(result.Message);
+        //    }
+        //    return BadRequest(result.Message);
+        //}
     }
 }

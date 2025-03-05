@@ -130,20 +130,20 @@ namespace WebAPI.Controllers
             return GetResponseOnlyResultMessage(await Mediator.Send(command));
         }
 
-        /// <summary>
-        /// Token decode test
-        /// </summary>
-        /// <returns></returns>
-        [Consumes("application/json")]
-        [Produces("application/json", "text/plain")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
-        [HttpPost("test")]
-        public IActionResult LoginTest()
-        {
-            var auth = Request.Headers["Authorization"];
-            var token = JwtHelper.DecodeToken(auth);
+        ///// <summary>
+        ///// Token decode test
+        ///// </summary>
+        ///// <returns></returns>
+        //[Consumes("application/json")]
+        //[Produces("application/json", "text/plain")]
+        //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        //[HttpPost("test")]
+        //public IActionResult LoginTest()
+        //{
+        //    var auth = Request.Headers["Authorization"];
+        //    var token = JwtHelper.DecodeToken(auth);
 
-            return Ok(token);
-        }
+        //    return Ok(token);
+        //}
     }
 }

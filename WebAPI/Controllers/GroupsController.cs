@@ -94,19 +94,19 @@ namespace WebAPI.Controllers
             return GetResponseOnlyResultMessage(await Mediator.Send(new UpdateGroupCommand { Id = updateGroupDto.Id, GroupName = updateGroupDto.GroupName }));
         }
 
-        /// <summary>
-        /// Delete Group.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [Consumes("application/json")]
-        [Produces("application/json", "text/plain")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete([FromRoute] int id)
-        {
-            return GetResponseOnlyResultMessage(await Mediator.Send(new DeleteGroupCommand { Id = id }));
-        }
+        ///// <summary>
+        ///// Delete Group.
+        ///// </summary>
+        ///// <param name="id"></param>
+        ///// <returns></returns>
+        //[Consumes("application/json")]
+        //[Produces("application/json", "text/plain")]
+        //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> Delete([FromRoute] int id)
+        //{
+        //    return GetResponseOnlyResultMessage(await Mediator.Send(new DeleteGroupCommand { Id = id }));
+        //}
     }
 }

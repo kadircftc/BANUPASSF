@@ -250,23 +250,23 @@ namespace WebAPI.Controllers
             return BadRequest(result.Message);
         }
 
-        /// <summary>
-        /// Delete Visit.
-        /// </summary>
-        /// <param name="deleteVisit"></param>
-        /// <returns></returns>
-        [Produces("application/json", "text/plain")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        [HttpDelete]
-        public async Task<IActionResult> Delete([FromBody] DeleteVisitCommand deleteVisit)
-        {
-            var result = await Mediator.Send(deleteVisit);
-            if (result.Success)
-            {
-                return Ok(result.Message);
-            }
-            return BadRequest(result.Message);
-        }
+        ///// <summary>
+        ///// Delete Visit.
+        ///// </summary>
+        ///// <param name="deleteVisit"></param>
+        ///// <returns></returns>
+        //[Produces("application/json", "text/plain")]
+        //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        //[HttpDelete]
+        //public async Task<IActionResult> Delete([FromBody] DeleteVisitCommand deleteVisit)
+        //{
+        //    var result = await Mediator.Send(deleteVisit);
+        //    if (result.Success)
+        //    {
+        //        return Ok(result.Message);
+        //    }
+        //    return BadRequest(result.Message);
+        //}
     }
 }
