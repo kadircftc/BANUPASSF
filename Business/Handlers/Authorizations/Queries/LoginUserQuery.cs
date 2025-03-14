@@ -75,14 +75,10 @@ namespace Business.Handlers.Authorizations.Queries
                         UpdateContactDate = DateTime.Now
                     };
 
-                    HashingHelper.CreatePasswordHash(request.Password, out var passwordSalt, out var passwordHash);
-                    user.PasswordSalt = passwordSalt;
-                    user.PasswordHash = passwordHash;
-
                     _userRepository.Add(user);
                     await _userRepository.SaveChangesAsync();
                     var userGroup = new UserGroup { GroupId = 1, UserId = user.UserId };
-                     _userGroupRepository.Add(userGroup);
+                    _userGroupRepository.Add(userGroup);
                     await _userGroupRepository.SaveChangesAsync();
                 }
                 else

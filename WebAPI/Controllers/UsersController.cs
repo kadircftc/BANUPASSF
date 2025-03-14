@@ -127,19 +127,19 @@ namespace WebAPI.Controllers
             return GetResponseOnlyResultMessage(await Mediator.Send(new UpdateUserCommand { UserId = updateUserDto.UserId, Email = updateUserDto.Email, FullName = updateUserDto.FullName, MobilePhones = updateUserDto.MobilePhones, Address = updateUserDto.Address, Notes = updateUserDto.Notes }));
         }
 
-        ///// <summary>
-        ///// Delete User.
-        ///// </summary>
-        ///// <param name="id"></param>
-        ///// <returns></returns>
-        //[Consumes("application/json")]
-        //[Produces("application/json", "text/plain")]
-        //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> Delete([FromRoute] int id)
-        //{
-        //    return GetResponseOnlyResultMessage(await Mediator.Send(new DeleteUserCommand { UserId = id }));
-        //}
+        /// <summary>
+        /// Delete User.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Consumes("application/json")]
+        [Produces("application/json", "text/plain")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            return GetResponseOnlyResultMessage(await Mediator.Send(new DeleteUserCommand { UserId = id }));
+        }
     }
 }

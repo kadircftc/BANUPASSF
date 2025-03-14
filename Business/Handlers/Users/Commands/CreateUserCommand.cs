@@ -63,6 +63,7 @@ namespace Business.Handlers.Users.Commands
                     Email = request.Email,
                     FullName = request.FullName,
                     Status = true,
+                    IsExternalUser = false,
                     Address = request.Address,
                     BirthDate = request.BirthDate,
                     CitizenId = request.CitizenId,
