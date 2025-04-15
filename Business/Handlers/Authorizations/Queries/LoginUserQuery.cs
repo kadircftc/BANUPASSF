@@ -89,16 +89,6 @@ namespace Business.Handlers.Authorizations.Queries
 
                         if ((apiResponse?.Basarilimi ?? false) && (apiResponse?.Veri?.Ogrencimi ?? false))
                         {
-                            if(!HashingHelper.VerifyPasswordHash(request.Password, user.PasswordSalt, user.PasswordHash))
-                            {
-                                HashingHelper.CreatePasswordHash(request.Password, out var passwordSalt, out var passwordHash);
-
-                                user.PasswordHash = passwordHash;
-                                user.PasswordSalt = passwordSalt;
-
-                                _userRepository.Update(user);
-                                await _userRepository.SaveChangesAsync();
-                            }
                             var claimsBanu = _userRepository.GetClaims(user.UserId);
                             var accessTokenBanu = _tokenHelper.CreateToken<DArchToken>(user);
                             accessTokenBanu.Claims = claimsBanu.Select(x => x.Name).ToList();
