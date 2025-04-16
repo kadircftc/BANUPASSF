@@ -1,6 +1,6 @@
 export const environment = {
     production: true,
-    getApiUrl: window.location.protocol + '//' + window.location.hostname + ':5000/api/v1', // Dinamik host URL
+    getApiUrl: window.location.origin + '/api/v1', // Dinamik host URL
     getDropDownSetting: {
       singleSelection: false,
       idField: 'id',

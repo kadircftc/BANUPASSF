@@ -4,9 +4,9 @@
 
 /tmp
 /out-tsc
-.env
-docker-compose.yml
-Dockerfile
+#.env
+#docker-compose.yml
+#Dockerfile
 # dependencies
 /node_modules
 

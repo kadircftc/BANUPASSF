@@ -1,11 +1,10 @@
 version: "3.8"
 services:
   api:
-    image: banu-pass-api:v4
+    image: banu-pass-api:v1
     container_name: banu-pass-api
     ports:
       - "5000:80"
-      - "5001:443"
     networks:
       - banu-pass-network
     depends_on:
@@ -16,10 +15,10 @@ services:
       - ConnectionStrings__DArchPgContext=Host=db;Port=5432;Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}
 
   angular:
-    image: banu-pass-angular:v5
+    image: banu-pass-angular:v1
     container_name: banu-pass-angular
     ports:
-      - "4200:80"  
+      - "80:80"  
     networks:
       - banu-pass-network
 
