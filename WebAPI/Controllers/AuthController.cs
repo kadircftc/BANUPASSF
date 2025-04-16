@@ -14,6 +14,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using IResult = Core.Utilities.Results.IResult;
+using WebAPI.Services;
 
 namespace WebAPI.Controllers
 {
@@ -25,10 +26,12 @@ namespace WebAPI.Controllers
     public class AuthController : BaseApiController
     {
         private readonly ICacheManager _cacheManager;
+        private readonly IpBanService _ipBanService;
 
-        public AuthController(ICacheManager cacheManager)
+        public AuthController(ICacheManager cacheManager, IpBanService ipBanService)
         {
             this._cacheManager = cacheManager;
+            _ipBanService = ipBanService;
         }
 
         [Authorize]
@@ -63,11 +66,27 @@ namespace WebAPI.Controllers
         [Produces("application/json", "text/plain")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IDataResult<AccessToken>))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(object))]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginUserQuery loginModel)
         {
+            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+            
+            if (_ipBanService.IsIpBanned(ipAddress))
+            {
+                return StatusCode(403, new { message = "IP Address is blocked." });
+            }
+
             var result = await Mediator.Send(loginModel);
-            return result.Success ? Ok(result) : Unauthorized(result);
+            
+            if (!result.Success)
+            {
+                await _ipBanService.RecordFailedAttempt(ipAddress);
+                return Unauthorized(result);
+            }
+
+            _ipBanService.ResetFailedAttempts(ipAddress);
+            return Ok(result);
         }
 
         [AllowAnonymous]

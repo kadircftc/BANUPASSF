@@ -29,6 +29,8 @@ using Business.Connected_Services.SignalR.Abstract;
 using Business.Connected_Services.SignalR.Concrete;
 using System.Text.Json;
 using System.Threading.Tasks;
+using AspNetCoreRateLimit;
+using WebAPI.Services;
 
 namespace WebAPI
 {
@@ -57,6 +59,15 @@ namespace WebAPI
         /// <param name="services"></param>
         public override void ConfigureServices(IServiceCollection services)
         {
+            // Add these at the beginning of ConfigureServices
+            services.AddMemoryCache();
+            services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimiting"));
+            services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+            services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+            services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
+            services.AddSingleton<IpBanService>();
+
             // Business katmanında olan dependency tanımlarının bir metot üzerinden buraya implemente edilmesi.
 
             services.AddControllers()
@@ -142,6 +153,9 @@ namespace WebAPI
         /// <param name="env"></param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // Add this at the beginning of Configure method, before other middleware
+            app.UseIpRateLimiting();
+
             // VERY IMPORTANT. Since we removed the build from AddDependencyResolvers, let's set the Service provider manually.
             // By the way, we can construct with DI by taking type to avoid calling static methods in aspects.
             ServiceTool.ServiceProvider = app.ApplicationServices;
