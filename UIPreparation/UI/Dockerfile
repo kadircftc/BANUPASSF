@@ -1,25 +1,24 @@
-FROM nginx:alpine
-
-COPY dist/ /usr/share/nginx/html/
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+#FROM nginx:alpine
+#
+#COPY dist/ /usr/share/nginx/html/
+#
+#EXPOSE 80
+#
+#CMD ["nginx", "-g", "daemon off;"]
 
 
 #FROM node:16-alpine AS build
 
-#WORKDIR /app
-#COPY package.json package-lock.json ./
-#RUN npm install
-#COPY . .
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm install
+COPY . .
 
-#RUN npm run build --prod
+RUN npm run build --prod
 
-#FROM nginx:alpine
+FROM nginx:alpine
+COPY --from=build /app/dist/ /usr/share/nginx/html
 
-#COPY --from=build /app/dist/ /usr/share/nginx/html
+EXPOSE 80
 
-#EXPOSE 80
-
-#CMD ["nginx", "-g", "daemon off;"]
+CMD ["nginx", "-g", "daemon off;"]
