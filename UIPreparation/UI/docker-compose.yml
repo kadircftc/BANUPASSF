@@ -4,7 +4,7 @@ services:
     image: banu-pass-api:v1
     container_name: banu-pass-api
     ports:
-      - "5000:80"
+      - "5000:5001"
     networks:
       - banu-pass-network
     depends_on:
