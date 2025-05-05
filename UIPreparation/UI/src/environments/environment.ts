@@ -5,7 +5,7 @@
 
 export const environment = {
   production: false,
-  getApiUrl: 'http://banupass.bandirma.edu.tr/api/v1',
+  getApiUrl:  '/api/v1',
   getDropDownSetting: {
     singleSelection: false,
     idField: 'id',
