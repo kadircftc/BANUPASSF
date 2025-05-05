@@ -1,6 +1,7 @@
 ﻿using Core.Entities;
 using Core.Entities.Concrete;
 using Core.Utilities.Results;
+using Nest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,15 +18,23 @@ namespace Core.DataAccess
         void Delete(T entity);
         IEnumerable<T> GetList(Expression<Func<T, bool>> expression = null);
         Task<IEnumerable<T>> GetListAsync(Expression<Func<T, bool>> expression = null);
-        PagingResult<T> GetListForPaging(int page, string propertyName, bool asc, Expression<Func<T, bool>> expression = null, params Expression<Func<T, object>>[] includeEntities);
+        Task<PrivPagingResult<T>> GetListForPaging(int page,int pageSize, string propertyName, bool asc, Expression<Func<T, bool>> expression = null, params Expression<Func<T, object>>[] includeEntities);
         Task<PagingResult<T>> GetListForTableSearch(TableGlobalFilter globalFilter);
         T Get(Expression<Func<T, bool>> expression);
         Task<T> GetAsync(Expression<Func<T, bool>> expression);
         int SaveChanges();
+        Task<PrivPagingResult<T>> GetFilteredAndPagedListAsync(List<GlobalFilterGeneric> filters,
+    int page,
+    int pageSize,
+    string propertyName,
+    bool asc,
+    params Expression<Func<T, object>>[] includeEntities);
+        Task<IEnumerable<T>> GetFilteredListAsync(List<GlobalFilterGeneric> filters, Expression<Func<T, bool>> expression = null);
         Task<int> SaveChangesAsync();
         IQueryable<T> Query();
         Task<int> Execute(FormattableString interpolatedQueryString);
-
+        Task<IEnumerable<T>> BulkInsert(int TId, IEnumerable<T> TIds);
+        
         TResult InTransaction<TResult>(Func<TResult> action, Action successAction = null, Action<Exception> exceptionAction = null);
 
         Task<int> GetCountAsync(Expression<Func<T, bool>> expression = null);

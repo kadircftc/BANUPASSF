@@ -25,6 +25,12 @@ using System.IO;
 using System.Linq;
 using System.Text.Json.Serialization;
 using ConfigurationManager = Business.ConfigurationManager;
+using Business.Connected_Services.SignalR.Abstract;
+using Business.Connected_Services.SignalR.Concrete;
+using System.Text.Json;
+using System.Threading.Tasks;
+using AspNetCoreRateLimit;
+using WebAPI.Services;
 
 namespace WebAPI
 {
@@ -53,6 +59,15 @@ namespace WebAPI
         /// <param name="services"></param>
         public override void ConfigureServices(IServiceCollection services)
         {
+            // Add these at the beginning of ConfigureServices
+            services.AddMemoryCache();
+            services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimiting"));
+            services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+            services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+            services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
+            services.AddSingleton<IpBanService>();
+
             // Business katmanında olan dependency tanımlarının bir metot üzerinden buraya implemente edilmesi.
 
             services.AddControllers()
@@ -74,7 +89,11 @@ namespace WebAPI
             {
                 options.AddPolicy(
                     "AllowOrigin",
-                    builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+                    builder => builder.AllowAnyMethod().AllowAnyHeader().AllowCredentials()
+                    .WithOrigins("http://localhost:5500", "http://127.0.0.1:5500", "http://localhost:4200")
+
+
+                    );
             });
 
             var tokenOptions = Configuration.GetSection("TokenOptions").Get<TokenOptions>();
@@ -93,15 +112,33 @@ namespace WebAPI
                         IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey),
                         ClockSkew = TimeSpan.Zero
                     };
+
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+                            var path = context.HttpContext.Request.Path;
+
+                            if (!string.IsNullOrEmpty(accessToken) &&
+                                (path.StartsWithSegments("/d_o10_sig_r")))
+                            {
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
             services.AddSwaggerGen(c =>
             {
                 c.IncludeXmlComments(Path.ChangeExtension(typeof(Startup).Assembly.Location, ".xml"));
             });
 
+            services.AddSignalR();
             services.AddTransient<FileLogger>();
             services.AddTransient<PostgreSqlLogger>();
             services.AddTransient<MsSqlLogger>();
+            services.AddTransient<IVisitHub, VisitHub>();
             services.AddTransient<MsSqlLoggerProcess>();
             services.AddScoped<IpControlAttribute>();
 
@@ -116,6 +153,9 @@ namespace WebAPI
         /// <param name="env"></param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // Add this at the beginning of Configure method, before other middleware
+            app.UseIpRateLimiting();
+
             // VERY IMPORTANT. Since we removed the build from AddDependencyResolvers, let's set the Service provider manually.
             // By the way, we can construct with DI by taking type to avoid calling static methods in aspects.
             ServiceTool.ServiceProvider = app.ApplicationServices;
@@ -137,7 +177,7 @@ namespace WebAPI
             }
 
             app.UseDeveloperExceptionPage();
-            app.UseMiddleware<ApiKeyMiddleware>();
+            //app.UseMiddleware<ApiKeyMiddleware>();
 
             app.ConfigureCustomExceptionMiddleware();
 
@@ -153,14 +193,14 @@ namespace WebAPI
                     c.DocExpansion(DocExpansion.None);
                 });
             }
+
             app.UseCors("AllowOrigin");
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
-            var apiKey = app.ApplicationServices.GetRequiredService<IConfiguration>()["ApiKey"];
-            Console.WriteLine($"API Key from UserSecrets: {apiKey}");
+
             app.UseAuthentication();
 
             app.UseAuthorization();
@@ -176,10 +216,13 @@ namespace WebAPI
 
             CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
             CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
-
             app.UseStaticFiles();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapHub<VisitHub>("/d_o10_sig_r");
+            });
         }
     }
 }

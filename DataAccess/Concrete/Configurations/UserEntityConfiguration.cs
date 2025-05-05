@@ -12,6 +12,11 @@ namespace DataAccess.Concrete.Configurations
             builder.Property(x => x.CitizenId).IsRequired();
             builder.Property(x => x.FullName).HasMaxLength(100).IsRequired();
             builder.Property(x => x.Email).HasMaxLength(50);
+            builder.ToTable("Users", t =>
+            {
+                t.HasCheckConstraint("CHK_Email_MinLength", "LEN(Email) >= 10");
+            });
+
             builder.Property(x => x.Status).IsRequired();
             builder.Property(x => x.BirthDate);
             builder.Property(x => x.Gender);
@@ -19,7 +24,8 @@ namespace DataAccess.Concrete.Configurations
             builder.Property(x => x.Address).HasMaxLength(200);
             builder.Property(x => x.MobilePhones).HasMaxLength(30);
             builder.Property(x => x.Notes).HasMaxLength(500);
-
+            builder.Property(x=> x.ReqLimit);
+            builder.Property(x=> x.IsExternalUser).IsRequired();
             builder.HasIndex(x => x.CitizenId);
             builder.HasIndex(x => x.MobilePhones);
         }

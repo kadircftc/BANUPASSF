@@ -34,7 +34,7 @@ namespace Business.Handlers.Visits.Queries
             [PerformanceAspect(5)]
             [CacheAspect(10)]
             [LogAspect(typeof(FileLogger))]
-            //[SecuredOperation(Priority = 1)]
+            [SecuredOperation(Priority = 1)]
             public async Task<IDataResult<IEnumerable<Visit>>> Handle(GetVisitsByDateQuery request, CancellationToken cancellationToken)
             {
                 DateTime startDate = DateTime.ParseExact(request.StartDate, "dd-MM-yyyy", null);

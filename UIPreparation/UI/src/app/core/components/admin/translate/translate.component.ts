@@ -1,14 +1,14 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '../login/services/auth.service';
-import { Translate } from './Models/Translate';
-import { TranslateService } from './Services/Translate.service';
-import { LookUp } from '../../../models/LookUp';
-import { LookUpService } from 'app/core/services/lookUp.service';
-import { AlertifyService } from 'app/core/services/alertify.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { AlertifyService } from 'app/core/services/alertify.service';
+import { LookUpService } from 'app/core/services/lookUp.service';
+import { LookUp } from '../../../models/LookUp';
+import { AuthService } from '../login/Services/auth.service';
+import { Translate } from './models/Translate';
+import { TranslateService } from './services/Translate.service';
 
 
 declare var jQuery: any;
@@ -93,6 +93,8 @@ export class TranslateComponent implements  AfterViewInit, OnInit {
 			this.alertifyService.success(data);
 			this.clearFormGroup(this.translateAddForm);
 
+		},error=>{
+			this.alertifyService.error('Hata oluştu!')
 		})
 
 	}

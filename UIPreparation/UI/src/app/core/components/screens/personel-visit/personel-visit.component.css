@@ -1,0 +1,79 @@
+.visit-card {
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+    padding: 20px; /* Increased padding */
+  }
+  
+  .visit-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  }
+  
+  .approved {
+    background-color: #e8f5e9; /* Light green */
+    border-left: 5px solid #4caf50;
+  }
+  
+  .rejected {
+    background-color: #ffebee; /* Light red */
+    border-left: 5px solid #f44336;
+  }
+  
+  .pending {
+    background-color: #fff3cd; /* Light yellow */
+    border-left: 5px solid #ffc107;
+  }
+  
+  .status {
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 1.1em; /* Increased font size */
+  }
+  
+  .mat-icon {
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+
+button.mat-button {
+    background-color: #007bff; /* Primary color */
+    color: white; /* Text color */
+    border-radius: 5px; /* Rounded corners */
+    padding: 10px 15px; /* Padding for better size */
+    margin-right: 10px; /* Spacing between buttons */
+    transition: background-color 0.3s, transform 0.2s; /* Smooth transition */
+}
+
+button.mat-button:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+button.mat-button:focus {
+    outline: none; /* Remove default outline */
+}
+
+.card {
+    margin-bottom: 20px; /* Space between cards */
+}
+
+.card-header {
+    background-color: #673ab7; /* Primary color */
+    color: white; /* Text color */
+}
+
+.date-tabs button {
+    background-color: #007bff; /* Primary color */
+    color: white; /* Text color */
+    border-radius: 5px; /* Rounded corners */
+    padding: 10px 15px; /* Padding for better size */
+    margin-right: 10px; /* Spacing between buttons */
+    transition: background-color 0.3s, transform 0.2s; /* Smooth transition */
+}
+
+div.date-tabs button:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}

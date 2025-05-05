@@ -33,21 +33,23 @@ namespace Business.Handlers.Authorizations.Queries
         public class LoginUserQueryHandler : IRequestHandler<LoginUserQuery, IDataResult<AccessToken>>
         {
             private readonly IUserRepository _userRepository;
+            private readonly IUserGroupRepository _userGroupRepository;
             private readonly ITokenHelper _tokenHelper;
             private readonly IMediator _mediator;
             private readonly ICacheManager _cacheManager;
             private readonly IConfiguration _configuration;
 
-            public LoginUserQueryHandler(IUserRepository userRepository, ITokenHelper tokenHelper, IMediator mediator, ICacheManager cacheManager, IConfiguration configuration)
+            public LoginUserQueryHandler(IUserRepository userRepository, IUserGroupRepository userGroupRepository, ITokenHelper tokenHelper, IMediator mediator, ICacheManager cacheManager, IConfiguration configuration)
             {
                 _userRepository = userRepository;
+                _userGroupRepository = userGroupRepository;
                 _tokenHelper = tokenHelper;
                 _mediator = mediator;
                 _cacheManager = cacheManager;
                 _configuration = configuration;
             }
 
-            [LogAspect(typeof(FileLogger))]
+            //[LogAspect(typeof(FileLogger))]
             public async Task<IDataResult<AccessToken>> Handle(LoginUserQuery request, CancellationToken cancellationToken)
             {
                 var user = await _userRepository.GetAsync(u => u.Email == request.Email && u.Status);
@@ -56,9 +58,9 @@ namespace Business.Handlers.Authorizations.Queries
                 {
                     var apiResponse = await CheckUserFromExternalApi(request.Email, request.Password);
 
-                    if (!apiResponse.Basarilimi || !apiResponse.Veri.Ogrencimi)
+                    if (!(apiResponse?.Basarilimi ?? false) && !(apiResponse?.Veri?.Ogrencimi ?? false))
                     {
-                        return new ErrorDataResult<AccessToken>(Messages.UserNotFound);
+                        return new ErrorDataResult<AccessToken>(Messages.UserWrongEmaiOrPassword);
                     }
 
                     user = new User
@@ -68,18 +70,43 @@ namespace Business.Handlers.Authorizations.Queries
                         CitizenId = 0,
                         Status = true, 
                         RecordDate = DateTime.Now,
+                        ReqLimit=5,
+                        IsExternalUser = true,
                         UpdateContactDate = DateTime.Now
                     };
 
-                    HashingHelper.CreatePasswordHash(request.Password, out var passwordSalt, out var passwordHash);
-                    user.PasswordSalt = passwordSalt;
-                    user.PasswordHash = passwordHash;
-
                     _userRepository.Add(user);
                     await _userRepository.SaveChangesAsync();
+                    var userGroup = new UserGroup { GroupId = 1, UserId = user.UserId };
+                    _userGroupRepository.Add(userGroup);
+                    await _userGroupRepository.SaveChangesAsync();
                 }
                 else
                 {
+                    if (user.IsExternalUser)
+                    {
+                        var apiResponse = await CheckUserFromExternalApi(request.Email, request.Password);
+
+                        if ((apiResponse?.Basarilimi ?? false) && (apiResponse?.Veri?.Ogrencimi ?? false))
+                        {
+                            var claimsBanu = _userRepository.GetClaims(user.UserId);
+                            var accessTokenBanu = _tokenHelper.CreateToken<DArchToken>(user);
+                            accessTokenBanu.Claims = claimsBanu.Select(x => x.Name).ToList();
+
+                            user.RefreshToken = accessTokenBanu.RefreshToken;
+                            _userRepository.Update(user);
+                            await _userRepository.SaveChangesAsync();
+
+                            _cacheManager.Add($"{CacheKeys.UserIdForClaim}={user.UserId}", claimsBanu.Select(x => x.Name));
+
+                            return new SuccessDataResult<AccessToken>(accessTokenBanu, Messages.SuccessfulLogin);
+                        }
+                        else
+                        {
+                            return new ErrorDataResult<AccessToken>(Messages.PasswordError);
+                        }
+                    }
+
                     if (!HashingHelper.VerifyPasswordHash(request.Password, user.PasswordSalt, user.PasswordHash))
                     {
                         return new ErrorDataResult<AccessToken>(Messages.PasswordError);

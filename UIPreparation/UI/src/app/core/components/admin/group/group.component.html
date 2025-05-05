@@ -12,7 +12,7 @@
               
               <div class="col-md-4 pull-right">
                 <mat-form-field>
-                  <mat-label>{{Filter |translate}}</mat-label>
+                  <mat-label>{{'Filter' |translate}}</mat-label>
                   <input matInput (keyup)="applyFilter($event)" placeholder="" #input>
                 </mat-form-field>
               </div>
@@ -74,31 +74,43 @@
 </div>
 
 <div class="modal modal-angular fade" id="group" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
-      <div class="modal-body text-center">
-        <button type="button" #closeButton class="close" data-dismiss="modal" aria-label="Close"
-          (click)="clearFormGroup(groupAddForm)"><span aria-hidden="true">&times;</span></button>
-        <h4 class="margin-top">
+      <div class="modal-header bg-primary text-white">
+        <h4 class="modal-title">
+          <i class="material-icons mr-2">group_add</i>
           {{'GroupForm'| translate}}
         </h4>
-        <div class="separator"></div>
-        <form *ngIf="groupAddForm" [formGroup]="groupAddForm" (ngSubmit)="save()">
-          <div class="row">
-            <div class="col-md-6">
-              <mat-form-field class="example-full-width">
-                <input matInput placeholder=" {{'GroupName'|translate}}" type="text" id="groupName" name="groupName"
-                  formControlName="groupName">
-                <div class="alert alert-danger"
-                     *ngIf="groupAddForm.get('groupName')!.hasError('required') && groupAddForm.get('groupName')!.touched">
+        <button type="button" #closeButton class="close text-white" data-dismiss="modal" aria-label="Close"
+          (click)="clearFormGroup(groupAddForm)">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form *ngIf="groupAddForm" [formGroup]="groupAddForm" (ngSubmit)="save()" class="p-3">
+          <div class="row mb-4">
+            <div class="col-md-12">
+              <mat-form-field class="w-100" appearance="outline">
+                <mat-label>{{'GroupName'|translate}}</mat-label>
+                <input matInput type="text" formControlName="groupName">
+                <mat-icon matPrefix class="mr-2">group</mat-icon>
+                <mat-error *ngIf="groupAddForm.get('groupName')!.hasError('required') && groupAddForm.get('groupName')!.touched">
                   {{'Required'| translate}}
-                </div>
+                </mat-error>
               </mat-form-field>
             </div>
           </div>
 
-          <button mat-raised-button type="submit" class="btn btn-danger pull-right">{{'Save' |translate}}</button>
-          <div class="clearfix"></div>
+          <div class="d-flex justify-content-end mt-4">
+            <button mat-button type="button" class="mr-2" data-dismiss="modal" (click)="clearFormGroup(groupAddForm)">
+              <mat-icon>close</mat-icon>
+              {{'Cancel' |translate}}
+            </button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="!groupAddForm.valid">
+              <mat-icon>save</mat-icon>
+              {{'Save' |translate}}
+            </button>
+          </div>
         </form>
       </div>
     </div>
@@ -107,48 +119,78 @@
 
 
 <div class="modal modal-angular fade" id="groupUsers" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
-      <div class="modal-body text-center">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">&times;</span></button>
-        <h4 class="margin-top">
+      <div class="modal-header bg-primary text-white">
+        <h4 class="modal-title">
+          <i class="material-icons mr-2">people</i>
           {{'GroupUsers'| translate}}
         </h4>
-        <div class="separator"></div>
-
-        <ng-multiselect-dropdown [settings]="dropdownSettings" [placeholder]="'Users'" [data]="userDropdownList"
-          [(ngModel)]="userSelectedItems" (onSelect)="onItemSelect('User')" (onSelectAll)="onSelectAll('User')"
-          (onDeSelect)="onItemDeSelect('User')">
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body p-4">
+        <ng-multiselect-dropdown 
+          [settings]="dropdownSettings" 
+          [placeholder]="'Users'" 
+          [data]="formattedUserDropdownList"
+          [(ngModel)]="userSelectedItems" 
+          (onSelect)="onItemSelect('User')" 
+          (onSelectAll)="onSelectAll('User')"
+          (onDeSelect)="onItemDeSelect('User')"
+          class="w-100">
         </ng-multiselect-dropdown>
 
-      </div>
-      <div class="modal-footer">
-        <a class="btn btn-primary pull-right" (click)="saveGroupUsers()"> {{'Save' |translate}}</a>
+        <div class="d-flex justify-content-end mt-4">
+          <button mat-button type="button" class="mr-2" data-dismiss="modal">
+            <mat-icon>close</mat-icon>
+            {{'Cancel' |translate}}
+          </button>
+          <button mat-raised-button color="primary" (click)="saveGroupUsers()">
+            <mat-icon>save</mat-icon>
+            {{'Save' |translate}}
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 <div class="modal modal-angular fade" id="groupClaims" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
-      <div class="modal-body text-center">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">&times;</span></button>
-        <h4 class="margin-top">
+      <div class="modal-header bg-primary text-white">
+        <h4 class="modal-title">
+          <i class="material-icons mr-2">security</i>
           {{'GroupClaims'| translate}}
         </h4>
-        <div class="separator"></div>
-
-        <ng-multiselect-dropdown [settings]="dropdownSettings" [placeholder]="'Claims'" [data]="claimDropdownList"
-          [(ngModel)]="claimSelectedItems" (onSelect)="onItemSelect('Claim')" (onSelectAll)="onSelectAll('Claim')"
-          (onDeSelect)="onItemDeSelect('Claim')">
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body p-4">
+        <ng-multiselect-dropdown 
+          [settings]="dropdownSettings" 
+          [placeholder]="'Claims'" 
+          [data]="claimDropdownList"
+          [(ngModel)]="claimSelectedItems" 
+          (onSelect)="onItemSelect('Claim')" 
+          (onSelectAll)="onSelectAll('Claim')"
+          (onDeSelect)="onItemDeSelect('Claim')"
+          class="w-100">
         </ng-multiselect-dropdown>
 
-      </div>
-      <div class="modal-footer">
-        <a class="btn btn-primary pull-right" (click)="saveGroupClaims()"> {{'Save' |translate}}</a>
+        <div class="d-flex justify-content-end mt-4">
+          <button mat-button type="button" class="mr-2" data-dismiss="modal">
+            <mat-icon>close</mat-icon>
+            {{'Cancel' |translate}}
+          </button>
+          <button mat-raised-button color="primary" (click)="saveGroupClaims()">
+            <mat-icon>save</mat-icon>
+            {{'Save' |translate}}
+          </button>
+        </div>
       </div>
     </div>
   </div>

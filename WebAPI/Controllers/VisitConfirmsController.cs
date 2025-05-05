@@ -28,7 +28,6 @@ namespace WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<VisitConfirm>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpGet("getall")]
-        [AllowAnonymous]
         public async Task<IActionResult> GetList()
         {
             var result = await Mediator.Send(new GetVisitConfirmsQuery());
@@ -133,23 +132,23 @@ namespace WebAPI.Controllers
             }
             return BadRequest(result.Message);
         }
-        /// <summary>
-        /// Delete VisitConfirm.
-        /// </summary>
-        /// <param name="deleteVisitConfirm"></param>
-        /// <returns></returns>
-        [Produces("application/json", "text/plain")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        [HttpDelete]
-        public async Task<IActionResult> Delete([FromBody] DeleteVisitConfirmCommand deleteVisitConfirm)
-        {
-            var result = await Mediator.Send(deleteVisitConfirm);
-            if (result.Success)
-            {
-                return Ok(result.Message);
-            }
-            return BadRequest(result.Message);
-        }
+        ///// <summary>
+        ///// Delete VisitConfirm.
+        ///// </summary>
+        ///// <param name="deleteVisitConfirm"></param>
+        ///// <returns></returns>
+        //[Produces("application/json", "text/plain")]
+        //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        //[HttpDelete]
+        //public async Task<IActionResult> Delete([FromBody] DeleteVisitConfirmCommand deleteVisitConfirm)
+        //{
+        //    var result = await Mediator.Send(deleteVisitConfirm);
+        //    if (result.Success)
+        //    {
+        //        return Ok(result.Message);
+        //    }
+        //    return BadRequest(result.Message);
+        //}
     }
 }

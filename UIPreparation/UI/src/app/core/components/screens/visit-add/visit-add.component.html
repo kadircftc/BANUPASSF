@@ -1,0 +1,172 @@
+<div class="container-fluid" style="padding-top: 35px;">
+    <div class="card">
+      <div class="card-header card-header-primary">
+        <h4 class="card-title">Ziyaret Talebi</h4>
+        <p class="card-category">Ziyaret Talebi</p>
+      </div>
+      <div class="card-body">
+        <!-- Tab Butonları -->
+        <div class="date-tabs">
+          <button mat-button 
+                  [class.active]="selectedTab === 'vehicle'"
+                  (click)="switchTab('vehicle')">
+            <mat-icon>directions_car</mat-icon>
+            <span>Araç</span>
+          </button>
+          <button mat-button 
+                  [class.active]="selectedTab === 'pedestrian'"
+                  (click)="switchTab('pedestrian')">
+            <mat-icon>directions_walk</mat-icon>
+            <span>Yaya</span>
+          </button>
+        </div>
+
+        <!-- Ziyaretçi Formu -->
+        <div class="visitor-form" [ngSwitch]="selectedTab">
+          
+          <!-- Araçlı Ziyaretçi Formu -->
+          <div *ngSwitchCase="'vehicle'" class="mt-4">
+            <form #vehicleForm="ngForm" (ngSubmit)="saveVisit(true)">
+              <div class="form-group">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Araç Plakası</mat-label>
+                  <input matInput [(ngModel)]="vehicleData.plate" name="plate" required>
+                </mat-form-field>
+              </div>
+
+              <!-- Tarih Alanları -->
+              <div class="row">
+                <div class="col-md-6">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Giriş Tarihi</mat-label>
+                    <input matInput [matDatepicker]="startDatePicker" 
+                           [(ngModel)]="vehicleData.visitStartDate" 
+                           name="visitStartDate"
+                           (dateChange)="onStartDateChange()" 
+                           [matDatepickerFilter]="dateFilter"
+                           required>
+                    <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+                    <mat-datepicker #startDatePicker></mat-datepicker>
+                  </mat-form-field>
+                </div>
+                <div class="col-md-6">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Çıkış Tarihi</mat-label>
+                    <input matInput [matDatepicker]="endDatePicker" 
+                           [(ngModel)]="vehicleData.visitEndDate" 
+                           name="visitEndDate"
+                           (dateChange)="onEndDateChange()" 
+                           [min]="vehicleData.visitStartDate"
+                           required>
+                    <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+                    <mat-datepicker #endDatePicker></mat-datepicker>
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <!-- Ziyaretçi Listesi -->
+              <div class="visitors-list">
+                <div *ngFor="let visitor of vehicleVisitors; let i = index" class="visitor-item mb-3">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>{{ i === 0 ? 'Ana Ziyaretçi' : 'Ek Ziyaretçi ' + i }}</mat-label>
+                    <input matInput [(ngModel)]="visitor.name" [name]="'visitor' + i" required>
+                    <button mat-icon-button matSuffix color="warn" 
+                            (click)="removeVisitor(i)" 
+                            *ngIf="i !== 0">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <!-- Ziyaretçi Ekle Butonu -->
+              <div class="text-right mb-3">
+                <button mat-mini-fab color="primary" 
+                        type="button"
+                        (click)="addVisitor()"
+                        matTooltip="Ek Ziyaretçi Ekle">
+                  <mat-icon>add</mat-icon>
+                </button>
+              </div>
+
+              <!-- Kaydet Butonu -->
+              <button mat-raised-button color="primary" 
+                      class="w-100" 
+                      [disabled]="!vehicleForm.valid"
+                      type="submit">
+                Kaydet
+              </button>
+            </form>
+          </div>
+
+          <!-- Yaya Ziyaretçi Formu -->
+          <div *ngSwitchCase="'pedestrian'" class="mt-4">
+            <form #pedestrianForm="ngForm" (ngSubmit)="saveVisit(false)">
+              <!-- Tarih Alanları -->
+              <div class="row">
+                <div class="col-md-6">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Giriş Tarihi</mat-label>
+                    <input matInput [matDatepicker]="pedStartDatePicker" 
+                           [(ngModel)]="vehicleData.visitStartDate" 
+                           name="visitStartDate"
+                           (dateChange)="onStartDateChange()" 
+                           [matDatepickerFilter]="dateFilter"
+                           required>
+                    <mat-datepicker-toggle matSuffix [for]="pedStartDatePicker"></mat-datepicker-toggle>
+                    <mat-datepicker #pedStartDatePicker></mat-datepicker>
+                  </mat-form-field>
+                </div>
+                <div class="col-md-6">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Çıkış Tarihi</mat-label>
+                    <input matInput [matDatepicker]="pedEndDatePicker" 
+                           [(ngModel)]="vehicleData.visitEndDate" 
+                           name="visitEndDate"
+                           (dateChange)="onEndDateChange()" 
+                           [min]="vehicleData.visitStartDate"
+                           required>
+                    <mat-datepicker-toggle matSuffix [for]="pedEndDatePicker"></mat-datepicker-toggle>
+                    <mat-datepicker #pedEndDatePicker></mat-datepicker>
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <!-- Yaya Ziyaretçi Listesi -->
+              <div class="visitors-list">
+                <div *ngFor="let visitor of pedestrianVisitors; let i = index" class="visitor-item mb-3">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>{{ i === 0 ? 'Ana Ziyaretçi' : 'Ek Ziyaretçi ' + i }}</mat-label>
+                    <input matInput [(ngModel)]="visitor.name" [name]="'visitor' + i" required>
+                    <button mat-icon-button matSuffix color="warn" 
+                            (click)="removePedestrianVisitor(i)" 
+                            *ngIf="i !== 0">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <!-- Ziyaretçi Ekle Butonu -->
+              <div class="text-right mb-3">
+                <button mat-mini-fab color="primary" 
+                        type="button"
+                        (click)="addPedestrianVisitor()"
+                        matTooltip="Ek Ziyaretçi Ekle">
+                  <mat-icon>add</mat-icon>
+                </button>
+              </div>
+
+              <!-- Kaydet Butonu -->
+              <button mat-raised-button color="primary" 
+                      class="w-100" 
+                      [disabled]="!pedestrianForm.valid"
+                      type="submit">
+                Kaydet
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>

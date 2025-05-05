@@ -54,7 +54,7 @@ namespace Business.Handlers.Authorizations.Commands
                     FullName = request.FullName,
                     PasswordHash = passwordHash,
                     PasswordSalt = passwordSalt,
-                    Status = true
+                    Status = true,IsExternalUser = false
                 };
 
                 _userRepository.Add(user);

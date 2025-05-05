@@ -96,23 +96,23 @@ namespace WebAPI.Controllers
             return BadRequest(result.Message);
         }
 
-        /// <summary>
-        /// Delete MultiVisiters.
-        /// </summary>
-        /// <param name="deleteMultiVisiters"></param>
-        /// <returns></returns>
-        [Produces("application/json", "text/plain")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        [HttpDelete]
-        public async Task<IActionResult> Delete([FromBody] DeleteMultiVisitersCommand deleteMultiVisiters)
-        {
-            var result = await Mediator.Send(deleteMultiVisiters);
-            if (result.Success)
-            {
-                return Ok(result.Message);
-            }
-            return BadRequest(result.Message);
-        }
+        ///// <summary>
+        ///// Delete MultiVisiters.
+        ///// </summary>
+        ///// <param name="deleteMultiVisiters"></param>
+        ///// <returns></returns>
+        //[Produces("application/json", "text/plain")]
+        //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        //[HttpDelete]
+        //public async Task<IActionResult> Delete([FromBody] DeleteMultiVisitersCommand deleteMultiVisiters)
+        //{
+        //    var result = await Mediator.Send(deleteMultiVisiters);
+        //    if (result.Success)
+        //    {
+        //        return Ok(result.Message);
+        //    }
+        //    return BadRequest(result.Message);
+        //}
     }
 }

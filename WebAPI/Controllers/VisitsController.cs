@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Http;
 using Entities.Concrete;
 using System.Collections.Generic;
 using System;
+using Microsoft.AspNetCore.SignalR;
+using Business.Services.UserService.Concrete;
 
 namespace WebAPI.Controllers
 {
@@ -18,6 +20,10 @@ namespace WebAPI.Controllers
     [ApiController]
     public class VisitsController : BaseApiController
     {
+       
+
+
+
         ///<summary>
         ///List Visits
         ///</summary>
@@ -31,6 +37,25 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> GetList()
         {
             var result = await Mediator.Send(new GetVisitsQuery());
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(result.Message);
+        }
+        ///<summary>
+        ///List Visits
+        ///</summary>
+        ///<remarks>Visits</remarks>
+        ///<return>List Visits</return>
+        ///<response code="200"></response>
+        [Produces("application/json", "text/plain")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Visit>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [HttpGet("getVisitsByPagingQuery")]
+        public async Task<IActionResult> GetList(int page, int pageSize)
+        {
+            var result = await Mediator.Send(new GetVisitsByPagingQuery{ Page=page,PageSize=pageSize});
             if (result.Success)
             {
                 return Ok(result.Data);
@@ -104,7 +129,6 @@ namespace WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Visit))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpGet("getByDate")]
-        [AllowAnonymous]
         public async Task<IActionResult> GetByDate( string startDate,string endDate)
         {
             var result = await Mediator.Send(new GetVisitsByDateQuery { StartDate=startDate,EndDate=endDate });
@@ -114,12 +138,32 @@ namespace WebAPI.Controllers
             }
             return BadRequest(result.Message);
         }
-        /// <summary>
-        /// Add Visit.
-        /// </summary>
-        /// <param name="createVisit"></param>
-        /// <returns></returns>
-        [Produces("application/json", "text/plain")]
+
+		/// <summary>
+		/// Belirtilen tarih için Visit ve MultiVisiters birleşik listesini getirir.
+		/// </summary>
+		/// <param name="date">Tarih (dd-MM-yyyy formatında)</param>
+		/// <returns>Visit ve MultiVisiters birleşik DTO listesi</returns>
+		[HttpGet("GetVisitsWithMultiVisits")]
+		public async Task<IActionResult> GetVisitsWithMultiVisits([FromQuery] string date)
+		{
+			if (string.IsNullOrWhiteSpace(date))
+			{
+				return BadRequest("Tarih parametresi boş olamaz.");
+			}
+			var result = await Mediator.Send(new GetVisitsMultiVisitsQuery(date));
+			if (result.Success)
+			{
+				return Ok(result.Data);
+			}
+			return BadRequest(result.Message);
+		}
+		/// <summary>
+		/// Add Visit.
+		/// </summary>
+		/// <param name="createVisit"></param>
+		/// <returns></returns>
+		[Produces("application/json", "text/plain")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpPost]
@@ -132,7 +176,43 @@ namespace WebAPI.Controllers
             }
             return BadRequest(result.Message);
         }
-
+        /// <summary>
+		/// Add Visit.
+		/// </summary>
+		/// <param name="pedestrianEntrance"></param>
+		/// <returns></returns>
+		[Produces("application/json", "text/plain")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [HttpPost("pedestrianEntrance")]
+        public async Task<IActionResult> AddPedestrianEntrance([FromBody] PedestrianEntranceCommand pedestrianEntrance)
+        {
+            var result = await Mediator.Send(pedestrianEntrance);
+            if (result.Success)
+            {
+                return Ok(result.Message);
+            }
+            return BadRequest(result.Message);
+        }
+        /// <summary>
+        /// Add Visit.
+        /// </summary>
+        /// <param name="vehicleEntranceCommand"></param>
+        /// <returns></returns>
+        [Produces("application/json", "text/plain")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [HttpPost("vehicleEntrance")]
+    
+        public async Task<IActionResult> AddVehicleEntrance([FromBody] VehicleEntranceCommand vehicleEntranceCommand)
+        {
+            var result = await Mediator.Send(vehicleEntranceCommand);
+            if (result.Success)
+            {
+                return Ok(result.Message);
+            }
+            return BadRequest(result.Message);
+        }
         /// <summary>
         /// Update Visit.
         /// </summary>
@@ -151,24 +231,42 @@ namespace WebAPI.Controllers
             }
             return BadRequest(result.Message);
         }
-
         /// <summary>
-        /// Delete Visit.
+        /// Reject Visit.
         /// </summary>
-        /// <param name="deleteVisit"></param>
+        /// <param name="rejectVisit"></param>
         /// <returns></returns>
         [Produces("application/json", "text/plain")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        [HttpDelete]
-        public async Task<IActionResult> Delete([FromBody] DeleteVisitCommand deleteVisit)
+        [HttpPut("rejectvisit")]
+        public async Task<IActionResult> Update([FromBody] VisitRejectCommand rejectVisit)
         {
-            var result = await Mediator.Send(deleteVisit);
+            var result = await Mediator.Send(rejectVisit);
             if (result.Success)
             {
                 return Ok(result.Message);
             }
             return BadRequest(result.Message);
         }
+
+        ///// <summary>
+        ///// Delete Visit.
+        ///// </summary>
+        ///// <param name="deleteVisit"></param>
+        ///// <returns></returns>
+        //[Produces("application/json", "text/plain")]
+        //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        //[HttpDelete]
+        //public async Task<IActionResult> Delete([FromBody] DeleteVisitCommand deleteVisit)
+        //{
+        //    var result = await Mediator.Send(deleteVisit);
+        //    if (result.Success)
+        //    {
+        //        return Ok(result.Message);
+        //    }
+        //    return BadRequest(result.Message);
+        //}
     }
 }

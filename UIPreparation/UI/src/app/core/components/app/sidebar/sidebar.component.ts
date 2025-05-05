@@ -1,9 +1,8 @@
-import { HostListener } from '@angular/core';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { AuthService } from '../../admin/login/services/auth.service';
-
+import { Subscription } from 'rxjs';
+import { AuthService } from '../../admin/login/Services/auth.service';
 
 declare const $: any;
 declare interface RouteInfo {
@@ -11,19 +10,23 @@ declare interface RouteInfo {
     title: string;
     icon: string;
     class: string;
-    claim:string;
+    claim: string;
 }
+
 export const ADMINROUTES: RouteInfo[] = [
-  { path: '/user', title: 'Users', icon: 'how_to_reg', class: '', claim:"GetUsersQuery" },
-  { path: '/group', title: 'Groups', icon:'groups', class: '',claim:"GetGroupsQuery" },
-  { path: '/operationclaim', title: 'OperationClaim', icon:'local_police', class: '', claim:"GetOperationClaimsQuery"},
-  { path: '/language', title: 'Languages', icon:'language', class: '', claim:"GetLanguagesQuery" },
-  { path: '/translate', title: 'TranslateWords', icon: 'translate', class: '', claim: "GetTranslatesQuery" },
-  { path: '/log', title: 'Logs', icon: 'update', class: '', claim: "GetLogDtoQuery" }
+  { path: '/user', title: 'Users', icon: 'people', class: '', claim:"GetUsersQuery" },
+  { path: '/group', title: 'Groups', icon: 'group_work', class: '', claim:"GetGroupsQuery" },
+  //{ path: '/operationclaim', title: 'OperationClaim', icon: 'security', class: '', claim:"GetOperationClaimsQuery"},
+  { path: '/language', title: 'Languages', icon: 'translate', class: '', claim:"GetLanguagesQuery" },
+  { path: '/translate', title: 'TranslateWords', icon: 'language', class: '', claim: "GetTranslatesQuery" },
+  { path: '/banu-log', title: 'Ana Raporlama İşlemleri', icon: 'assignment', class: '', claim: "GetUsersQuery" },
+  { path: '/visit', title: 'Ziyaret Kayıtları', icon: 'event_note', class: '', claim: "GetUsersQuery" }
 ];
 
 export const USERROUTES: RouteInfo[] = [ 
-  //{ path: '/log', title: 'Logs', icon: 'update', class: '', claim: "GetLogDtoQuery" }
+  { path: '/banu-logs', title: 'Güvenlik Rapor İşlemleri', icon: 'admin_panel_settings', class: '', claim: "GetBanuLogsForSecurityQuery" },
+  { path: '/security-transactions', title: 'Güvenlik Ziyaret İşlemleri', icon: 'security', class: '', claim: "GetVisitsMultiVisitsQuery" },
+  { path: '/visit-add', title: 'Ziyaret Talebi', icon: 'add_circle', class: '', claim: "VehicleEntranceCommand" }
 ];
 
 @Component({
@@ -31,37 +34,55 @@ export const USERROUTES: RouteInfo[] = [
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
 })
-export class SidebarComponent implements OnInit {
-  adminMenuItems: any[];
-  userMenuItems: any[];
+export class SidebarComponent implements OnInit, OnDestroy {
+  adminMenuItems: RouteInfo[] = [];
+  userMenuItems: RouteInfo[] = [];
+  private claimsSubscription: Subscription;
 
-  constructor(private router:Router, private authService:AuthService,public translateService:TranslateService) {
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    public translateService: TranslateService
+  ) {}
+
+  async ngOnInit() {
+    await this.authService.loadClaims();
     
-  }
+    this.claimsSubscription = this.authService.claims$.subscribe(() => {
+      this.updateMenuItems();
+    });
 
-  ngOnInit() {
-  
-    this.adminMenuItems = ADMINROUTES.filter(menuItem => menuItem);
-    this.userMenuItems = USERROUTES.filter(menuItem => menuItem);
-
-    var lang=localStorage.getItem('lang') || 'tr-TR'
+    var lang = localStorage.getItem('lang') || 'tr-TR';
     this.translateService.use(lang);
   }
-  isMobileMenu() {
-      if ($(window).width() > 991) {
-          return false;
-      }
-      return true;
-  };
 
-  checkClaim(claim:string):boolean{
-    return this.authService.claimGuard(claim)
+  private updateMenuItems() {
+    this.adminMenuItems = ADMINROUTES.filter(menuItem => 
+      menuItem && this.checkClaim(menuItem.claim)
+    );
+    
+    this.userMenuItems = USERROUTES.filter(menuItem => 
+      menuItem && this.checkClaim(menuItem.claim)
+    );
   }
+
+  isMobileMenu() {
+    return $(window).width() <= 991;
+  }
+
+  checkClaim(claim: string): boolean {
+    return this.authService.claimGuard(claim);  
+  }
+
   ngOnDestroy() {
+    if (this.claimsSubscription) {
+      this.claimsSubscription.unsubscribe();
+    }
     if (!this.authService.loggedIn()) {
+      localStorage.removeItem('token')
       this.authService.logOut();
       this.router.navigateByUrl("/login");
     }
-  } 
- }
+  }
+}
 

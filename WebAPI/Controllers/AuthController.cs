@@ -1,6 +1,7 @@
 ﻿using Business.Handlers.Authorizations.Commands;
 using Business.Handlers.Authorizations.Queries;
 using Business.Handlers.Users.Commands;
+using Core.CrossCuttingConcerns.Caching;
 using Core.Utilities.Results;
 using Core.Utilities.Security.Jwt;
 using Entities.Dtos;
@@ -8,8 +9,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using IResult = Core.Utilities.Results.IResult;
+using WebAPI.Services;
 
 namespace WebAPI.Controllers
 {
@@ -20,7 +25,37 @@ namespace WebAPI.Controllers
     [ApiController]
     public class AuthController : BaseApiController
     {
+        private readonly ICacheManager _cacheManager;
+        private readonly IpBanService _ipBanService;
 
+        public AuthController(ICacheManager cacheManager, IpBanService ipBanService)
+        {
+            this._cacheManager = cacheManager;
+            _ipBanService = ipBanService;
+        }
+
+        [Authorize]
+        [HttpGet("cx0_d_s91o2_xw24")]
+        public IActionResult VerifyToken()
+        {
+            try
+            {
+                var userId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value);
+
+                var cachedClaims = _cacheManager.Get<IEnumerable<string>>($"{CacheKeys.UserIdForClaim}={userId}");
+
+                if (cachedClaims == null)
+                {
+                    return Unauthorized(new { valid = false, message = "Oturum bulunamadı veya süresi doldu" });
+                }
+
+                return Ok(new { valid = true });
+            }
+            catch
+            {
+                return Unauthorized(new { valid = false, message = "Geçersiz oturum" });
+            }
+        }
         /// <summary>
         /// Make it User Login operations
         /// </summary>
@@ -31,11 +66,27 @@ namespace WebAPI.Controllers
         [Produces("application/json", "text/plain")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IDataResult<AccessToken>))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(object))]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginUserQuery loginModel)
         {
+            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+            
+            if (_ipBanService.IsIpBanned(ipAddress))
+            {
+                return StatusCode(403, new { message = "IP Address is blocked." });
+            }
+
             var result = await Mediator.Send(loginModel);
-            return result.Success ? Ok(result) : Unauthorized(result.Message);
+            
+            if (!result.Success)
+            {
+                await _ipBanService.RecordFailedAttempt(ipAddress);
+                return Unauthorized(result);
+            }
+
+            _ipBanService.ResetFailedAttempts(ipAddress);
+            return Ok(result);
         }
 
         [AllowAnonymous]
@@ -98,20 +149,20 @@ namespace WebAPI.Controllers
             return GetResponseOnlyResultMessage(await Mediator.Send(command));
         }
 
-        /// <summary>
-        /// Token decode test
-        /// </summary>
-        /// <returns></returns>
-        [Consumes("application/json")]
-        [Produces("application/json", "text/plain")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
-        [HttpPost("test")]
-        public IActionResult LoginTest()
-        {
-            var auth = Request.Headers["Authorization"];
-            var token = JwtHelper.DecodeToken(auth);
+        ///// <summary>
+        ///// Token decode test
+        ///// </summary>
+        ///// <returns></returns>
+        //[Consumes("application/json")]
+        //[Produces("application/json", "text/plain")]
+        //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        //[HttpPost("test")]
+        //public IActionResult LoginTest()
+        //{
+        //    var auth = Request.Headers["Authorization"];
+        //    var token = JwtHelper.DecodeToken(auth);
 
-            return Ok(token);
-        }
+        //    return Ok(token);
+        //}
     }
 }

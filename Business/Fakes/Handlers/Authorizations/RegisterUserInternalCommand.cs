@@ -17,6 +17,7 @@ namespace Business.Fakes.Handlers.Authorizations
         public string Email { get; set; }
         public string Password { get; set; }
         public string FullName { get; set; }
+        public bool IsExternalUser { get; set; }
 
 
         public class RegisterUserInternalCommandHandler : IRequestHandler<RegisterUserInternalCommand, IResult>
@@ -50,6 +51,8 @@ namespace Business.Fakes.Handlers.Authorizations
                     PasswordHash = passwordHash,
                     PasswordSalt = passwordSalt,
                     Status = true
+                    ,
+                    IsExternalUser = false
                 };
 
                 _userRepository.Add(user);

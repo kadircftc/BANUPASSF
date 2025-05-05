@@ -39,7 +39,7 @@ namespace Business.Handlers.Visits.Queries
 
             [PerformanceAspect(5)]
             [CacheAspect(10)]
-            [LogAspect(typeof(FileLogger))]
+            //[LogAspect(typeof(FileLogger))]
             [SecuredOperation(Priority = 1)]
             public async Task<IDataResult<IEnumerable<Visit>>> Handle(GetPersonnelVisitsQuery request, CancellationToken cancellationToken)
             {

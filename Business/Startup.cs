@@ -1,15 +1,12 @@
 using Autofac;
 using Business.Constants;
 using Business.DependencyResolvers;
-using Business.Fakes.DArch;
-using Business.Services.Authentication;
+using Business.Services.ConvertPdfService.Abstract;
+using Business.Services.ConvertPdfService.Concrete;
 using Business.Services.UserService.Abstract;
 using Business.Services.UserService.Concrete;
-using Core.CrossCuttingConcerns.Caching;
-using Core.CrossCuttingConcerns.Caching.Microsoft;
 using Core.DependencyResolvers;
 using Core.Extensions;
-using Core.Middlewares;
 using Core.Utilities.ElasticSearch;
 using Core.Utilities.IoC;
 using Core.Utilities.MessageBrokers.RabbitMq;
@@ -19,7 +16,6 @@ using DataAccess.Concrete.EntityFramework;
 using DataAccess.Concrete.EntityFramework.Contexts;
 using DataAccess.Concrete.MongoDb.Context;
 using FluentValidation;
-using Google.Protobuf.WellKnownTypes;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -76,7 +72,7 @@ namespace Business
 
             services.AddTransient<IMessageBrokerHelper, MqQueueHelper>();
             services.AddTransient<IMessageConsumer, MqConsumerHelper>();
-
+            
             services.AddAutoMapper(typeof(ConfigurationManager));
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddMediatR(typeof(BusinessStartup).GetTypeInfo().Assembly);
@@ -111,7 +107,7 @@ namespace Business
             services.AddTransient<IGroupClaimRepository, GroupClaimRepository>();
             services.AddTransient<IUserGroupRepository, UserGroupRepository>();
 
-            services.AddDbContext<ProjectDbContext, MsDbContext>();
+            services.AddDbContext<ProjectDbContext, PostgreDbContext>();
             services.AddSingleton<MongoDbContextBase, MongoDbContext>();
         }
 
@@ -127,8 +123,11 @@ namespace Business
             services.AddTransient<IVisitRepository, VisitRepository>();
             services.AddTransient<IVisitConfirmRepository, VisitConfirmRepository>();
             services.AddTransient<ILogRepository, LogRepository>();
+
             services.AddTransient<ITranslateRepository, TranslateRepository>();
             services.AddTransient<ILanguageRepository, LanguageRepository>();
+
+            
 
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IUserClaimRepository, UserClaimRepository>();
@@ -136,9 +135,11 @@ namespace Business
             services.AddTransient<IGroupRepository, GroupRepository>();
             services.AddTransient<IGroupClaimRepository, GroupClaimRepository>();
             services.AddTransient<IUserGroupRepository, UserGroupRepository>();
-            services.AddDbContext<ProjectDbContext ,MsDbContext>();
+            services.AddDbContext<ProjectDbContext ,PostgreDbContext>();
 
             services.AddSingleton<MongoDbContextBase, MongoDbContext>();
+
+            services.AddScoped<IConvertPdfService, ConvertPdfService>();
         }
 
         /// <summary>
@@ -162,7 +163,7 @@ namespace Business
             services.AddTransient<IGroupRepository, GroupRepository>();
             services.AddTransient<IGroupClaimRepository, GroupClaimRepository>();
 
-            services.AddDbContext<ProjectDbContext,MsDbContext>();
+            services.AddDbContext<ProjectDbContext,PostgreDbContext>();
             services.AddSingleton<MongoDbContextBase, MongoDbContext>();
         }
 

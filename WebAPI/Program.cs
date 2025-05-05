@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
+using System.Linq;
 
 namespace WebAPI
 {
@@ -24,23 +25,23 @@ namespace WebAPI
         /// <param name="args"></param>
         public static void Main(string[] args)
         {
-            //var host = CreateHostBuilder(args).Build();
-            //using (var scope = host.Services.CreateScope())
-            //{
-            //    var services = scope.ServiceProvider;
-            //    try
-            //    {
-            //        var context = services.GetRequiredService<MsDbContext>();
-            //        context.Database.Migrate();
-            //        Console.WriteLine("Database migration completed.");
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        Console.WriteLine($"Migration error: {ex.Message}");
-            //    }
-            //}
-          
-            CreateHostBuilder(args).Build().Run();
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
+            var host = CreateHostBuilder(args).Build();
+
+            // Migration için argüman kontrolü
+            if (args.Contains("--migration"))
+            {
+                using (var scope = host.Services.CreateScope())
+                {
+                    var services = scope.ServiceProvider;
+                    var context = services.GetRequiredService<PostgreDbContext>();
+                    context.Database.Migrate();
+                }
+                return;
+            }
+
+            host.Run();
         }
 
         /// <summary>

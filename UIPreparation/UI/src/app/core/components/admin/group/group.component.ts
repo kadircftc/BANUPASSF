@@ -3,14 +3,15 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { LookUp } from 'app/core/models/lookUp';
+import { LookUp } from 'app/core/models/LookUp';
+import { LookUpEmail } from 'app/core/models/LookUpEmail';
 import { AlertifyService } from 'app/core/services/alertify.service';
 import { LookUpService } from 'app/core/services/lookUp.service';
 import { environment } from 'environments/environment';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
-import { AuthService } from '../login/services/auth.service';
-import { Group } from './models/group';
-import { GroupService } from './services/group.service';
+import { AuthService } from '../login/Services/auth.service';
+import { Group } from './Models/group';
+import { GroupService } from './Services/group.service';
 
 
 declare var jQuery: any;
@@ -25,9 +26,9 @@ export class GroupComponent implements AfterViewInit, OnInit {
   dataSource: MatTableDataSource<any>;
 	@ViewChild(MatPaginator) paginator: MatPaginator;
 	@ViewChild(MatSort) sort: MatSort;
-	displayedColumns: string[] = ["id","groupName","updateGroupClaim","updateUserGroupClaims","update","delete"];
+	displayedColumns: string[] = ["groupName","updateUserGroupClaims","update"];
   
-  userDropdownList:LookUp[];
+  userDropdownList:LookUpEmail[];
   userSelectedItems:LookUp[];
 
   claimDropdownList:LookUp[];
@@ -44,6 +45,8 @@ export class GroupComponent implements AfterViewInit, OnInit {
   isClaimChange: boolean = false;
 
   groupId:number;
+
+  formattedUserDropdownList: any[];
 
   constructor(private groupService:GroupService, private lookupService:LookUpService,private alertifyService:AlertifyService,private formBuilder: FormBuilder, private authService:AuthService) { }
 
@@ -64,7 +67,8 @@ export class GroupComponent implements AfterViewInit, OnInit {
       });
 
      this.lookupService.getUserLookUp().subscribe(data=>{
-       this.userDropdownList=data;
+       this.userDropdownList = data;
+       this.formattedUserDropdownList = this.userDropdownList.map(user => ({ id: user.id, label: `${user.label} (${user.email})` }));
      });
   }
 

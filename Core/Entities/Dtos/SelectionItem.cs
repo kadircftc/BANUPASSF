@@ -20,5 +20,6 @@
         public string ParentId { get; set; }
         public string Label { get; set; }
         public bool IsDisabled { get; set; }
+        public string Email { get; set; }
     }
 }

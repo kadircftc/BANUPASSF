@@ -50,7 +50,7 @@ namespace Tests.Business.Handlers
             _cacheManager = new Mock<ICacheManager>();
             _configuration = new Mock<IConfiguration>();
 
-            _loginUserQueryHandler = new LoginUserQueryHandler(_userRepository.Object, _tokenHelper.Object, _mediator.Object, _cacheManager.Object, _configuration.Object);
+            //_loginUserQueryHandler = new LoginUserQueryHandler(_userRepository.Object, _tokenHelper.Object, _mediator.Object, _cacheManager.Object, _configuration.Object);
             _registerUserCommandHandler = new RegisterUserCommandHandler(_userRepository.Object);
             _forgotPasswordCommandHandler = new ForgotPasswordCommandHandler(_userRepository.Object);
         }

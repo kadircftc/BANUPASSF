@@ -1,0 +1,276 @@
+<div class="main-content">
+    <div class="container-fluid">
+      <div class="card" style="margin-top: 15px;">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0">Filtreleme</h5>
+          <button mat-raised-button color="primary"  (click)="createPdf()">
+            <i class="fas fa-file-pdf"></i>
+            PDF Oluştur
+          </button>
+        </div>
+        <div class="card-body py-2">
+          <div class="row">
+            <div class="col-md-3">
+              <mat-form-field appearance="outline" style="width: 100%;">
+                <mat-label>Başlangıç</mat-label>
+                <input matInput [matDatepicker]="startDatePicker" [(ngModel)]="startDate" (dateChange)="onStartDateChange()" placeholder="Seçiniz">
+                <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+                <mat-datepicker #startDatePicker></mat-datepicker>
+              </mat-form-field>
+              <button *ngIf="startDate" style="color:red; border:none; background:none; margin-top:-15px" (click)="startDate=null;formattedStartDate=''">
+                Filtreyi Temizle
+              </button>
+            </div>
+            <div class="col-md-3">
+              <mat-form-field appearance="outline" style="width: 100%;">
+                <mat-label>Bitiş</mat-label>
+                <input matInput [matDatepicker]="endDatePicker" [(ngModel)]="endDate" (dateChange)="onEndDateChange()" placeholder="Seçiniz">
+                <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+                <mat-datepicker #endDatePicker></mat-datepicker>
+              </mat-form-field>
+              <button *ngIf="endDate" style="color:red; border:none; background:none; margin-top:-15px" (click)="endDate=null;formattedEndDate=''">
+                Filtreyi Temizle
+              </button>
+            </div>
+            <div class="col-md-3">
+              <mat-form-field appearance="outline" style="width: 100%;">
+                <mat-label>İsim</mat-label>
+                <input matInput [(ngModel)]="searchName" (keyup)="page=1" placeholder="İsim giriniz">
+              </mat-form-field>
+              <button *ngIf="searchName" style="color:red; border:none; background:none; margin-top:-15px" (click)="searchName=''">
+                Filtreyi Temizle
+              </button>
+            </div>
+            <div class="col-md-3">
+              <mat-form-field appearance="outline" style="width: 100%;">
+                <mat-label>İşlem</mat-label>
+                <mat-select (selectionChange)="page=1" [(ngModel)]="selectedProcessType">
+                  <mat-option value="Güvenlik Onay">Güvenlik Onay</mat-option>
+                  <mat-option value="Güvenlik Red">Güvenlik Red</mat-option>
+                  <mat-option value="Güvenlik Pdf Rapor Oluşturma">Rapor Oluşturma</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <button *ngIf="selectedProcessType" style="color:red; border:none; background:none; margin-top:-15px" (click)="selectedProcessType=''">
+                Filtreyi Temizle
+              </button>
+            </div>
+          </div>
+          <div class="row" *ngIf="formattedEndDate||formattedStartDate||selectedProcessType||searchName">
+            <div class="col-md-12 text-center">
+              <button mat-raised-button color="primary" (click)="onSearch()">
+                <i class="fas fa-search"></i>
+                Ara
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header card-header-danger">
+              <h4 style="padding-bottom: 30px;" class="card-title ">{{'BanuLogList'| translate}}</h4>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <div class="row" *ngIf="filteredAllResult">
+                  <div style="font-weight: bold;" class="col-md-4" *ngIf="filteredAllResult">
+                    {{filteredAllResult.totalItemCount}} kayıt arasından {{filteredAllResult.data.length}} kayıt listeleniyor
+                  </div>
+                  <div class="col-md-4">
+                    <div class="pagination-container" *ngIf="pageCount.length > 0">
+                      <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                          <li class="page-item" [class.disabled]="page === 1">
+                            <a class="page-link" (click)="onPageChange(page - 1)" aria-label="Previous">
+                              <span aria-hidden="true">&laquo;</span>
+                            </a>
+                          </li>
+                          <li class="page-item" *ngFor="let p of getVisiblePages()" [class.active]="p === page">
+                            <a class="page-link" *ngIf="p !== -1" (click)="onPageChange(p)">{{p}}</a>
+                            <span class="page-link dots" *ngIf="p === -1">...</span>
+                          </li>
+                          <li class="page-item" [class.disabled]="page === pageCount.length">
+                            <a class="page-link" (click)="onPageChange(page + 1)" aria-label="Next">
+                              <span aria-hidden="true">&raquo;</span>
+                            </a>
+                          </li>
+                        </ul>
+                      </nav>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <mat-form-field class="float-right">
+                      <mat-label>Filter</mat-label>
+                      <input matInput (keyup)="applyFilter($event)" placeholder="" #input>
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class="row" *ngIf="allResult&&!filteredAllResult">
+                  <div style="font-weight: bold;" class="col-md-4" *ngIf="allResult">
+                    {{allResult.totalItemCount}} kayıt arasından {{allResult.data.length}} kayıt listeleniyor
+                  </div>
+                  <div class="col-md-4">
+                    <div class="pagination-container" *ngIf="allPageCount.length > 0">
+                      <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                          <li class="page-item" [class.disabled]="basePageIndex === 1">
+                            <a class="page-link" (click)="onAllPageChange(basePageIndex - 1)" aria-label="Previous">
+                              <span aria-hidden="true">&laquo;</span>
+                            </a>
+                          </li>
+                          <li class="page-item" *ngFor="let p of getAllVisiblePages()" [class.active]="p === basePageIndex">
+                            <a class="page-link" *ngIf="p !== -1" (click)="onAllPageChange(p)">{{p}}</a>
+                            <span class="page-link dots" *ngIf="p === -1">...</span>
+                          </li>
+                          <li class="page-item" [class.disabled]="basePageIndex === allPageCount.length">
+                            <a class="page-link" (click)="onAllPageChange(basePageIndex + 1)" aria-label="Next">
+                              <span aria-hidden="true">&raquo;</span>
+                            </a>
+                          </li>
+                        </ul>
+                      </nav>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <mat-form-field class="float-right">
+                      <mat-label>Filter</mat-label>
+                      <input matInput (keyup)="applyFilter($event)" placeholder="" #input>
+                    </mat-form-field>
+                  </div>
+                </div>
+                              <table mat-table [dataSource]="dataSource" matSort>
+  
+  
+                                  
+                     <ng-container matColumnDef="id">
+                       <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'Id'|translate}}</th>
+                       <td mat-cell *matCellDef="let element">{{element.id}}</td>
+                     </ng-container>
+      
+                     <ng-container matColumnDef="createdDate">
+                       <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'CreatedDate'|translate}}</th>
+                       <td mat-cell *matCellDef="let element">{{element.createdDate|date:'dd/MM/yyyy'}}</td>
+                     </ng-container>
+      
+                     <ng-container matColumnDef="transactorFullName">
+                       <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'TransactorFullName'|translate}}</th>
+                       <td mat-cell *matCellDef="let element">{{element.transactorFullName}}</td>
+                     </ng-container>
+      
+                     <ng-container matColumnDef="transactorId">
+                       <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'TransactorId'|translate}}</th>
+                       <td mat-cell *matCellDef="let element">{{element.transactorId}}</td>
+                     </ng-container>
+      
+                     <ng-container matColumnDef="transactionsDescription">
+                       <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'TransactionsDescription'|translate}}</th>
+                       <td mat-cell *matCellDef="let element">{{element.transactionsDescription}}</td>
+                     </ng-container>
+      
+                     <ng-container matColumnDef="transactionType">
+                       <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'TransactionType'|translate}}</th>
+                       <td mat-cell *matCellDef="let element">{{element.transactionType}}</td>
+                     </ng-container>
+  
+  
+  
+  
+                              
+  
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  
+                  <tr class="mat-row" *matNoDataRow style="text-align: center;">
+                    <td class="mat-cell" colspan="4">{{'NoRecordsFound' |translate}} "{{input.value}}"</td>
+                  </tr>
+                              </table>
+                          
+                              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+  
+  <div class="modal modal-angular fade" id="banulog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body text-center">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+            (click)="clearFormGroup(banuLogAddForm)"><span aria-hidden="true">&times;</span></button>
+          <h4 class="margin-top">
+             {{'BanuLogForm'| translate}}
+          </h4>
+          <div class="separator"></div>
+          <form *ngIf="banuLogAddForm" [formGroup]="banuLogAddForm" (ngSubmit)="save()">
+            
+                      <div class="row">
+              <div class="col col-md-12">
+                <mat-form-field class="example-full-width">
+                  <input matInput placeholder="createdDate" type="date" id="createdDate" name="createdDate"
+                         formControlName="createdDate" />
+                  <div class="alert alert-danger"
+                       *ngIf="banuLogAddForm.get('createdDate')!.hasError('createdDate') && banuLogAddForm.get('createdDate')!.dirty">
+                  </div>
+                </mat-form-field>
+              </div>
+            </div>
+                      <div class="row">
+              <div class="col col-md-12">
+                <mat-form-field class="example-full-width">
+                  <input matInput placeholder="transactorFullName" type="text" id="transactorFullName" name="transactorFullName"
+                         formControlName="transactorFullName" />
+                  <div class="alert alert-danger"
+                       *ngIf="banuLogAddForm.get('transactorFullName')!.hasError('transactorFullName') && banuLogAddForm.get('transactorFullName')!.dirty">
+                  </div>
+                </mat-form-field>
+              </div>
+            </div>
+                      <div class="row">
+                          <div class="col-md-12">
+                              <select class="browser-default custom-select" formControlName="transactorId">
+                                  <option *ngFor="let item of banuLoglookUp" [value]="item.id"> {{item.label}}</option>
+                              </select>
+                          </div>
+                      </div>
+                      <div class="row">
+              <div class="col col-md-12">
+                <mat-form-field class="example-full-width">
+                  <input matInput placeholder="transactionsDescription" type="text" id="transactionsDescription" name="transactionsDescription"
+                         formControlName="transactionsDescription" />
+                  <div class="alert alert-danger"
+                       *ngIf="banuLogAddForm.get('transactionsDescription')!.hasError('transactionsDescription') && banuLogAddForm.get('transactionsDescription')!.dirty">
+                  </div>
+                </mat-form-field>
+              </div>
+            </div>
+                      <div class="row">
+              <div class="col col-md-12">
+                <mat-form-field class="example-full-width">
+                  <input matInput placeholder="transactionType" type="text" id="transactionType" name="transactionType"
+                         formControlName="transactionType" />
+                  <div class="alert alert-danger"
+                       *ngIf="banuLogAddForm.get('transactionType')!.hasError('transactionType') && banuLogAddForm.get('transactionType')!.dirty">
+                  </div>
+                </mat-form-field>
+              </div>
+            </div>
+                     
+            <button mat-raised-button type="submit" class="btn btn-danger pull-right">{{'Save'|translate}}</button>
+            <div class="clearfix"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <swal #deleteSwal title="{{'DeleteConfirm' | translate}}" icon = "error" [showCancelButton]="true"
+      [confirmButtonText] = "'OK'"[cancelButtonText] = "'Cancel'" >
+  </swal>
+  
+  

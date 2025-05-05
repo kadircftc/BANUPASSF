@@ -1,8 +1,8 @@
-import { Component, OnInit, ElementRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { AuthService } from '../../admin/login/services/auth.service';
 import { SharedService } from 'app/core/services/shared.service';
+import { Subscription } from 'rxjs';
+import { AuthService } from '../../admin/login/Services/auth.service';
 
 
 @Component({
@@ -30,23 +30,24 @@ export class NavbarComponent implements OnInit {
 	logOut() {
 		this.authService.logOut();
 		this.router.navigateByUrl("/login");
-
 	}
 
 	help(): void{
 
 		window.open(
-			'https://www.reqspark.net/',
+			'https://www.reqspark.com/',
 			'_blank' 
 		);
 	}
 	ngOnInit() {
-		console.log(this.userName);
 		this.userName = this.authService.getUserName();
 	}
 
 	setUserName(){
 
 		this.userName = this.authService.getUserName();
+	}
+	checkClaim(claim:string):boolean{
+		return this.authService.claimGuard(claim);
 	}
 }

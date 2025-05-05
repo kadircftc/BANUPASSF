@@ -11,5 +11,6 @@ namespace Entities.Concrete
     {
         public Guid VisitId { get; set; }
         public int SecurityId { get; set; }
+        public bool TransactionType { get; set; }
     }
 }

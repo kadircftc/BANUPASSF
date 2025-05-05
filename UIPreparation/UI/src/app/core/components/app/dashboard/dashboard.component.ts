@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import * as Chartist from 'chartist';
+import { AuthService } from '../../admin/login/Services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -8,7 +9,8 @@ import * as Chartist from 'chartist';
 })
 export class DashboardComponent implements OnInit {
 
-  constructor() { }
+  constructor(private authService: AuthService) { }
+
   startAnimationForLineChart(chart){
       let seq: any, delays: any, durations: any;
       seq = 0;
@@ -147,4 +149,7 @@ export class DashboardComponent implements OnInit {
       this.startAnimationForBarChart(websiteViewsChart);
   }
 
+  checkClaim(claim: string): boolean {
+    return this.authService.claimGuard(claim);
+  }
 }

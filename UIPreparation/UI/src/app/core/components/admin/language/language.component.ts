@@ -1,13 +1,13 @@
-import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { AlertifyService } from 'app/core/services/alertify.service';
 import { LookUpService } from 'app/core/services/lookUp.service';
-import { AuthService } from '../login/services/auth.service';
-import { Language } from './Models/Language';
-import { LanguageService } from './Services/Language.service';
+import { AuthService } from '../login/Services/auth.service';
+import { Language } from './models/language';
+import { LanguageService } from './services/Language.service';
 
 declare var jQuery: any;
 

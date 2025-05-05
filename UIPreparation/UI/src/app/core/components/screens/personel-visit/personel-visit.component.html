@@ -1,0 +1,66 @@
+<div class="container-fluid" style="padding-top: 35px;">
+    <div class="card">
+        <div class="card-header card-header-primary">
+            <h4 class="card-title" style="padding-bottom: 25px;">Ziyaretleriniz</h4>
+        </div>
+        <div *ngIf="filteredVisits.length === 0" class="card-body">
+            <div class="text-center">
+                <mat-spinner style="margin: 0 auto;"></mat-spinner>
+                <p>Yükleniyor...</p>
+            </div>
+        </div>
+        <div *ngIf="filteredVisits.length > 0" class="card-body">
+            <!-- Tab Butonları -->
+            <div class="date-tabs text-center mb-3">
+                <button mat-button (click)="filterVisits('all')">Tümü</button>
+                <button mat-button (click)="filterVisits('approved')">Onaylı</button>
+                <button mat-button (click)="filterVisits('rejected')">Reddedildi</button>
+                <button mat-button (click)="filterVisits('pending')">Beklemede</button>
+            </div>
+
+            <!-- Tablo -->
+            <div class="mat-elevation-z8">
+                <table mat-table [dataSource]="filteredVisits" class="mat-elevation-z8">
+                    <ng-container matColumnDef="visitorFullName">
+                        <th mat-header-cell *matHeaderCellDef> Ziyaretçi Adı </th>
+                        <td mat-cell *matCellDef="let visit"> {{ visit.visitorFullName }} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="visitStartDate">
+                        <th mat-header-cell *matHeaderCellDef> Giriş Tarihi </th>
+                        <td mat-cell *matCellDef="let visit"> {{ visit.visitStartDate | date: 'short' }} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="exitDate">
+                        <th mat-header-cell *matHeaderCellDef> Çıkış Tarihi </th>
+                        <td mat-cell *matCellDef="let visit"> {{ visit.exitDate !== '0001-01-01T02:00:00+02:00' ? (visit.exitDate | date: 'short') : 'Yok' }} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="status">
+                        <th mat-header-cell *matHeaderCellDef> Durum </th>
+                        <td mat-cell *matCellDef="let visit"> 
+                            <span *ngIf="visit.isConfirm" class="status approved">
+                                <mat-icon>check_circle</mat-icon> Onaylı
+                            </span>
+                            <span *ngIf="visit.isReject" class="status rejected">
+                                <mat-icon>cancel</mat-icon> Reddedildi: {{ visit.reasonForRejection }}
+                            </span>
+                            <span *ngIf="!visit.isConfirm && !visit.isReject" class="status pending">
+                                <mat-icon>hourglass_empty</mat-icon> Beklemede
+                            </span>
+                            <span *ngIf="visit.vehicleEntry" class="status vehicle">
+                                <mat-icon>directions_car</mat-icon> Araç
+                            </span>
+                            <span *ngIf="!visit.vehicleEntry" class="status pedestrian">
+                                <mat-icon>directions_walk</mat-icon> Yaya
+                            </span>
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="['visitorFullName', 'visitStartDate', 'exitDate', 'status']"></tr>
+                    <tr mat-row *matRowDef="let row; columns: ['visitorFullName', 'visitStartDate', 'exitDate', 'status'];"></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

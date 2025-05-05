@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { LocalStorageService } from 'app/core/services/local-storage.service';
 import { environment } from 'environments/environment';
 import { tap } from 'rxjs/operators';
-import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'

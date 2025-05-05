@@ -1,12 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { LookUp } from 'app/core/models/lookUp';
+import { LookUp } from 'app/core/models/LookUp';
 import { LocalStorageService } from 'app/core/services/local-storage.service';
 import { LookUpService } from 'app/core/services/lookUp.service';
 import { environment } from 'environments/environment';
+import { LanguageService } from '../../../services/language.service';
 import { LoginUser } from './model/login-user';
-import { AuthService } from './services/auth.service';
+import { AuthService } from './Services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -18,13 +19,15 @@ export class LoginComponent implements OnInit {
   username:string="";
   loginUser:LoginUser=new LoginUser();
   langugelookUp:LookUp[];
+  hidePassword = true;
 
 
   constructor(private auth:AuthService,
     private storageService:LocalStorageService,
     private lookupService:LookUpService,
     public translateService:TranslateService,
-    private httpClient:HttpClient) { }
+    private httpClient:HttpClient,
+    private languageService: LanguageService) { }
 
   ngOnInit() {
 
@@ -51,6 +54,15 @@ export class LoginComponent implements OnInit {
   changeLang(lang){  
     localStorage.setItem("lang",lang);
     this.translateService.use(lang);
+  }
+
+  getLanguageCodes() {
+    this.languageService.getLanguageCodes().subscribe({
+      next: (response) => {
+      },
+      error: (error) => {
+      }
+    });
   }
 
 }

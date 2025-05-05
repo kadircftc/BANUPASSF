@@ -1,4 +1,5 @@
 ﻿
+using Business.Constants;
 using Business.Handlers.Visits.Commands;
 using FluentValidation;
 
@@ -10,7 +11,7 @@ namespace Business.Handlers.Visits.ValidationRules
         public CreateVisitValidator()
         {
             RuleFor(x => x.VisitorFullName).NotEmpty();
-            RuleFor(x => x.VisitorLicensePlate).NotEmpty();
+           
             RuleFor(x => x.VehicleEntry)
     .NotNull().WithMessage("Vehicle Entry cannot be null.")
     .Must(x => x == false || x == true).WithMessage("Vehicle Entry must be a valid boolean value (true or false).");
@@ -19,8 +20,7 @@ namespace Business.Handlers.Visits.ValidationRules
                 .NotNull().WithMessage("Multi Person Visit cannot be null.")
                 .Must(x => x == false || x == true).WithMessage("Multi Person Visit must be a valid boolean value (true or false).");
 
-            RuleFor(x => x.ApprovalDate).NotEmpty();
-            RuleFor(x => x.ExitDate).NotEmpty();
+           
             RuleFor(x => x.VisitStartDate).NotEmpty();
             RuleFor(x => x.VisitEndDate).NotEmpty();
 
@@ -39,6 +39,31 @@ namespace Business.Handlers.Visits.ValidationRules
             RuleFor(x => x.ExitDate).NotEmpty();
             RuleFor(x => x.VisitStartDate).NotEmpty();
             RuleFor(x => x.VisitEndDate).NotEmpty();
+
+        }
+    }
+    public class VisitRejectValidator : AbstractValidator<VisitRejectCommand>
+    {
+        public VisitRejectValidator()
+        {
+            RuleFor(x => x.ReasonForRejection).NotEmpty().WithMessage(TransactionMessagesTR.RejectForReasonNotNull);
+            
+        }
+    }
+    public class PedestrianEntranceCommandValidator : AbstractValidator<PedestrianEntranceCommand>
+    {
+        public PedestrianEntranceCommandValidator()
+        {
+            RuleFor(x => x.VisitorFullName).NotEmpty().WithMessage(TransactionMessagesTR.NullName);
+
+        }
+    }
+    public class VehicleEntranceCommandValidator : AbstractValidator<VehicleEntranceCommand>
+    {
+        public VehicleEntranceCommandValidator()
+        {
+            RuleFor(x => x.VisitorFullName).NotEmpty().WithMessage(TransactionMessagesTR.NullName);
+            RuleFor(x => x.VisitorLicensePlate).NotEmpty().WithMessage(TransactionMessagesTR.NullLicensePlate);
 
         }
     }

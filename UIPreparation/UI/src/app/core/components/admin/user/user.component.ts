@@ -1,25 +1,27 @@
 import {
   AfterViewInit,
   Component,
-  ElementRef,
+  OnDestroy,
   OnInit,
-  ViewChild,
+  ViewChild
 } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { User } from "./models/user";
-import { UserService } from "./services/user.service";
-import { IDropdownSettings } from "ng-multiselect-dropdown";
-import { LookUp } from "app/core/models/lookUp";
+import { MatPaginator } from "@angular/material/paginator";
+import { MatSort } from "@angular/material/sort";
+import { MatTableDataSource } from "@angular/material/table";
+import * as signalR from '@microsoft/signalr';
+import { MustMatch } from "app/core/directives/must-match";
+import { LookUp } from "app/core/models/LookUp";
 import { AlertifyService } from "app/core/services/alertify.service";
 import { LookUpService } from "app/core/services/lookUp.service";
-import { AuthService } from "../login/services/auth.service";
-import { MustMatch } from "app/core/directives/must-match";
-import { PasswordDto } from "./models/passwordDto";
 import { environment } from "environments/environment";
-import { MatSort } from "@angular/material/sort";
-import { MatPaginator } from "@angular/material/paginator";
-import { MatTableDataSource } from "@angular/material/table";
-
+import { IDropdownSettings } from "ng-multiselect-dropdown";
+import { GroupService } from '../group/Services/group.service';
+import { AuthService } from "../login/Services/auth.service";
+import { PasswordDto } from "./models/passwordDto";
+import { User } from "./models/user";
+import { SignalRService } from "./Services/signalr.service";
+import { UserService } from "./Services/user.service";
 declare var jQuery: any;
 
 @Component({
@@ -27,45 +29,49 @@ declare var jQuery: any;
   templateUrl: "./user.component.html",
   styleUrls: ["./user.component.scss"],
 })
-export class UserComponent implements AfterViewInit, OnInit {
+export class UserComponent implements AfterViewInit, OnInit ,OnDestroy{
   dataSource: MatTableDataSource<any>;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   displayedColumns: string[] = [
-    "userId",
     "email",
     "fullName",
+    "reqLimit",
     "status",
     "mobilePhones",
     "address",
     "notes",
+    "updateReqLimit",
     "passwordChange",
-    "updateClaim",
     "updateGroupClaim",
     "update",
-    "delete",
   ];
-
+  visits: string[] = ["jhnuıohıuj"];
   user: User;
   userList: User[];
+  userEmail: string;
   groupDropdownList: LookUp[];
   groupSelectedItems: LookUp[];
   dropdownSettings: IDropdownSettings;
-
+  notValidEmail: boolean = true;
   claimDropdownList: LookUp[];
   claimSelectedItems: LookUp[];
-
+  private hubConnection!: signalR.HubConnection;
   isGroupChange: boolean = false;
   isClaimChange: boolean = false;
 
   userId: number;
+  reqLimitForm: FormGroup;
+  selectedUserId: number;
 
   constructor(
     private userService: UserService,
     private formBuilder: FormBuilder,
     private alertifyService: AlertifyService,
     private lookUpService: LookUpService,
-    private authService: AuthService
+    private authService: AuthService,
+    private signalRService: SignalRService,
+    private groupService: GroupService
   ) {}
 
   ngAfterViewInit(): void {
@@ -78,6 +84,8 @@ export class UserComponent implements AfterViewInit, OnInit {
   ngOnInit() {
     this.createUserAddForm();
     this.createPasswordForm();
+    this.createReqLimitForm();
+    this.getGroupList();
 
     this.dropdownSettings = environment.getDropDownSetting;
 
@@ -88,6 +96,20 @@ export class UserComponent implements AfterViewInit, OnInit {
     this.lookUpService.getOperationClaimLookUp().subscribe((data) => {
       this.claimDropdownList = data;
     });
+
+    // Real-time validation for email field
+    this.userAddForm.get('email')?.valueChanges.subscribe(() => {
+        this.validateEmail();
+    });
+  }
+
+  validateEmail() {
+    
+    if (this.userEmail.length < 10 || this.userEmail.length > 50) {
+      this.notValidEmail = false;
+    } else {
+      this.notValidEmail = true;
+    }
   }
 
   getUserGroupPermissions(userId: number) {
@@ -97,7 +119,16 @@ export class UserComponent implements AfterViewInit, OnInit {
       this.groupSelectedItems = data;
     });
   }
-
+  ngOnDestroy(): void {
+    if (this.hubConnection) {
+      this.hubConnection.stop()
+        .then(() => console.log('Hub connection stopped'))
+        .catch(err => console.error('Error while stopping connection:', err));
+    } else {
+      console.warn('Hub connection is undefined, cannot stop.');
+    }
+  }
+  
   getUserClaimsPermissions(userId: number) {
     this.userId = userId;
 
@@ -182,6 +213,12 @@ export class UserComponent implements AfterViewInit, OnInit {
         validator: MustMatch("password", "confirmPassword"),
       }
     );
+  }
+
+  createReqLimitForm() {
+    this.reqLimitForm = this.formBuilder.group({
+      reqLimit: ['', [Validators.required, Validators.min(1)]]
+    });
   }
 
   getUserList() {
@@ -288,5 +325,60 @@ export class UserComponent implements AfterViewInit, OnInit {
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
+  }
+
+  requestLimitIncrease(userId: number) {
+    const newLimit = prompt('Enter new request limit:');
+    if (newLimit !== null) {
+      const limit = parseInt(newLimit);
+      if (!isNaN(limit)) {
+        this.userService.requestLimitIncrease(userId, limit).subscribe(
+          (response) => {
+            this.alertifyService.success(response);
+            this.getUserList();
+          },
+          (error) => {
+            this.alertifyService.error(error.error);
+          }
+        );
+      } else {
+        this.alertifyService.error('Please enter a valid number');
+      }
+    }
+  }
+
+  setSelectedUserId(userId: number) {
+    this.selectedUserId = userId;
+    // Get current req limit and set it in form
+    const user = this.userList.find(u => u.userId === userId);
+    if (user) {
+      this.reqLimitForm.patchValue({
+        reqLimit: user.reqLimit
+      });
+    }
+  }
+
+  saveRequestLimit() {
+    if (this.reqLimitForm.valid) {
+      const newLimit = this.reqLimitForm.get('reqLimit')?.value;
+      this.userService.requestLimitIncrease(this.selectedUserId, newLimit).subscribe({
+        next: (response) => {
+          jQuery('#reqLimitModal').modal('hide');
+          this.alertifyService.success(response);
+          this.getUserList();
+          this.clearFormGroup(this.reqLimitForm);
+        },
+        error: (error) => {
+          const errorMessage = error.error || error.message || 'An error occurred while updating request limit';
+          this.alertifyService.error(errorMessage);
+        }
+      });
+    }
+  }
+
+  getGroupList() {
+    this.groupService.getGroupList().subscribe(data => {
+        this.groupDropdownList = data.map(group => ({ id: group.id, label: group.groupName }));
+    });
   }
 }

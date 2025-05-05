@@ -1,0 +1,31 @@
+<button class="mobile-toggle-btn" (click)="toggleSidebar()" *ngIf="isMobile">
+  <i class="material-icons">{{isOpen ? 'chevron_right' : 'menu'}}</i>
+</button>
+
+<div class="mobile-sidebar" [class.open]="isOpen" *ngIf="isMobile">
+  <div class="sidebar-overlay" (click)="toggleSidebar()" *ngIf="isOpen"></div>
+  <div class="sidebar-content">
+    <div class="sidebar-menu">
+      <div class="logo">
+        <a class="simple-text">
+          <div class="logo-img">
+            <img src="../../../../../assets/img/analogo.jpg" width="200" alt="Logo"/>
+          </div>
+          Misafir Takip Sistemi
+        </a>
+      </div>
+      <ul class="nav">
+        <li routerLinkActive="active" *ngFor="let menuItem of menuItems; trackBy: trackByFn" class="nav-item">
+          <a class="nav-link" [routerLink]="[menuItem.path]" (click)="toggleSidebar()" *ngIf="!menuItem.claim || checkClaim(menuItem.claim)">
+            <i class="material-icons">{{menuItem.icon}}</i>
+            <p>{{menuItem.title}}</p>
+          </a>
+        </li>
+      </ul>
+      <button mat-button color="warn" (click)="logOut()" class="logout-btn" style="margin-top: 20px; display: flex; align-items: center; background-color: #f44336; color: white; border-radius: 5px; padding: 10px 15px; transition: background-color 0.3s;">
+        <i class="material-icons" style="margin-right: 8px;">exit_to_app</i>
+        Güvenli Çıkış Yap
+      </button>
+    </div>
+  </div>
+</div> 

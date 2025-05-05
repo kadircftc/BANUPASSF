@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Core.Entities.Concrete
@@ -19,6 +20,7 @@ namespace Core.Entities.Concrete
         public int UserId { get; set; }
         public long CitizenId { get; set; }
         public string FullName { get; set; }
+        [MinLength(10)]
         public string Email { get; set; }
         [JsonIgnore]
         public string RefreshToken { get; set; }
@@ -30,6 +32,8 @@ namespace Core.Entities.Concrete
         public string Address { get; set; }
         public string Notes { get; set; }
         public DateTime UpdateContactDate { get; set; }
+        public int? ReqLimit { get; set; }
+        public bool IsExternalUser { get; set; }
 
         /// <summary>
         /// This is required when encoding token. Not in db. The default is Person.
