@@ -5,7 +5,8 @@
 
 export const environment = {
   production: false,
-  getApiUrl:  '/api/v1',
+  getApiUrl: '/api/v1',
+  signalRUrl: '/d_o10_sig_r',  // SignalR hub URL'si
   getDropDownSetting: {
     singleSelection: false,
     idField: 'id',
@@ -15,9 +16,8 @@ export const environment = {
     itemsShowLimit: 3,
     allowSearchFilter: true
   },
-  getDatatableSettings:  {
+  getDatatableSettings: {
     pagingType: 'full_numbers',
     pageLength: 2
   }
-
 };
