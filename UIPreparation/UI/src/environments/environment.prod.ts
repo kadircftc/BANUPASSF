@@ -1,6 +1,6 @@
 export const environment = {
     production: true,
-    getApiUrl: window.location.origin + '/api/v1', // Dinamik host URL
+    getApiUrl: 'http://banupass.bandirma.edu.tr' + '/api/v1', // Dinamik host URL
     getDropDownSetting: {
       singleSelection: false,
       idField: 'id',
