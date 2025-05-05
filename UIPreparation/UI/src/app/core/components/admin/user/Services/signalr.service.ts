@@ -24,8 +24,8 @@ export class SignalRService {
       return;
     }
 
-    // API URL'den SignalR hub URL'sini oluştur
-    const hubUrl = environment.getApiUrl.replace('/api/v1', '/d_o10_sig_r');
+    // Doğrudan environment'tan SignalR URL'sini kullan
+    const hubUrl = environment.signalRUrl;
 
     this.hubConnection = new HubConnectionBuilder()
       .withUrl(hubUrl, {
@@ -41,22 +41,16 @@ export class SignalRService {
       .start()
       .then(() => {
         this.isConnected = true;
-        
-        // Bağlantı başarılı olduğunda mevcut connection ID'yi logla
+        console.log('SignalR Connected');
       })
       .catch(err => {
         this.isConnected = false;
-        
-        // Hata detaylarını logla
-        if (err.statusCode) {
-        }
-        if (err.message) {
-        }
+        console.error('SignalR Connection Error:', err);
       });
 
-    // Bağlantı durumu değişikliklerini dinle
     this.hubConnection.onclose((error) => {
       this.isConnected = false;
+      console.log('SignalR Connection Closed:', error);
     });
 
     this.hubConnection.onreconnecting((error) => {
@@ -66,6 +60,7 @@ export class SignalRService {
 
     this.hubConnection.onreconnected((connectionId) => {
       this.isConnected = true;
+      console.log('SignalR Reconnected:', connectionId);
     });
   }
 

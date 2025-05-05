@@ -1,6 +1,7 @@
 export const environment = {
     production: true,
     getApiUrl: '/api/v1', // Dinamik host URL
+    signalRUrl: '/d_o10_sig_r',  // SignalR hub URL'si
     getDropDownSetting: {
       singleSelection: false,
       idField: 'id',
@@ -12,7 +13,7 @@ export const environment = {
     },
     getDatatableSettings: {
       pagingType: 'full_numbers',
-      pageLength: 10
+      pageLength: 2
     }
   };
   
